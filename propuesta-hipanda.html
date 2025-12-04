@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hipanda | Innovación & Software</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        neon: {
+                            purple: '#b026ff',
+                            cyan: '#00f3ff',
+                            pink: '#ff0099'
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #030712;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(17, 24, 39, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, rgba(17, 24, 39, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(17, 24, 39, 1) 0, transparent 50%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.15);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+        }
+        .text-glow-purple {
+            text-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="text-gray-300 overflow-x-hidden">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 grid-bg z-0"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-black/20 backdrop-blur-md border-b border-white/5">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="pandaV2.png" alt="Hipanda" class="h-10 w-auto rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                <span class="text-xl font-bold text-white tracking-wider">HIPANDA</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium">
+                <a href="#nosotros" class="hover:text-neon-cyan transition-colors">NOSOTROS</a>
+                <a href="#casos" class="hover:text-neon-cyan transition-colors">CASOS</a>
+                <a href="#planes" class="hover:text-neon-cyan transition-colors">PLANES</a>
+                <a href="#contacto" class="text-neon-cyan hover:text-white transition-colors">CONTACTO</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-20 z-10">
+        <div class="container mx-auto px-6 text-center">
+            <div class="inline-block mb-6 px-4 py-1.5 rounded-full border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan text-sm font-medium tracking-wide animate-pulse-slow">
+                SOFTWARE A LA MEDIDA + INTELIGENCIA ARTIFICIAL
+            </div>
+            <h1 class="text-5xl md:text-8xl font-bold text-white mb-8 leading-tight tracking-tight">
+                Creamos el <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple text-glow">Futuro</span><br>
+                de tu Empresa
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto font-light">
+                Soy <strong class="text-white">Juan David Jaramillo</strong>. En Hipanda transformamos procesos manuales en sistemas inteligentes de alto rendimiento.
+            </p>
+            
+            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+                <a href="#planes" class="group relative px-8 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-neon-cyan via-white to-neon-cyan opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    <span class="relative">Ver Propuesta Económica</span>
+                </a>
+                <a href="#casos" class="px-8 py-4 border border-white/20 text-white rounded-full hover:bg-white/5 transition-all hover:border-white/50">
+                    Explorar Casos de Éxito
+                </a>
+            </div>
+
+            <!-- Tech Stack Strip -->
+            <div class="mt-24 pt-8 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-blue-400">⚛</span> React</span>
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-emerald-400">✨</span> Vue.js</span>
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-green-400">⚡</span> Node.js</span>
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-yellow-400">🐍</span> Python</span>
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-purple-400">🧠</span> AI Models</span>
+                <span class="text-2xl font-bold flex items-center gap-2"><span class="text-red-400">☁</span> GCP</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ownership Section -->
+    <section id="nosotros" class="py-32 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-12 text-center">
+                    El Software es <span class="text-neon-cyan text-glow">Tuyo</span>
+                </h2>
+                
+                <div class="glass-card rounded-3xl p-8 md:p-12 mb-12">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🔓</span>
+                                <h3 class="text-xl font-bold text-white">Código 100% Tuyo</h3>
+                            </div>
+                            <p class="text-gray-400 leading-relaxed">
+                                Te entregamos el código fuente completo. Sin ataduras, sin dependencias. Tú eres el dueño absoluto de tu software.
+                            </p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-3xl">🏗️</span>
+                                <h3 class="text-xl font-bold text-white">Tu Infraestructura</h3>
+                            </div>
+                            <p class="text-gray-400 leading-relaxed">
+                                Todo desplegado en TU propia infraestructura. Con tu usuario, tus credenciales, tu control total.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8 md:p-12">
+                    <h3 class="text-2xl font-bold text-white mb-6 text-center">Nuestra Stack de Desarrollo</h3>
+                    <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">🦊</div>
+                            <h4 class="font-semibold text-white mb-2">GitLab</h4>
+                            <p class="text-sm text-gray-400">Control de versiones y CI/CD en tu cuenta</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">🔥</div>
+                            <h4 class="font-semibold text-white mb-2">Firebase</h4>
+                            <p class="text-sm text-gray-400">Frontend rápido y escalable</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-3">☁️</div>
+                            <h4 class="font-semibold text-white mb-2">Google Cloud</h4>
+                            <p class="text-sm text-gray-400">Backend robusto en GCP</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-white/10 pt-6">
+                        <h4 class="font-semibold text-white mb-4 text-center">Tú Decides Cómo Operar:</h4>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="text-2xl">👨‍💼</span>
+                                    <h5 class="font-bold text-white">Nosotros Administramos</h5>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">
+                                    Te despreocupas. Pagás una administración mensual y nosotros nos encargamos de todo: despliegues, monitoreo, backups, actualizaciones.
+                                </p>
+                                <p class="text-xs text-neon-cyan">Incluido en planes mensuales</p>
+                            </div>
+                            <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="text-2xl">🔧</span>
+                                    <h5 class="font-bold text-white">Tu Equipo Gestiona</h5>
+                                </div>
+                                <p class="text-sm text-gray-400 mb-3">
+                                    Montamos todo en tu infraestructura con tu usuario. Tu equipo interno toma el control y gestiona como quiera.
+                                </p>
+                                <p class="text-xs text-neon-purple">Autonomía total</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cases Section -->
+    <section id="casos" class="py-32 relative z-10">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-20 text-center">
+                Resultados <span class="text-neon-purple text-glow-purple">Reales</span>
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Galco -->
+                <div class="glass-card rounded-3xl p-8 md:p-12 relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-2">Galco</h3>
+                    <p class="text-neon-cyan mb-6 font-mono text-sm">METALMECÁNICA & AUTOMATIZACIÓN</p>
+                    <p class="text-gray-400 mb-8 leading-relaxed">
+                        Automatizamos toda su planta de producción. Desarrollamos un software a la medida que controla cada proceso productivo en piso, eliminando el papel y permitiendo la toma de decisiones en tiempo real.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">Control de Piso</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">IoT</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">Dashboards</span>
+                    </div>
+                </div>
+
+                <!-- Argo -->
+                <div class="glass-card rounded-3xl p-8 md:p-12 relative group overflow-hidden">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 2h2v2h-2V5zm0 4h2v2h-2V9zm0 4h2v2h-2v-2zm-4-8h2v2H8V5zm0 4h2v2H8V9zm0 4h2v2H8v-2zm-4-8h2v2H4V5zm0 4h2v2H4V9zm0 4h2v2H4v-2zm14 10H6v-1h14v1zm0-3h-6v-2h6v2zm0-4h-6V9h6v2zm0-4h-6V5h6v2z"/></svg>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-2">Grupo Argo</h3>
+                    <p class="text-neon-purple mb-6 font-mono text-sm">FINTECH & IMPUESTOS</p>
+                    <p class="text-gray-400 mb-8 leading-relaxed">
+                        Revolucionamos su proceso fiscal. Creamos un motor de cálculo que automatiza más de 350 declaraciones mensuales de ICA. Lo que tomaba horas de trabajo manual propenso a errores, ahora toma minutos con precisión absoluta.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">Automatización Masiva</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">Cálculo Fiscal</span>
+                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white">Cero Errores</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="planes" class="py-32 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Modelos de Trabajo</h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Flexibilidad para cada etapa de tu crecimiento. Sin contar horas, nos enfocamos en entregar valor y resultados.
+                </p>
+            </div>
+
+            <!-- Project Based (Wide Card) -->
+            <div class="max-w-5xl mx-auto mb-24">
+                <div class="glass-card rounded-3xl p-8 md:p-12 border-l-4 border-l-yellow-500 flex flex-col md:flex-row items-center gap-12">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-4xl">🎯</span>
+                            <h3 class="text-2xl font-bold text-white">Proyecto Específico</h3>
+                        </div>
+                        <p class="text-gray-400 mb-6">
+                            Ideal para necesidades puntuales. Escuchamos tu requerimiento, definimos el alcance y entregamos una solución llave en mano.
+                        </p>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex items-center gap-2"><span class="text-yellow-500">✓</span> Alcance cerrado y definido</li>
+                            <li class="flex items-center gap-2"><span class="text-yellow-500">✓</span> Pago por hitos de entrega</li>
+                            <li class="flex items-center gap-2"><span class="text-yellow-500">✓</span> Garantía de funcionamiento</li>
+                        </ul>
+                    </div>
+                    <div class="text-center md:text-right min-w-[200px]">
+                        <p class="text-sm text-gray-500 mb-1">Inversión base desde</p>
+                        <p class="text-5xl font-bold text-white mb-2">$12M</p>
+                        <p class="text-xs text-gray-500">Dependiendo de la complejidad</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Plans Grid -->
+            <div class="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                
+                <!-- Plan Estabilidad -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Estabilidad</h3>
+                        <p class="text-sm text-gray-400">Mantenimiento y Mejoras</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-4xl font-bold text-white">$7M</span>
+                        <span class="text-gray-500">/mes</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-8 flex-grow">
+                        "Mantengamos la casa en orden". Para que el sistema no se caiga y se ajuste a cambios menores.
+                    </p>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-blue-400 mt-0.5">✓</span>
+                            <span>Soporte prioritario</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-blue-400 mt-0.5">✓</span>
+                            <span>Ajustes menores y reportes</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-blue-400 mt-0.5">✓</span>
+                            <span>Mantenimiento preventivo</span>
+                        </li>
+                    </ul>
+                    <a href="#contacto" class="w-full py-3 rounded-xl border border-white/20 text-white text-center hover:bg-white/10 transition-colors">
+                        Elegir Estabilidad
+                    </a>
+                </div>
+
+                <!-- Plan Evolución (Featured) -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col relative transform md:-translate-y-4 border-neon-purple shadow-[0_0_30px_rgba(176,38,255,0.15)]">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neon-purple text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider shadow-lg">
+                        RECOMENDADO
+                    </div>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2 text-neon-purple">Evolución</h3>
+                        <p class="text-sm text-gray-400">Desarrollo Continuo / MVP</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-5xl font-bold text-white">$12M</span>
+                        <span class="text-gray-500">/mes</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-8 flex-grow">
+                        "Ritmo de crucero". Cada mes entregamos un módulo nuevo o una automatización completa. Construimos valor constante.
+                    </p>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-purple mt-0.5">✓</span>
+                            <span class="font-bold text-white">Todo lo de Estabilidad +</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-purple mt-0.5">✓</span>
+                            <span>Nuevas funcionalidades mensuales</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-purple mt-0.5">✓</span>
+                            <span>Automatizaciones complejas</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-purple mt-0.5">✓</span>
+                            <span>Integración de modelos de IA</span>
+                        </li>
+                    </ul>
+                    <a href="#contacto" class="w-full py-3 rounded-xl bg-neon-purple text-white font-bold text-center hover:bg-purple-600 transition-colors shadow-lg shadow-purple-900/50">
+                        Empezar Evolución
+                    </a>
+                </div>
+
+                <!-- Plan Transformación (New High Tier) -->
+                <div class="glass-card rounded-3xl p-8 flex flex-col hover:-translate-y-2 transition-transform duration-300 border-t-4 border-t-neon-cyan">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Transformación</h3>
+                        <p class="text-sm text-gray-400">Aceleración Total</p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-4xl font-bold text-white">$22M</span>
+                        <span class="text-gray-500">/mes</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-8 flex-grow">
+                        "Tu propio departamento de I+D". Velocidad máxima para empresas que necesitan liderar el mercado ya.
+                    </p>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-cyan mt-0.5">✓</span>
+                            <span>Equipo dedicado full-focus</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-cyan mt-0.5">✓</span>
+                            <span>Arquitectura de alto nivel</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-cyan mt-0.5">✓</span>
+                            <span>Consultoría estratégica incluida</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-neon-cyan mt-0.5">✓</span>
+                            <span>Despliegue de múltiples módulos</span>
+                        </li>
+                    </ul>
+                    <a href="#contacto" class="w-full py-3 rounded-xl border border-neon-cyan/50 text-neon-cyan text-center hover:bg-neon-cyan/10 transition-colors">
+                        Máxima Potencia
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="py-32 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="glass-card rounded-3xl p-12 md:p-20 text-center max-w-4xl mx-auto bg-gradient-to-b from-white/5 to-transparent">
+                <h2 class="text-4xl md:text-6xl font-bold text-white mb-8">
+                    ¿Listo para <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-purple">Escalar?</span>
+                </h2>
+                <p class="text-xl text-gray-400 mb-12">
+                    Hablemos de tu proyecto. Sin compromiso, solo tecnología y negocios.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="https://wa.me/573105349585" class="flex items-center justify-center gap-3 px-8 py-4 bg-[#25D366] text-white font-bold rounded-full hover:bg-[#20bd5a] transition-all hover:scale-105 shadow-lg shadow-green-900/50">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        WhatsApp
+                    </a>
+                    <a href="mailto:jdjara@gmail.com" class="flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all hover:scale-105">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Enviar Correo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="border-t border-white/10 bg-black/50 backdrop-blur-lg py-12 relative z-10">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3 opacity-70">
+                <img src="pandaV2.png" alt="Hipanda" class="h-8 w-auto grayscale">
+                <span class="font-bold text-white">HIPANDA</span>
+            </div>
+            <p class="text-gray-600 text-sm">
+                © 2025 Hipanda. Transformando el futuro.
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
