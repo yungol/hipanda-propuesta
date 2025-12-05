@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta de Auditoría Actuarial | Recálculo de Provisiones y Solvencia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            900: '#0f172a', // Slate 900
+                            800: '#1e293b', // Slate 800
+                            accent: '#c2410c', // Orange 700 (Impact color)
+                            gold: '#d4af37',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-700 antialiased bg-slate-50">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brand-accent text-3xl"></i>
+                    <span class="font-serif text-2xl font-bold text-brand-900 tracking-tight">ACTUARIA<span class="text-brand-accent">CHILE</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#inicio" class="text-slate-600 hover:text-brand-accent font-medium transition">Inicio</a>
+                    <a href="#contexto" class="text-slate-600 hover:text-brand-accent font-medium transition">Normativa</a>
+                    <a href="#solucion" class="text-slate-600 hover:text-brand-accent font-medium transition">Propuesta</a>
+                    <a href="#metodologia" class="text-slate-600 hover:text-brand-accent font-medium transition">Metodología</a>
+                    <a href="#contacto" class="px-5 py-2 bg-brand-900 text-white rounded-full hover:bg-brand-accent transition shadow-lg font-medium">Solicitar Reunión</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="relative h-screen flex items-center justify-center hero-bg text-white">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/90"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full border border-brand-gold/50 bg-brand-900/50 backdrop-blur-sm text-brand-gold text-sm font-semibold tracking-wider uppercase">
+                Excelencia en Auditoría Financiera y de Riesgos
+            </div>
+            <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight">
+                Certidumbre Técnica en un <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-orange-200">Entorno Regulatorio Complejo</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto font-light">
+                Auditoría independiente de recálculo de provisiones técnicas y solvencia. 
+                Especialistas en <strong class="text-white">Unit Linked</strong>, cumplimiento <strong class="text-white">CMF</strong>, transición <strong class="text-white">IFRS 17</strong> y estándares <strong class="text-white">Solvencia II</strong>.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#solucion" class="px-8 py-4 bg-brand-accent hover:bg-orange-600 text-white rounded-lg font-bold text-lg transition shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                    Ver Propuesta Técnica
+                </a>
+                <a href="#contacto" class="px-8 py-4 bg-transparent border-2 border-white hover:bg-white hover:text-brand-900 text-white rounded-lg font-bold text-lg transition">
+                    Contactar Especialista
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fa-solid fa-chevron-down text-white/50 text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- Context & Regulation Section -->
+    <section id="contexto" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-brand-accent font-bold tracking-wide uppercase text-sm mb-2">Contexto Regulatorio</h2>
+                <h3 class="text-4xl font-serif font-bold text-brand-900">Convergencia Normativa en Chile</h3>
+                <div class="w-24 h-1 bg-brand-accent mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Card 1 -->
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent transition">
+                        <i class="fa-solid fa-scale-balanced text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-900 mb-3">Normativa CMF & Unit Linked</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Validación exhaustiva de las cuentas únicas de inversión (CUI) y el calce de activos y pasivos bajo las exigencias de la Comisión para el Mercado Financiero. Aseguramos la correcta valoración de los fondos subyacentes.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent transition">
+                        <i class="fa-solid fa-globe text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-900 mb-3">Estándar IFRS 17</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Recálculo independiente del Margen de Servicio Contractual (CSM), Ajuste de Riesgo (RA) y Flujos de Efectivo de Cumplimiento (BEL). Verificación de la granularidad de los grupos de contratos y test de onerosidad.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition duration-300 group">
+                    <div class="w-14 h-14 bg-brand-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-accent transition">
+                        <i class="fa-solid fa-shield-virus text-white text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-900 mb-3">Solvencia II & Capital Basado en Riesgo</h4>
+                    <p class="text-slate-600 leading-relaxed">
+                        Evaluación de suficiencia de capital bajo modelos de estrés. Cálculo de requerimientos de capital de solvencia (SCR) y capital mínimo (MCR) alineados con las mejores prácticas internacionales.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Proposal (Solution) -->
+    <section id="solucion" class="py-24 bg-brand-900 text-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-brand-gold font-bold tracking-wide uppercase text-sm mb-2">Nuestra Propuesta de Valor</h2>
+                    <h3 class="text-4xl md:text-5xl font-serif font-bold mb-6">Auditoría de Recálculo "Shadow"</h3>
+                    <p class="text-lg text-slate-300 mb-8 leading-relaxed">
+                        No solo revisamos papeles de trabajo; <strong>reconstruimos el cálculo</strong>. Nuestra metodología de "Shadow Calculation" implica generar una valoración paralela e independiente de sus provisiones técnicas para identificar brechas con precisión quirúrgica.
+                    </p>
+                    
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check-circle text-brand-accent mt-1 mr-3"></i>
+                            <div>
+                                <strong class="block text-white">Validación de Modelos Actuariales</strong>
+                                <span class="text-slate-400 text-sm">Revisión de supuestos demográficos, financieros y de gastos.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check-circle text-brand-accent mt-1 mr-3"></i>
+                            <div>
+                                <strong class="block text-white">Integridad de Datos (Data Quality)</strong>
+                                <span class="text-slate-400 text-sm">Auditoría de la base de datos técnica y conciliación con contabilidad.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-check-circle text-brand-accent mt-1 mr-3"></i>
+                            <div>
+                                <strong class="block text-white">Certificación de Suficiencia</strong>
+                                <span class="text-slate-400 text-sm">Dictamen formal sobre la suficiencia de reservas según norma chilena e internacional.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-0 bg-brand-accent transform rotate-3 rounded-2xl opacity-20"></div>
+                    <div class="glass-card p-8 rounded-2xl relative text-slate-800">
+                        <h4 class="text-2xl font-bold mb-6 border-b border-slate-200 pb-4">Alcance del Servicio</h4>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Provisiones Matemáticas</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">INCLUIDO</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Reservas de Siniestros (IBNR/IBNER)</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">INCLUIDO</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Test de Adecuación de Pasivos (LAT)</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">INCLUIDO</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Valoración de Derivados Implícitos</span>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">INCLUIDO</span>
+                            </div>
+                            <div class="mt-8 pt-6 border-t border-slate-200">
+                                <p class="text-sm text-slate-500 italic">
+                                    * Entregables adaptados para presentación al Directorio y Regulador (CMF).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology Section -->
+    <section id="metodologia" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl font-serif font-bold text-brand-900">Metodología de Trabajo</h3>
+                <p class="text-slate-600 mt-4 max-w-2xl mx-auto">Un enfoque estructurado en 4 fases para garantizar transparencia y rigor técnico.</p>
+            </div>
+
+            <div class="relative">
+                <!-- Connecting Line -->
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+                    <!-- Step 1 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 text-center hover:-translate-y-2 transition duration-300">
+                        <div class="w-12 h-12 bg-brand-900 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 border-4 border-slate-50">1</div>
+                        <h4 class="font-bold text-lg mb-2">Entendimiento</h4>
+                        <p class="text-sm text-slate-500">Revisión de productos, notas técnicas y estructura de datos.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 text-center hover:-translate-y-2 transition duration-300">
+                        <div class="w-12 h-12 bg-brand-900 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 border-4 border-slate-50">2</div>
+                        <h4 class="font-bold text-lg mb-2">Modelamiento</h4>
+                        <p class="text-sm text-slate-500">Réplica de cálculos en software actuarial independiente.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 text-center hover:-translate-y-2 transition duration-300">
+                        <div class="w-12 h-12 bg-brand-900 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 border-4 border-slate-50">3</div>
+                        <h4 class="font-bold text-lg mb-2">Análisis de Brechas</h4>
+                        <p class="text-sm text-slate-500">Comparación de resultados y análisis de desviaciones.</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 text-center hover:-translate-y-2 transition duration-300">
+                        <div class="w-12 h-12 bg-brand-accent text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 border-4 border-slate-50">4</div>
+                        <h4 class="font-bold text-lg mb-2">Informe Final</h4>
+                        <p class="text-sm text-slate-500">Dictamen técnico, recomendaciones y presentación ejecutiva.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA / Contact -->
+    <section id="contacto" class="py-24 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-brand-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
+                <div class="p-12 md:w-3/5 text-white">
+                    <h3 class="text-3xl font-serif font-bold mb-4">Eleve el Estándar de su Auditoría</h3>
+                    <p class="text-slate-300 mb-8">
+                        Agende una presentación técnica detallada. Discutamos cómo nuestra metodología de recálculo puede fortalecer la gobernanza de riesgos de su compañía.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-envelope text-brand-accent w-8"></i>
+                            <span>contacto@actuariachile.cl</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-phone text-brand-accent w-8"></i>
+                            <span>+56 2 2345 6789</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-location-dot text-brand-accent w-8"></i>
+                            <span>Las Condes, Santiago de Chile</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-100 p-12 md:w-2/5 flex flex-col justify-center">
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+                            <input type="text" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Empresa</label>
+                            <input type="text" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Email Corporativo</label>
+                            <input type="email" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-accent focus:border-transparent outline-none">
+                        </div>
+                        <button type="button" class="w-full bg-brand-accent text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition shadow-lg mt-2">
+                            Solicitar Propuesta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="font-serif text-xl font-bold text-white tracking-tight">ACTUARIA<span class="text-brand-accent">CHILE</span></span>
+                <p class="text-sm mt-2">Consultoría Actuarial & Auditoría de Riesgos</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="#" class="hover:text-white transition">Aviso Legal</a>
+                <a href="#" class="hover:text-white transition">Privacidad</a>
+                <a href="#" class="hover:text-white transition">LinkedIn</a>
+            </div>
+            <div class="mt-4 md:mt-0 text-sm">
+                &copy; 2025 ActuariaChile. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
