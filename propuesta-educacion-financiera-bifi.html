@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Educación Financiera Bifi</title>
+
+    <!-- Tailwind CSS (OBLIGATORIO) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuración de colores corporativos (OBLIGATORIO) -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-orange': '#F18446',
+              'brand-blue': '#093E5E',
+              'brand-beige': '#FEDB9B',
+              'brand-dark': '#4B4B4C',
+              'brand-aqua': '#BED4CF',
+              '4h-primary': '#667eea',
+              '4h-secondary': '#764ba2',
+              '4h-dark': '#4b4b4c',
+              '4h-green': '#6b8e6f'
+            },
+            fontFamily: {
+              'sans': ['Helvetica', 'Arial', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+        /* Estilos personalizados */
+        .circle-bullets li::before {
+            content: "●";
+            color: #F18446;
+            font-size: 1.1em;
+            margin-right: 0.5rem;
+        }
+        .circle-outline-bullets li::before {
+            content: "○";
+            color: #093E5E;
+            font-size: 1.1em;
+            margin-right: 0.5rem;
+        }
+        .badge {
+            background: linear-gradient(135deg, #F18446 0%, #093E5E 100%);
+            border-radius: 9999px;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            flex: 0 0 auto;
+        }
+        body {
+            background-color: var(--color-engibre-dulce);
+            color: var(--color-gris-raton);
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--color-morazul);
+            color: var(--color-estrella-plata);
+            padding: 1rem 0;
+            text-align: center;
+        }
+        h1, h2, h3, h4 {
+            color: var(--color-naranja-intenso);
+            font-weight: bold;
+        }
+        h2 {
+            border-bottom: 3px solid var(--color-naranja-intenso);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        a {
+            color: var(--color-morazul);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            color: var(--color-naranja-intenso);
+        }
+        .bg-primary {
+            background-color: var(--color-naranja-intenso);
+        }
+        .bg-secondary {
+            background-color: var(--color-magico-suroeste);
+        }
+        .bg-accent {
+            background-color: var(--color-gran-lago);
+        }
+        .text-primary {
+            color: var(--color-naranja-intenso);
+        }
+        .text-secondary {
+            color: var(--color-magico-suroeste);
+        }
+        .text-accent {
+            color: var(--color-gran-lago);
+        }
+        .border-primary {
+            border-color: var(--color-naranja-intenso);
+        }
+        .border-secondary {
+            border-color: var(--color-magico-suroeste);
+        }
+        .rounded-2xl {
+            border-radius: 1rem;
+        }
+        .shadow-sm {
+            box-shadow: 0 1px 2px var(--color-onix-profundo);
+        }
+        .hover\:shadow-lg:hover {
+            box-shadow: 0 4px 6px var(--color-onix-profundo);
+        }
+    </style>
+</head>
+<body class="font-sans text-brand-dark antialiased bg-gray-50">
+    <header class="bg-brand-blue text-white py-6">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-4xl font-bold">4Hands Partners S.A.S BIC</h1>
+            <div class="text-right">
+                <h2 class="text-2xl font-semibold">Propuesta de servicios profesionales</h2>
+                <p class="text-lg">para Industrias Haceb S.A</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 space-y-20">
+        <section class="grid gap-10 lg:grid-cols-2 items-center">
+            <div class="space-y-4">
+                <h2 class="text-4xl font-bold text-brand-blue leading-tight">Bienestar e inteligencia financiera</h2>
+                <p class="text-base text-brand-dark">Programas: <span class="font-semibold">Bifi Básico</span> y <span class="font-semibold">Bifi Pro</span></p>
+                <p class="text-sm text-gray-500">Fecha: febrero 17 de 2026</p>
+                <p class="text-base text-justify">Propuesta integral para fortalecer el bienestar financiero, la autonomía y prosperidad  personal, el legado y sostenibilidad familiar, y la toma de decisiones conscientes e informadas por los colaboradores.</p>
+            </div>
+            <div class="bg-brand-beige/40 rounded-2xl p-8 shadow-sm">
+                <blockquote class="text-xl italic text-brand-dark/90 text-justify">
+                    “Un comportamiento financiero consciente, con bases y criterios sólidos, impulsa la productividad, la salud, el bienestar y la resiliencia de las organizaciones y sus colaboradores.”
+                </blockquote>
+                <p class="mt-4 text-sm text-brand-dark/80 font-semibold">"Invierte en ti mismo. Tu mente es tu mejor activo." – Warren Buffett</p>
+            </div>
+        </section>
+
+        <section class="space-y-6">
+            <h2 class="text-3xl font-semibold text-brand-blue">Introducción</h2>
+            <p class="text-base text-gray-600 text-justify">Gracias por su interés en 4Hands Partners S.A.S BIC. Es un gusto acompañarlos como aliados de Industrias Haceb S.A en la consolidación de su iniciativa estratégica y de sostenibilidad, fortaleciendo las competencias, el pensamiento y el comportamiento financiero de sus colaboradores.</p>
+            <p class="text-base text-justify">La propuesta integra formación aplicada, acompañamiento técnico experto, escenarios de decisiones y herramientas prácticas para promover hábitos saludables y una relación positiva con el dinero.</p>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Quiénes somos</h2>
+            <div class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-6 shadow-sm">
+                <h3 class="text-xl font-semibold text-brand-dark">Nuestro propósito</h3>
+                <p class="text-justify">Movilizar el desarrollo consciente y ético de personas y negocios, a través del acompañamiento profesional de una red que transforma capacidades, crea y comparte conocimiento, perspectivas y opiniones.</p>
+                <div class="grid gap-5 md:grid-cols-3 pt-2">
+                    <div class="rounded-xl border border-brand-aqua/60 bg-brand-aqua/10 p-4 text-center">
+                        <p class="font-semibold text-brand-blue">Red colaborativa</p>
+                    </div>
+                    <div class="rounded-xl border border-brand-aqua/60 bg-brand-aqua/10 p-4 text-center">
+                        <p class="font-semibold text-brand-blue">Sostenibilidad</p>
+                    </div>
+                    <div class="rounded-xl border border-brand-aqua/60 bg-brand-aqua/10 p-4 text-center">
+                        <p class="font-semibold text-brand-blue">Conocimiento</p>
+                    </div>
+                </div>
+                <a class="inline-flex items-center text-brand-blue font-semibold hover:text-brand-orange transition-colors" href="https://4handsp-my.sharepoint.com/personal/dir_ejecutiva_4hands_co/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fdir%5Fejecutiva%5F4hands%5Fco%2FDocuments%2F4Hands%2DServicios%2FBrochure%204HANDS%2Epdf&parent=%2Fpersonal%2Fdir%5Fejecutiva%5F4hands%5Fco%2FDocuments%2F4Hands%2DServicios&ga=1" target="_blank" rel="noreferrer">
+                    📄 Conoce nuestro portafolio de servicios
+                </a>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Alcance del servicio</h2>
+            <div class="grid gap-6 lg:grid-cols-3">
+                <div class="bg-brand-aqua/20 rounded-xl p-6 shadow-sm">
+                    <p class="text-sm uppercase text-brand-blue font-semibold">Entidad</p>
+                    <p class="text-lg font-semibold">Industrias Haceb S.A</p>
+                </div>
+                <div class="bg-brand-aqua/20 rounded-xl p-6 shadow-sm">
+                    <p class="text-sm uppercase text-brand-blue font-semibold">Servicio</p>
+                    <p class="text-lg font-semibold">Educación en bienestar e inteligencia financiera: Bifi Básico y Bifi Pro</p>
+                </div>
+                <div class="bg-brand-aqua/20 rounded-xl p-6 shadow-sm">
+                    <p class="text-sm uppercase text-brand-blue font-semibold">Objetivo general</p>
+                    <p class="text-base text-justify">Fortalecer el bienestar financiero, la autonomía y prosperidad personal, el legado y sostenibilidad familiar, y la toma de decisiones conscientes e informadas por los colaboradores.</p>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-brand-dark">Resultados esperados de la experiencia de aprendizaje:</h3>
+                <ul class="mt-4 space-y-3 circle-bullets text-justify">
+                    <li>Mayor seguridad en la toma de decisiones financieras.</li>
+                    <li>Comprensión de riesgos y oportunidades financieras.</li>
+                    <li>Transformación de hábitos financieros.</li>
+                    <li>Construcción de un camino sostenible hacia la prosperidad.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Metodología general</h2>
+            <div class="grid gap-8 lg:grid-cols-2">
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 shadow-sm">
+                    <h3 class="text-xl font-semibold text-brand-dark">Enfoque de aprendizaje aplicado</h3>
+                    <ul class="space-y-3 circle-bullets">
+                        <li>Experiencia de aprendizaje cercana y aplicada con acompañamiento experto.</li>
+                        <li>Ejercicios de gestión de inteligencia emocional financiera, del riesgo y oportunidades.</li>
+                        <li>Conceptualización técnica esencial, con métodos sencillos y prácticos.</li>
+                        <li>Acompañamiento a participantes combinando espacios grupales e individuales.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 shadow-sm">
+                    <h3 class="text-xl font-semibold text-brand-dark">Herramientas y medición</h3>
+                    <ul class="space-y-3 circle-bullets">
+                        <li>Diagnósticos al inicio y al final del proceso.</li>
+                        <li>Ejercicios de aprendizaje basado en: juegos, estudios de casos, círculos de confianza.</li>
+                        <li>Visualización de escenarios y experimentación de decisiones.</li>
+                        <li>Herramientas de planificación y autogestión financiera.</li>
+                        <li>Indicadores de impacto durante de la formación.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Programas de formación</h2>
+            <div class="grid gap-8 lg:grid-cols-2">
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-6 space-y-4 flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-semibold text-brand-blue">Bifi Básico</h3>
+                        <span class="text-xs uppercase tracking-widest text-brand-blue/70 font-semibold">Colaboradores nivel inicial</span>
+                    </div>
+                    <p class="text-gray-600 text-justify">Un programa diseñado para transformar la relación de los colaboradores con el dinero, entregando herramientas prácticas para construir bienestar desde hábitos financieros saludables y sostenibles.</p>
+                    
+                    <h4 class="font-semibold text-brand-dark pt-2">Módulos:</h4>
+                    
+                    <div class="space-y-4 flex-grow">
+                         <p><strong>Lanzamiento: espacio de sensibilización [Virtual grupal sincrónica].</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Propósito estratégico y de sostenibilidad:</strong> conexión del programa con el propósito y objetivos de la organización.</li>
+                            <li><strong>¿Para qué gestionar mis finanzas?:</strong> panel conversacional.</li>
+                         </ul>
+                        <p><strong>Módulo 1 - Ser: Mi relación con el dinero [Virtual e-learning].</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Psicología del dinero:</strong> conceptualización inicial, identificación de creencias y emociones.</li>
+                            <li><strong>Diagnóstico 360°:</strong> ¿dónde estoy hoy?.</li>
+                         </ul>
+
+                        <p><strong>Módulo 2 - Hacer: Presupuesto como herramienta de planificación [Virtual e-learning].</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Optimización del flujo de caja:</strong> ingresos vs. egresos.</li>
+                            <li><strong>Gestión inteligente de la deuda y el sistema financiero:</strong> tipos de deuda, sistema financiero y estrategias.</li>
+                        </ul>
+
+                        <p><strong>Módulo 3 - Tener: Construyendo mi futuro [Virtual e-learning].</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Fundamentos del ahorro y la inversión:</strong> metas, horizonte y perfil de riesgo.</li>
+                            <li><strong>ABC de impuestos y la seguridad social:</strong> conciencia de la responsabilidad y obligaciones.</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-4 mt-auto">
+                        <h4 class="font-semibold text-brand-dark">Sesiones del programa: cuatro (4)</h4>
+                        <ul class="mt-2 space-y-2 circle-outline-bullets text-justify">
+                            <li>Una (1) sesión grupal virtual de lanzamiento y sensibilización, de 1.5 horas.</li>
+                            <li>Tres (3) módulos virtuales (enfoque en actualización de los módulos actuales en el e-learning corporativo).</li>
+                        </ul>
+                    </div>
+                </article>
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-6 space-y-4 flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-semibold text-brand-blue">Bifi Pro</h3>
+                        <span class="text-xs uppercase tracking-widest text-brand-blue/70 font-semibold">Colaboradores nivel de profundización</span>
+                    </div>
+                    <p class="text-gray-600 text-justify">Un programa diseñado para profundizar el conocimiento financiero, explorar alternativas y herramientas que pueden potenciar el patrimonio, optimizar la estructura financiera y diseñar estrategias.</p>
+                    
+                    <h4 class="font-semibold text-brand-dark pt-2">Módulos:</h4>
+                    <div class="space-y-4 flex-grow">
+                                                <p><strong>Módulo 1 - Conocer: optimización estructura financiera personal.</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Sesión 1 Grupal - Diagnóstico financiero y patrimonial avanzado:</strong> balance, flujo de caja, estado financiero e indicadores claves.</li>
+                            <li><strong>Sesión 2 Grupal - Definición de metas financieras:</strong> identificación de posibles brechas y opciones de estrategias aplicables según diagnóstico.</li>
+                        </ul>
+
+                        <p><strong>Módulo 2 - Actuar: estrategia de optimización financiera y proyección en el corto, mediano y largo plazo.</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Sesión 3 Grupal - Fundamentación de escenarios de ahorro e inversión:</strong> asignación y diversificación de activos (inversión y alternativas), mercados, herramientas.</li>
+                            <li><strong>Sesión 4 Grupal - Estructuración de escenarios de ahorro e inversión:</strong> criterios esenciales, integración metas personales, eficiencia fiscal, gestión de riesgos y oportunidades, monitoreo.</li>
+                            <li><strong>Sesión 5 Grupal - Planificación pensional:</strong> estado de ahorro y planificación pensional, gestión de brecha pensional.</li>
+                            <li><strong>Sesión 6 Grupal - Estrategia legal del patrimonio y sucesión:</strong> planificación estructura patrimonial familiar, vehículos (fiducias, seguros, otros), filantropía o inversiones de impacto.</li>
+                        </ul>
+
+                        <p><strong>Módulo 3 - Ser: mentorías individuales para planificación integral.</strong></p>
+                        <ul class="space-y-2 circle-bullets text-sm pl-4 text-justify">
+                            <li><strong>Sesión 7 Individual - Mentoría individual en planificación pensional:</strong> enfoque personalizado pensional basado en la historia laboral.</li>
+                            <li><strong>Sesión 8 Individual - Cierre del proceso y de la construcción del plan financiero y patrimonial integral:</strong> revisión final y conclusiones para la implementación del plan.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pt-4 mt-auto">
+                        <h4 class="font-semibold text-brand-dark">Sesiones del programa: ocho (8) por participante durante 5 meses, de 1.5 horas</h4>
+                        <ul class="mt-2 space-y-2 circle-outline-bullets text-justify">
+                            <li>Dos (2) sesiones grupales serán presenciales (sesiones #1 y #4).</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Indicadores claves del impacto de la formación (definir y priorizar)</h2>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">1</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Nivel de participación activa</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Porcentaje de asistentes que participan activamente en las sesiones.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">2</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Índice de comprensión aplicada</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Evaluaciones y resultados prácticos realizadas durante las sesiones.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">3</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">NPS y puntuación de relevancia</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Net Promoter Score (NPS) obtenido al finalizar cada módulo.</li>
+                        <li>Puntuación promedio de relevancia personal asignada por los participantes.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">4</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Tasa de adopción de herramientas</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Porcentaje de participantes que implementan herramientas financieras durante la formación.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- POST-Formación indicators -->
+            <h2 class="text-3xl font-semibold text-brand-blue mt-12">Indicadores claves posterior a la formación (definir y priorizar)</h2>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">1</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Índice de implementación de estrategias</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Porcentaje de participantes que aplican estrategias financieras aprendidas.</li>
+                        <li>Frecuencia de uso de las estrategias en su vida diaria o profesional.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">2</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Evolución de la confianza financiera</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Incremento en la percepción de control sobre sus finanzas.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="badge">3</span>
+                        <h3 class="text-xl font-semibold text-brand-dark">Impacto patrimonial percibido (ROI cualitativo)</h3>
+                    </div>
+                    <ul class="mt-4 space-y-2 circle-bullets">
+                        <li>Historias de éxito documentadas de participantes.</li>
+                        <li>Percepción de mejora en su patrimonio financiero.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Entregables</h2>
+            <ul class="space-y-3 circle-bullets">
+                <li>Diagnóstico inicial y final con resultados de evolución.</li>
+                <li>Materiales de formación, simulaciones y herramientas de decisiones y autogestión.</li>
+                <li>Informe de resultados y recomendaciones para sostenibilidad del programa.</li>
+            </ul>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Equipo base de facilitadores</h2>
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 text-center shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div>
+                        <h3 class="text-lg font-semibold text-brand-dark">Yuly Alejandra Jaramillo Henao</h3>
+                        <p class="text-sm text-brand-blue font-medium">Contadora · Finanzas · Auditora · Gobierno Corporativo · Sostenibilidad · Riesgos · Cumplimiento</p>
+                    </div>
+                    <p class="text-sm text-justify text-gray-600">Contadora Pública de la Universidad de Antioquia, Maestría en Administración Financiera de la Universidad EAFIT y Auditora Interna Certificada - CIA - del Institute of Internal Auditors. Cuenta con más de 19 años de experiencia en asuntos de Gobierno Corporativo, Riesgos, Cumplimiento, Control y Aseguramiento - GRCA - desde el rol de finanzas, auditoría interna, cumplimiento e investigación forense, desarrollada principalmente en las industrias de retail, inmobiliaria, textil, transporte, telefonía móvil y viajes, tanto a nivel local como internacional. Trabajó para el Grupo Éxito más de 15 años, ocupando cargos como Jefe del Departamento de Auditoría de Soporte y Otros Negocios. Actualmente es Directora Ejecutiva de 4Hands Partners S.A.S BIC.</p>
+                </article>
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 text-center shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div>
+                        <h3 class="text-lg font-semibold text-brand-dark">Daniel Arturo Hoyos Nieto</h3>
+                        <p class="text-sm text-brand-blue font-medium">Ingeniero administrador y financiero · Gerencia actuarial · Cálculo y certificación reservas · Estrategia financiera e inversiones · Pensiones</p>
+                    </div>
+                    <p class="text-sm text-justify text-gray-600">Ingeniero administrador de la Universidad Nacional, Especialización en Ingeniería Financiera de la Universidad Nacional, con Maestría en ciencias actuariales y financieras de la Universidad Carlos III de Madrid, y conocimientos en cálculos y certificación de reservas, IFRS17, Solvencia II, estrategia financiera e inversiones. Cuenta con más de 15 años de experiencia en asuntos de actuaria, gestión de riesgos financieros, investigación, docencia universitaria, desarrollada principalmente en las industrias de seguros, financiero, educación y sector real.</p>
+                </article>
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 text-center shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div>
+                        <h3 class="text-lg font-semibold text-brand-dark">Ana Carolina Velasquez</h3>
+                        <p class="text-sm text-brand-blue font-medium">Abogada · Gobierno Corporativo · Comercial · Societario · Finanzas</p>
+                    </div>
+                    <p class="text-sm text-justify text-gray-600">Abogada de la Universidad Eafit, Maestría en Relaciones Internacionales de la Universidad de New South Wales, Sydney, Australia y Especialización en Derecho Administrativo de la Universidad de Antioquia. Formación complementaria en Alta Dirección, Gestión de proyectos legales, Finanzas y Gerencia para abogados. Cuenta con más de 18 años de experiencia en asuntos de derecho comercial, societario y gobierno corporativo, principalmente en las industrias de retail, textil, viajes y turismo, inmobiliario, transporte, distribución de combustibles, seguros, salud y agricultura, con alcance a entidades de Colombia y Latinoamérica.</p>
+                </article>
+                <article class="bg-white border border-gray-200/80 rounded-2xl p-8 space-y-4 text-center shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    <div>
+                        <h3 class="text-lg font-semibold text-brand-dark">Ana Isabel Roldán Puerta</h3>
+                        <p class="text-sm text-brand-blue font-medium">Economista · Finanzas · ASG · Gerencia empresas sociales</p>
+                    </div>
+                    <p class="text-sm text-justify text-gray-600">Administradora de negocios y economista de la Universidad EAFIT, Maestría en Gerencia de Empresas Sociales para la Innovación Social y el Desarrollo Local de la Universidad EAFIT y Especialización en Finanzas de la Universidad de Antioquia. Formación complementaria en docencia universitaria, finanzas y liderazgo. Cuenta con más de 16 años de experiencia en asuntos de finanzas, evaluación, gestión y seguimiento de proyectos, diseño de estrategias comerciales y sostenibilidad desarrollada principalmente en el sector financiero y real. Ha trabajado para el Grupo Bancolombia por más de 15 años, ocupando cargos como Especialista Financiera, Jefe en diferentes roles financieros y Gerente de finanzas ASG.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Valor del servicio</h2>
+            <div class="overflow-x-auto bg-white border border-gray-200/80 rounded-2xl shadow-sm">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-100 text-brand-blue">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Ítem</th>
+                            <th class="px-6 py-4 font-semibold">Valor $COP</th>
+                            <th class="px-6 py-4 font-semibold">Observación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-t">
+                            <td class="px-6 py-4">Bifi Básico</td>
+                            <td class="px-6 py-4">$15,000,000</td>
+                            <td class="px-6 py-4">Incluye sesión grupal virtual, actualización de módulos virtuales y herramientas base.</td>
+                        </tr>
+                        <tr class="border-t">
+                            <td class="px-6 py-4">Bifi Pro</td>
+                            <td class="px-6 py-4">$65,000,000</td>
+                            <td class="px-6 py-4">Incluye sesiones grupales, mentorías individuales (2 por participante considerando hasta 35 participantes), herramientas y entregables.</td>
+                        </tr>
+                        <tr class="border-t bg-gray-50">
+                            <td class="px-6 py-4 font-semibold" colspan="2">Total valor del servicio</td>
+                            <td class="px-6 py-4 font-semibold">$80,000,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="space-y-8">
+            <h2 class="text-3xl font-semibold text-brand-blue">Condiciones comerciales</h2>
+            <div class="grid gap-8 lg:grid-cols-2">
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-8 shadow-sm">
+                    <h3 class="text-xl font-semibold text-brand-dark">⚙️ Forma de pago (desarrollo)</h3>
+                    <ul class="mt-4 space-y-3 circle-outline-bullets">
+                        <li><strong>30%</strong> - Anticipo al inicio del proyecto.</li>
+                        <li><strong>40%</strong> - Al finalizar las sesiones grupales.</li>
+                        <li><strong>30%</strong> - Al finalizar el programa o al cierre del año si por disponibilidad de los participantes no se han cerrado las sesiones grupales.</li>
+                    </ul>
+                </div>
+                <div class="bg-white border border-gray-200/80 rounded-2xl p-8 shadow-sm">
+                    <h3 class="text-xl font-semibold text-brand-dark">💳 Consideraciones para facturación y pago</h3>
+                    <ul class="mt-4 space-y-3 circle-bullets">
+                        <li>Valores no incluyen IVA.</li>
+                        <li>Plazo de pago facturas: 15 días.</li>
+                        <li>Incremento anual (si aplica): IPC + 2 puntos.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-6">
+            <h2 class="text-3xl font-semibold text-brand-blue">Consideraciones adicionales</h2>
+            <ul class="space-y-3 circle-bullets text-gray-600">
+                <li class="text-justify">Es relevante asegurar la disponibilidad y responsabilidad de la administración y equipos participantes.</li>
+                <li class="text-justify">Se requiere información completa y oportuna durante el proceso.</li>
+                <li class="text-justify">La estimación de tiempos es flexible y adaptable según disponibilidad, siempre que se desarrolle en el período y plazo estimado.</li>
+                <li class="text-justify">Se realizará acuerdo de confidencialidad y/o contrato firmado, según acuerdo conjunto.</li>
+                <li class="text-justify">El alcance del servicio es de formación integral financiera. No actuamos como asesores de inversión, gestores de fondos, ni intermediarios del mercado de valores. La información compartida busca fortalecer el criterio del participante, quien asume total autonomía y responsabilidad sobre la ejecución de sus decisiones y los resultados obtenidos.</li>
+                <li class="text-justify">El diagnóstico pensional se emite como concepto técnico actuarial, con fundamento en la información suministrada por el cliente y en la normativa vigente al momento del análisis. Las cifras y proyecciones constituyen estimaciones sujetas a supuestos económicos, laborales y regulatorios, por lo que no implican garantía de resultado ni constituyen asesoría jurídica vinculante. La decisión final y sus efectos corresponden exclusivamente al cliente.</li>
+                <li class="text-justify">Se realizará debida diligencia ampliada al inicio del servicio.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="bg-brand-blue text-white mt-20">
+        <div class="max-w-6xl mx-auto px-6 py-12 space-y-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                <div>
+                    <p class="text-sm text-white/70">Vigencia de la propuesta: 30 días</p>
+                    <h3 class="text-2xl font-semibold mt-1">4Hands Partners</h3>
+                </div>
+                <div class="grid gap-6 sm:grid-cols-3">
+                    <div class="text-center sm:text-left">
+                        <p class="text-lg">📞</p>
+                        <p class="text-sm text-white/70 font-semibold">Llámanos</p>
+                        <a class="font-semibold hover:text-brand-orange transition-colors" href="tel:+573054697173">+57 305 469 7173</a>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <p class="text-lg">✉️</p>
+                        <p class="text-sm text-white/70 font-semibold">Escríbenos</p>
+                        <a class="font-semibold hover:text-brand-orange transition-colors" href="mailto:info@4hands.co">info@4hands.co</a>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <p class="text-lg">📅</p>
+                        <p class="text-sm text-white/70 font-semibold">Agenda</p>
+                        <a class="font-semibold hover:text-brand-orange transition-colors" href="https://outlook.office.com/owa/calendar/G5971dc3fcb4f48d0bac65b2df4960085@4Hands.co/bookings/?ismsaljsauthenabled" target="_blank" rel="noreferrer">4Hands te acompaña</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/20 pt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm text-white/70">
+                <div class="flex gap-4">
+                    <a class="hover:text-white" href="https://www.linkedin.com/company/4hands-partners/?viewAsMember=true" target="_blank" rel="noreferrer">LinkedIn</a>
+                    <a class="hover:text-white" href="https://www.instagram.com/4hands_partners/profilecard/?igsh=MXF2YmNoc2w0eXBpbA%3D%3D" target="_blank" rel="noreferrer">Instagram</a>
+                </div>
+                <p>&copy; 2025 4Hands Partners S.A.S BIC. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
