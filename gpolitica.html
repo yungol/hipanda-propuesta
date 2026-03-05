@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Política PTEE - ESAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .word-doc {
+            width: 100%;
+            max-width: 21cm;
+            min-height: 29.7cm;
+            padding: 2.54cm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #000;
+            text-align: justify;
+        }
+        @media (max-width: 768px) {
+            .word-doc {
+                padding: 1.5cm 1cm;
+                font-size: 10pt;
+            }
+            .word-doc h1 { font-size: 12pt !important; margin-bottom: 16pt !important; }
+            .word-doc h2 { font-size: 11pt !important; margin-top: 14pt !important; margin-bottom: 8pt !important; }
+        }
+        .word-doc h1 { font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 24pt; border-bottom: 2px solid #000; padding-bottom: 10px;}
+        .word-doc h2 { font-size: 12pt; font-weight: bold; margin-top: 20pt; margin-bottom: 10pt; color: #1a365d; }
+        .word-doc p { margin-bottom: 12pt; }
+        .word-doc ul { list-style-type: disc; margin-left: 20pt; margin-bottom: 12pt; }
+        .word-doc li { margin-bottom: 6pt; }
+        
+        /* Organigrama Simple */
+        .org-chart { display: flex; flex-direction: column; align-items: center; margin: 20px 0; width: 100%; }
+        .org-box { border: 2px solid #1a365d; padding: 10px 20px; font-weight: bold; text-align: center; background-color: #f8fafc; z-index: 10; border-radius: 4px; width: 80%; max-width: 400px;}
+        .org-line { width: 2px; height: 15px; background-color: #1a365d; }
+        .org-split { display: flex; width: 100%; justify-content: space-around; border-top: 2px solid #1a365d; padding-top: 15px; margin-top: -2px; gap: 10px; flex-wrap: wrap; }
+        .org-sub-box { border: 2px solid #2b6cb0; padding: 10px; text-align: center; background-color: #ebf8ff; border-radius: 4px; font-weight: bold; font-size: 9pt; flex: 1; min-width: 100px; display: flex; align-items: center; justify-content: center; }
+        
+        @media print {
+            @page { margin: 2cm; }
+            html, body { height: auto !important; overflow: visible !important; background: white !important; }
+            #app, main { display: block !important; height: auto !important; width: 100% !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: white !important; }
+            .no-print { display: none !important; }
+            .word-doc { box-shadow: none !important; padding: 0 !important; width: 100% !important; margin: 0 !important; min-height: auto !important; }
+            h1, h2, h3 { page-break-after: avoid; }
+            ul, p, li { page-break-inside: avoid; widows: 3; orphans: 3; }
+        }
+    </style>
+</head>
+<body class="bg-gray-200 h-screen flex flex-col overflow-hidden font-sans">
+    <div id="app" class="h-full w-full relative">
+        
+        <!-- PANTALLA DE ACCESO -->
+        <div v-if="!isAuthenticated" class="absolute inset-0 bg-gray-900 flex items-center justify-center z-50 flex-col p-4">
+            <div class="bg-white p-8 md:p-10 rounded-lg shadow-2xl w-full max-w-md text-center">
+                <div class="mb-6 flex justify-center">
+                    <svg class="w-16 h-16 text-blue-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">Acceso Restringido</h2>
+                <p class="text-sm text-gray-500 mb-6">Ingrese su código de acceso para abrir el generador.</p>
+                
+                <input type="password" v-model="enteredPin" @keyup.enter="verifyPin" class="text-center w-full border border-gray-300 p-4 font-mono text-xl tracking-[0.5em] rounded mb-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-bold" placeholder="****" maxlength="10">
+                
+                <p v-if="pinError" class="text-red-500 text-sm mb-4 font-bold">❌ Código incorrecto</p>
+                <p v-else class="text-transparent text-sm mb-4 font-bold select-none">Espacio</p>
+                
+                <button @click="verifyPin" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded w-full transition-colors shadow">Desbloquear Documento</button>
+            </div>
+            <p class="mt-8 text-gray-400 text-xs text-center">Generador de Política PTEE sector ESAL - Uso Confidencial</p>
+        </div>
+
+        <!-- APLICACIÓN PRINCIPAL -->
+        <div v-if="isAuthenticated" class="flex flex-col md:flex-row h-full w-full">
+            
+            <!-- SIDEBAR DE FORMULARIO -->
+            <aside class="w-full md:w-1/3 bg-white h-[50vh] md:h-full overflow-y-auto shadow-xl border-b md:border-b-0 md:border-r border-gray-300 flex flex-col no-print z-10">
+                <div class="bg-blue-900 text-white p-5 sticky top-0 z-20">
+                    <h2 class="text-xl font-bold">Configuración de política PTEE</h2>
+                    <p class="text-sm text-blue-200">Sector ESAL - Paso 1</p>
+                    <div class="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
+                        <button @click="exportWord" class="bg-green-600 hover:bg-green-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap">📥 Word</button>
+                        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap">🖨️ PDF</button>
+                        <button @click="exportCSV" class="bg-yellow-600 hover:bg-yellow-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap text-white">📊 Datos (CSV)</button>
+                    </div>
+                    <p class="block md:hidden text-center text-xs text-blue-200 mt-3 font-medium">↓ Desplázate hacia abajo para ver el documento en vivo ↓</p>
+                </div>
+
+            <div class="p-6 flex flex-col gap-6">
+                <!-- Sección 1 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">1. Contexto de la entidad</h3>
+                    <label class="block text-sm font-medium">Razón Social</label>
+                    <input v-model="form.entityName" class="w-full border p-2 rounded mb-3" placeholder="Ej. Fundación Vida">
+                    
+                    <label class="block text-sm font-medium">Tipo de Entidad</label>
+                    <select v-model="form.entityType" class="w-full border p-2 rounded mb-3 bg-white">
+                        <option value="Fundación">Fundaciones</option>
+                        <option value="Asociación">Asociaciones</option>
+                        <option value="Corporación">Corporaciones</option>
+                        <option value="Cooperativa o similar">Cooperativas o similares</option>
+                        <option value="Fondo de empleados">Fondos de empleados</option>
+                        <option value="Asociación mutual">Asociaciones mutuales</option>
+                        <option value="Organización civil">Organización civil</option>
+                    </select>
+
+                    <label class="block text-sm font-medium mb-1">Áreas de Impacto Principales</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs mb-4">
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Educación" v-model="form.impactAreas"> Educación</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Salud y Bienestar" v-model="form.impactAreas"> Salud / Bienestar</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Desarrollo Comunitario" v-model="form.impactAreas"> Desarrollo Comunitario</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Cultura y Arte" v-model="form.impactAreas"> Cultura y Arte</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Deporte y Recreación" v-model="form.impactAreas"> Deporte y Recreación</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Medio Ambiente" v-model="form.impactAreas"> Medio Ambiente</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Desarrollo Empresarial" v-model="form.impactAreas"> Desarrollo Empresarial</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Derechos Humanos" v-model="form.impactAreas"> Derechos Humanos</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Población Vulnerable" v-model="form.impactAreas"> Población Vulnerable</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" value="Ciencia y Tecnología" v-model="form.impactAreas"> Tecnología / Ciencia</label>
+                    </div>
+
+                    <label class="block text-sm font-medium">Objeto Social / Propósito</label>
+                    <textarea v-model="form.socialPurpose" class="w-full border p-2 rounded mb-3" rows="2" placeholder="Ej. Desarrollo integral de la primera infancia..."></textarea>
+                    
+                    <label class="block text-sm font-medium">Principales Actividades</label>
+                    <textarea v-model="form.mainActivities" class="w-full border p-2 rounded mb-3" rows="2" placeholder="Ej. Comedores comunitarios, apoyo psicológico..."></textarea>
+                    
+                    <label class="block text-sm font-medium">Zonas de Operación</label>
+                    <input v-model="form.operationZones" class="w-full border p-2 rounded mb-3" placeholder="Ej. Departamento de Antioquia">
+                    
+                    <label class="block text-sm font-medium">Alcance Geográfico</label>
+                    <select v-model="form.reach" class="w-full border p-2 rounded mb-3 bg-white">
+                        <option value="local (ciudad)">Local (Ciudad)</option>
+                        <option value="departamental">Departamental</option>
+                        <option value="nacional">Nacional</option>
+                        <option value="internacional">Internacional</option>
+                        <option value="nacional e internacional">Nacional e Internacional</option>
+                    </select>
+
+                    <div v-show="form.reach === 'local (ciudad)' || form.reach === 'departamental'">
+                        <label class="block text-sm font-medium">¿Cuál/es Ciudades o Departamentos?</label>
+                        <input v-model="form.localAreas" class="w-full border p-2 rounded mb-3" placeholder="Ej. Bogotá D.C. y Cundinamarca">
+                    </div>
+
+                    <div v-show="form.reach === 'internacional' || form.reach === 'nacional e internacional'">
+                        <label class="block text-sm font-medium">Países de Operación (Internacional)</label>
+                        <input v-model="form.internationalCountries" class="w-full border p-2 rounded mb-3" placeholder="Ej. Ecuador, Perú, España...">
+                    </div>
+
+                    <label class="block text-sm font-medium mt-4 pb-1 mb-2 border-b border-gray-200">Tipos de Recursos que Maneja</label>
+                    <label class="flex items-start gap-2 text-sm font-medium">
+                        <input type="checkbox" v-model="form.publicResources" class="mt-1">
+                        Interactúa, contrata o maneja recursos de carácter público.
+                    </label>
+                    <label class="flex items-start gap-2 text-sm mt-2 font-medium">
+                        <input type="checkbox" v-model="form.privateResources" class="mt-1">
+                        Gestiona o maneja recursos de origen privado.
+                    </label>
+                    <label class="flex items-start gap-2 text-sm mt-2 font-medium mb-3">
+                        <input type="checkbox" v-model="form.cooperationResources" class="mt-1">
+                        Recibe y administra recursos de Cooperación (Nacional o Intl).
+                    </label>
+
+                    <!-- Fuentes de financiación -->
+                    <label class="block text-sm font-medium mt-4 pb-1 mb-2 border-b border-gray-200">Fuentes de Financiación</label>
+                    <p class="text-xs text-gray-500 mb-2">Seleccione las fuentes que aplican y apalancan la operación:</p>
+                    <div class="space-y-1 mb-4 bg-gray-50 p-2 border rounded shadow-inner max-h-32 overflow-y-auto">
+                        <label v-for="(fuente, index) in fuentesFinanciacionDisponibles" :key="index" class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1">
+                            <input type="checkbox" :value="fuente" v-model="form.fundingSources">
+                            <span class="leading-tight">{{ fuente }}</span>
+                        </label>
+                    </div>
+                    <label class="block text-sm font-medium mt-1">Otra fuente de financiación:</label>
+                    <input type="text" v-model="form.customFundingSource" class="w-full text-sm border border-gray-300 p-2 rounded mb-4 focus:ring-blue-500 focus:border-blue-500" placeholder="Ej. Patrocinios especiales, ingresos por eventos...">
+
+                    <label class="block text-sm font-medium mt-4 pb-1 mb-2 border-b border-gray-200">Estructura Corporativa y de Control</label>
+                    <label class="flex items-start gap-2 text-sm font-medium">
+                        <input type="checkbox" v-model="form.hasSubsidiaries" class="mt-1">
+                        Tiene entidades subsidiarias o subordinadas (ejerce control).
+                    </label>
+                    <label class="flex items-start gap-2 text-sm mt-2 font-medium">
+                        <input type="checkbox" v-model="form.hasController" class="mt-1">
+                        Tiene entidad controlante o con influencia significativa sobre ella.
+                    </label>
+
+                    <!-- Sectores de Alto Riesgo -->
+                    <label class="block text-sm font-medium mt-4 pb-1 mb-2 border-b border-gray-200">Sectores de alto riesgo (Opcional)</label>
+                    <p class="text-xs text-gray-500 mb-2">Seleccione si hace parte o atiende estos sectores y amerita mayor control.</p>
+                    <div class="space-y-1 mb-2 bg-gray-50 p-2 border rounded shadow-inner max-h-32 overflow-y-auto">
+                        <label v-for="(sector, index) in sectoresRiesgoDisponibles" :key="index" class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1">
+                            <input type="checkbox" :value="sector" v-model="form.highRiskSectors">
+                            <span class="leading-tight">{{ sector }}</span>
+                        </label>
+                    </div>
+                    <input v-model="form.customHighRiskSector" class="w-full border p-2 rounded mb-3 text-sm" placeholder="Otro sector (Detállalo aquí)">
+                </section>
+
+                <!-- Sección 2 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">2. Normatividad interna</h3>
+                    <div class="flex flex-col gap-2 text-sm font-medium">
+                        <label class="flex items-center gap-2"><input type="checkbox" checked disabled> Estatutos Sociales (Base)</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" v-model="form.hasGovCode"> Tiene Código de Buen Gobierno</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" v-model="form.hasEthicsCode"> Tiene Código de Ética y Conducta</label>
+                    </div>
+                </section>
+
+                <!-- Sección 3 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">3. Ámbito y grupos de interés</h3>
+                    <label class="block text-sm font-medium mb-2 w-full text-gray-700">Terceros con los que se relaciona la entidad (Grupos de Interés):</label>
+                    <div class="space-y-1 mb-4 bg-gray-50 p-2 border rounded shadow-inner max-h-48 overflow-y-auto">
+                        <label v-for="(tercero, index) in tercerosDisponibles" :key="index" class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1">
+                            <input type="checkbox" :value="tercero" v-model="form.thirdParties">
+                            <span class="leading-tight">{{ tercero }}</span>
+                        </label>
+                    </div>
+
+                    <label class="flex items-start gap-2 text-sm font-medium mb-3 border-t pt-3">
+                        <input type="checkbox" v-model="form.hasExceptions" class="mt-1">
+                        ¿Se exceptúa alguna área o actividad del PTEE?
+                    </label>
+                    <div v-show="form.hasExceptions">
+                        <label class="block text-sm font-medium">Describa la excepción y justificación:</label>
+                        <textarea v-model="form.exceptionDetails" class="w-full border p-2 rounded mb-3" rows="2" placeholder="Ej. Se exceptúa temporalmente la nueva filial adquirida hasta su homologación normativa..."></textarea>
+                    </div>
+                </section>
+
+                <!-- Sección 4 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">4. Gobernanza PTEE</h3>
+                    <label class="block text-sm font-medium">Nombre del Máximo Órgano</label>
+                    <input v-model="form.maxOrgan" class="w-full border p-2 rounded mb-3" placeholder="Ej. Asamblea General">
+                    
+                    <label class="block text-sm font-medium">Órgano de Administración</label>
+                    <input v-model="form.adminOrgan" class="w-full border p-2 rounded mb-3" placeholder="Ej. Junta Directiva">
+                    
+                    <label class="block text-sm font-medium">Primer Nivel de Administración / Rep. Legal</label>
+                    <select v-model="form.legalRepType" class="w-full border p-2 rounded mb-3 bg-white">
+                        <option value="Dirección Ejecutiva">Dirección Ejecutiva</option>
+                        <option value="Gerencia General">Gerencia General</option>
+                        <option value="Presidencia">Presidencia</option>
+                        <option value="Otra figura">Otra figura</option>
+                    </select>
+
+                    <div v-show="form.legalRepType === 'Otra figura'">
+                        <label class="block text-sm font-medium">¿Cuál figura?</label>
+                        <input v-model="form.otherLegalRepType" class="w-full border p-2 rounded mb-3" placeholder="Ej. Representación Legal">
+                    </div>
+
+                    <label class="block text-sm font-medium mt-2">Nivel de Riesgo (Clasificación PTEE)</label>
+                    <select v-model="form.riskLevel" class="w-full border p-2 rounded mb-3 bg-yellow-50">
+                        <option value="bajo">Riesgo Bajo</option>
+                        <option value="medio">Riesgo Medio</option>
+                        <option value="alto">Riesgo Alto</option>
+                    </select>
+
+                    <div v-if="form.riskLevel === 'alto'" class="bg-red-50 p-3 rounded mb-3 border border-red-200">
+                        <label class="block text-sm text-red-800 font-bold mb-1">El Oficial de Cumplimiento será:</label>
+                        <select v-model="form.isOutsourced" class="w-full border p-2 rounded text-sm">
+                            <option value="interno">Vinculado directamente a la entidad (Interno)</option>
+                            <option value="tercerizado">Persona natural externa (Tercerizado)</option>
+                        </select>
+                    </div>
+
+                    <label class="flex items-center gap-2 text-sm font-medium mt-2">
+                        <input type="checkbox" v-model="form.hasAuditoria">
+                        La entidad cuenta con Auditoría Interna
+                    </label>
+
+                    <label class="flex items-center gap-2 text-sm font-medium mt-2">
+                        <input type="checkbox" v-model="form.hasRevisoria">
+                        La entidad cuenta con Revisoría Fiscal
+                    </label>
+
+                    <label class="flex items-center gap-2 text-sm font-medium mt-2">
+                        <input type="checkbox" v-model="form.hasEthicsCommittee">
+                        La entidad cuenta con Comité de Ética
+                    </label>
+
+                    <label class="flex items-center gap-2 text-sm font-medium mt-2">
+                        <input type="checkbox" v-model="form.hasRiskManagement">
+                        La entidad cuenta con rol de Gestión de Riesgos
+                    </label>
+                </section>
+
+                <!-- Sección 5 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">5. Entorno y vigencia</h3>
+                    <label class="block text-sm font-medium">Entidades de Supervisión y Control</label>
+                    <input v-model="form.supervisionEntities" class="w-full border p-2 rounded mb-3" placeholder="Ej. Gobernación, Alcaldía, DIAN...">
+
+                    <label class="block text-sm font-medium">Gremios / Redes (Opcional)</label>
+                    <input v-model="form.guilds" class="w-full border p-2 rounded mb-3" placeholder="Ej. Confederación de ONG">
+                    
+                    <label class="block text-sm font-medium">Pactos Anticorrupción (Opcional)</label>
+                    <input v-model="form.commitments" class="w-full border p-2 rounded mb-3" placeholder="Ej. Pacto Global">
+                    
+                    <label class="block text-sm font-medium">Fecha de Aprobación de la Política</label>
+                    <input type="date" v-model="form.approvalDate" class="w-full border p-2 rounded mb-3">
+                </section>
+
+                <!-- Sección 6 -->
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">6. Marco normativo</h3>
+                    <label class="block text-sm font-medium mb-2 w-full text-gray-700">Seleccione las normas aplicables a mencionar:</label>
+                    <div class="space-y-2 mb-3 bg-white p-3 border rounded shadow-inner h-48 overflow-y-auto">
+                        <label v-for="(normativa, index) in normativasDisponibles" :key="index" class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 p-1">
+                            <input type="checkbox" :value="normativa.id" v-model="form.normativas" class="mt-1">
+                            <span class="leading-tight">{{ normativa.titulo }}</span>
+                        </label>
+                    </div>
+                </section>
+            </div>
+        </aside>
+
+        <!-- DOCUMENTO EN VIVO -->
+        <main class="w-full md:w-2/3 bg-gray-300 h-[50vh] md:h-full overflow-y-auto p-4 md:p-8 relative">
+            
+            <div id="exportable-document" class="word-doc relative bg-white mx-auto shadow-2xl p-4 md:p-10 max-w-[21cm] min-h-[29.7cm]">
+                
+                <h1 class="text-lg md:text-xl font-bold uppercase text-center border-b-2 border-black pb-2 mb-6">Política de cumplimiento del Programa de Transparencia y Ética Empresarial (PTEE)</h1>
+
+                <!-- 1. Contexto -->
+                <h2>1. Contexto de la entidad</h2>
+                <p>
+                    <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> (en adelante, la "Entidad"), constituida como una entidad del tipo <b>{{ form.entityType }}</b>, tiene como objeto social y/o propósito de impacto: <i>{{ form.socialPurpose || '[Descripción del objeto social]' }}</i>; priorizando de manera especial sus esfuerzos en el sector social dentro de las siguientes áreas de impacto: <b>{{ formattedImpactAreas }}</b>, y desarrollando principalmente las siguientes actividades: {{ form.mainActivities || '[Actividades principales]' }}.
+                </p>
+                <p>
+                    Reconociendo el contexto interno y externo en el que nos desenvolvemos, nuestro mapa de operación se centra principalmente en {{ form.operationZones || '[Zonas de operación]' }}, contando con un alcance de carácter <b>{{ form.reach }}</b><span v-if="form.reach === 'local (ciudad)' || form.reach === 'departamental'"> (específicamente en: {{ form.localAreas || '[Ciudad/es o Departamento/s]' }})</span><span v-if="form.reach === 'internacional' || form.reach === 'nacional e internacional'"> (específicamente en: {{ form.internationalCountries || '[Países de operación]' }})</span>.
+                    
+                    <span v-if="form.publicResources && form.privateResources && form.cooperationResources">
+                        Dentro de nuestro desarrollo institucional, la Entidad gestiona recursos de origen privado, recibe y administra recursos y fondos provenientes de la Cooperación y, a su vez, interactúa, contrata o maneja recursos de carácter público. Esta diversidad en nuestras fuentes de fondeo nos exige mantener el más alto estándar de debida diligencia, rendición de cuentas y transparencia corporativa frente a nuestros cooperantes, grupos de interés, la sociedad y el Estado.
+                    </span>
+                    <span v-else-if="form.publicResources && form.cooperationResources">
+                        Dentro de nuestro desarrollo institucional, la Entidad recibe y administra fondos de Cooperación, y paralelamente interactúa, contrata o maneja recursos de carácter público, lo cual nos exige mantener el más alto estándar de debida diligencia y transparencia corporativa frente a los cooperantes, la sociedad y el Estado.
+                    </span>
+                    <span v-else-if="form.privateResources && form.cooperationResources">
+                        En nuestro desarrollo institucional, la Entidad gestiona recursos de origen privado e integra transversalmente la recepción y administración de recursos provenientes de la Cooperación, manteniendo en todo momento un exigente estándar de debida diligencia corporativa, transparencia y rendición de cuentas frente a nuestros cooperantes y la sociedad.
+                    </span>
+                    <span v-else-if="form.publicResources && form.privateResources">
+                        Dentro de nuestro desarrollo institucional, la Entidad gestiona recursos de origen privado y, a su vez, interactúa, contrata o maneja recursos de carácter público, lo cual nos exige mantener el más alto estándar de debida diligencia y transparencia corporativa frente a nuestros grupos de interés, la sociedad y el Estado.
+                    </span>
+                    <span v-else-if="form.publicResources">
+                        Dentro de nuestro desarrollo institucional, la Entidad interactúa, contrata o maneja recursos de carácter público, lo cual eleva y exige un grado superior en nuestro deber de debida diligencia y transparencia frente a nuestros grupos de interés y la sociedad.
+                    </span>
+                    <span v-else-if="form.privateResources">
+                        Nuestras operaciones se desarrollan gestionando principalmente recursos de origen privado, manteniendo en todo momento un alto estándar de debida diligencia corporativa e institucional acorde a nuestra naturaleza de entidad del Tercer Sector.
+                    </span>
+                    <span v-else-if="form.cooperationResources">
+                        Un componente estructural de nuestro funcionamiento institucional es la recepción, canalización y administración de recursos provenientes de la Cooperación. Por ende, mantenemos en todo momento un exigente estándar de debida diligencia corporativa, transparencia y rendición de cuentas frente a nuestros cooperantes, la base social e institucional.
+                    </span>
+                    <span v-else>
+                        Nuestras operaciones buscan mantener en todo momento el más alto estándar de debida diligencia corporativa e institucional acorde a nuestra naturaleza de entidad del Tercer Sector frente a la gestión de nuestros recursos.
+                    </span>
+                </p>
+
+                <p v-if="(form.fundingSources && form.fundingSources.length > 0) || (form.customFundingSource && form.customFundingSource.trim() !== '')">
+                    Nuestra operatividad está apalancada por estructuras o fuentes de financiación que incluyen: <b>{{ formattedFundingSources }}</b>. Reconocemos plenamente que el manejo, procedencia y destino de esta infraestructura de recursos, demanda la aplicación de controles preventivos transparentes, con el propósito fundamental de neutralizar cualquier exposición que permita a la organización ser instrumentalizada en actos de corrupción o soborno transnacional.
+                </p>
+
+                <p v-if="form.hasSubsidiaries || form.hasController">
+                    <b>Estructura Corporativa y de Control:</b>
+                    <span v-if="form.hasSubsidiaries && form.hasController">
+                        Nuestra Entidad cuenta con entidades subsidiarias o sobre las cuales ejerce control y, paralelamente, existe una organización controlante que ejerce influencia significativa sobre nosotros. En este sentido, la presente Política establece una <b>alineación en ambos sentidos</b>: requerimos activamente que nuestras subordinadas adopten estándares éticos y de cumplimiento equivalentes a nuestro PTEE, al tiempo que acogemos y nos alineamos con las directrices de integridad, ética y transparencia emanadas por nuestra matriz.
+                    </span>
+                    <span v-else-if="form.hasSubsidiaries">
+                        Nuestra Entidad ejerce control o influencia sobre entidades subsidiarias y subordinadas. Por lo tanto, promovemos y requerimos una alineación normativa descendente, velando para que dichas filiales adopten, implementen y mantengan estándares de ética y cumplimiento preventivo (PTEE) consistentes y equivalentes a los establecidos en esta Política.
+                    </span>
+                    <span v-else-if="form.hasController">
+                        Existe sobre nuestra Entidad una organización controlante o con influencia significativa corporativa. Por consiguiente, nuestro PTEE y la presente Política mantienen una estrecha alineación ascendente con las directrices preventivas, de integridad y ética corporativa emanadas desde nuestra matriz, garantizando coherencia en la protección contra los riesgos de corrupción en todo el grupo.
+                    </span>
+                </p>
+
+                <!-- 2. Introducción -->
+                <h2>2. Introducción</h2>
+                <p>
+                    Como organización del Tercer Sector - Entidad Sin Ánimo de Lucro, en <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> nuestra visión trasciende la estricta obligación de cumplir con la legislación vigente. Asumimos como una profunda responsabilidad social el deber de actuar con ética y valores firmes, transmitiendo estos principios a las personas, terceros y entidades beneficiarias de nuestra actividad, a nuestros donantes, cooperantes y a la sociedad colombiana en general.
+                </p>
+                <p>
+                    Esta motivación nos ha llevado a disponer de un sistema de gestión y una cultura de cumplimiento normativo. La presente Política establece las bases formales para el óptimo desarrollo de nuestro Programa de Transparencia y Ética Empresarial (PTEE). A través de ella, declaramos nuestra voluntad de asentar una cultura de cumplimiento integral y mostramos un rechazo absoluto (cero tolerancia) ante la comisión de cualquier acto ilícito, no ético, de corrupción, de soborno o de fraude    .
+                </p>
+
+                <!-- 3. Alcance y Aplicación -->
+                <h2>3. Alcance y declaración de compromiso</h2>
+                <p>
+                    Esta política es la manifestación escrita mediante la cual el Máximo Órgano de gobierno y la Alta Gerencia de la Entidad establecen su compromiso irrevocable para llevar a cabo todas sus iniciativas y operaciones de manera ética, transparente y honesta; ofreciendo respaldo absoluto a las acciones para identificar, medir, detectar, prevenir, gestionar y mitigar los riesgos de Corrupción y Soborno Transnacional (C/ST).
+                </p>
+                <p>
+                    <b>Ámbito de Aplicación:</b> El alcance de esta política es integral y de carácter obligatorio. Ampara todos los procesos, métodos y sistemas de gestión de la entidad.
+                    <span v-if="form.hasExceptions && form.exceptionDetails">
+                        <br><br><b>Excepciones al Alcance:</b> No obstante lo anterior, se han establecido límites formales y debidamente sustentados a la aplicación material de este programa, específicamente: <i>"{{ form.exceptionDetails }}"</i>. Cualquier otra área no mencionada aquí queda plenamente cobijada por el Sistema.
+                    </span>
+                </p>
+                <p>
+                    Su cumplimiento vincula a:
+                </p>
+                <ul>
+                    <li>Todas las personas integrantes del órgano de gobierno ({{ form.maxOrgan || '[Máximo Órgano]' }} y {{ form.adminOrgan || '[Órgano de Administración]' }}).</li>
+                    <li>La figura de {{ displayLegalRep }}, y los líderes de procesos.</li>
+                    <li>Quienes actúen en representación directa o indirecta de la organización.</li>
+                    <li>Todos aquellos terceros, agentes y grupos de valor con los que la entidad se relaciona en el desarrollo de su actividad, incluyendo a: <b>{{ formattedThirdParties }}</b>.</li>
+                </ul>
+                <p>
+                    Todas las personas amparadas bajo este alcance tienen el deber de observar estrictamente el contenido de la Política y promover activamente su cumplimiento. La adopción de este programa generará valor agregado al proteger nuestro propósito social, salvaguardar nuestros recursos y asegurar la sostenibilidad institucional a largo plazo.
+                </p>
+
+                <!-- 4. Marco Normativo -->
+                <h2>4. Marco normativo</h2>
+                <p>
+                    El presente programa se enmarca en la normativa principal expedida por el Estado Colombiano en materia de prevención, destacando:
+                </p>
+                <ul>
+                    <li v-for="normativaId in form.normativas" :key="normativaId" v-html="getNormativaHTML(normativaId)"></li>
+                    <li v-if="form.normativas.length === 0" class="text-red-500 italic">[No se ha seleccionado ninguna normativa]</li>
+                </ul>
+                <p>
+                    A nivel interno, la política de Cumplimiento y el PTEE interactúan armónicamente con 
+                    nuestros <b>Estatutos Sociales</b><span v-if="form.hasGovCode">, nuestro <b>Código de Buen Gobierno</b></span><span v-if="form.hasEthicsCode"> y nuestro <b>Código de Ética y Conducta</b></span>, documentos rectores de nuestro accionar institucional.
+                </p>
+
+                <!-- 5. Riesgos Cubiertos -->
+                <h2>5. Riesgos cubiertos, definiciones y perfil de riesgo</h2>
+                <p>El diseño del PTEE busca prevenir, detectar y mitigar específicamente los siguientes riegos:</p>
+                <ul>
+                    <li><b>Corrupción:</b> Posibilidad de que, por acción u omisión se desvíen los propósitos de la administración pública, o se afecte el patrimonio público hacia un beneficio privado.</li>
+                    <li><b>Soborno:</b> Acto de dar, ofrecer, prometer, solicitar o recibir cualquier dádiva, regalo o beneficio, a cambio de que se realice, omita o retarde un acto, a fin de obtener una ventaja competitiva ilegítima para sí mismo o para un tercero.</li>
+                    <li><b>Soborno Transnacional:</b> Posibilidad de que una persona jurídica, directa o indirectamente dé, ofrezca o prometa a un servidor público extranjero sumas de dinero, objetos de valor pecuniario o cualquier beneficio o utilidad a cambio de que dicho servidor público realice, omita o retarde cualquier acto relacionado con sus funciones y en relación con un negocio o transacción internacional.</li>
+                </ul>
+
+                <div v-if="hasHighRiskSectors" class="mt-4 p-4 border border-red-200 bg-red-50 rounded-lg">
+                    <p class="font-bold text-red-900 mb-2">Declaración de Compromiso y Perfil de Riesgo Sectorial</p>
+                    <p class="text-black text-sm text-justify">
+                        Debido a que nuestra operación u objeto social tiene incidencia e interactúa con <b>sectores de alto riesgo</b> tales como: <i>{{ formattedHighRiskSectors }}</i>; la entidad asume un compromiso estricto, determinando la implementación de medidas de <b>Debida Diligencia Intensificada (DDI)</b>, la configuración de controles más rigurosos, y un esquema de monitoreo continuo de mayor nivel para mitigar eficazmente las amenazas inherentes a estas actividades en nuestro marco de cumplimiento.
+                    </p>
+                </div>
+
+                <!-- 6. Gobernanza -->
+                <h2>6. Esquema de gobernanza, roles y responsabilidades</h2>
+                <p>
+                    Para asegurar la ejecución práctica de esta política, la organización cuenta con la siguiente estructura y asignación de roles para el Programa de Transparencia y Ética Empresarial:
+                </p>
+
+                <!-- Organigrama Visual -->
+                <div class="org-chart mx-auto max-w-2xl text-[10px] sm:text-xs">
+                    <!-- Nivel 1: Máximo Órgano -->
+                    <div class="flex w-full items-center">
+                        <div class="flex-1"></div>
+                        <div class="org-box w-1/2">{{ form.maxOrgan || '[Máximo Órgano]' }}</div>
+                        <div class="flex-1 flex justify-start pl-4 space-x-2">
+                            <div v-if="form.hasRevisoria" class="border-2 border-orange-500 bg-orange-50 text-orange-900 rounded p-1 font-bold shadow-sm whitespace-nowrap flex items-center">Revisoría Fiscal</div>
+                        </div>
+                    </div>
+                    
+                    <div class="org-line"></div>
+                    
+                    <!-- Nivel 2: Órgano de Administración -->
+                    <div class="flex w-full items-center">
+                        <div class="flex-1 text-right pr-4">
+                            <div v-if="form.hasEthicsCommittee" class="inline-block border-2 border-purple-600 bg-purple-50 text-purple-900 rounded p-1 font-bold shadow-sm whitespace-nowrap">Comité de Ética</div>
+                        </div>
+                        <div class="org-box w-1/2">{{ form.adminOrgan || '[Órgano de Administración]' }}</div>
+                        <div class="flex-1 flex justify-start pl-4 space-x-2">
+                            <div v-if="form.hasAuditoria" class="border-2 border-teal-600 bg-teal-50 text-teal-900 rounded p-1 font-bold shadow-sm whitespace-nowrap flex items-center">Auditoría Interna</div>
+                        </div>
+                    </div>
+                    
+                    <div class="org-line"></div>
+                    
+                    <!-- Nivel 3: Ejecución y Cumplimiento -->
+                    <div class="org-split text-center w-full pt-4">
+                        <div class="org-sub-box bg-blue-50 border-blue-800">{{ displayLegalRep }}</div>
+                        <div class="org-sub-box bg-yellow-50 text-yellow-900 border-yellow-700 font-bold" style="border-width: 2px;">
+                            {{ form.riskLevel === 'alto' ? 'Oficial de Cumplimiento' : 'Responsable de Ética y Transparencia' }}
+                        </div>
+                        <div v-if="form.hasRiskManagement" class="org-sub-box bg-green-50 text-green-800 border-green-600 font-bold">Gestión de Riesgos</div>
+                        <div class="org-sub-box bg-gray-50 text-gray-700 border-gray-400">Líderes de Procesos</div>
+                    </div>
+                </div>
+
+                <ul class="mt-4">
+                    <li><b>{{ form.maxOrgan || '[Máximo Órgano]' }}:</b> Reconocido según estatutos, asume el compromiso máximo con el PTEE. Delega en el órgano de administración y mantiene un rol superior de aprobación, compromiso y respaldo al programa.</li>
+                    
+                    <li><b>{{ form.adminOrgan || '[Órgano de Administración]' }}:</b> Órgano directivo que ejerce un rol continuo de supervisión y control sobre el cumplimiento de la política; aprueba formalmente el PTEE, evalúa los reportes periódicos y respalda institucional y financieramente el programa para asegurar su operatividad.</li>
+
+                    <li v-if="form.hasEthicsCommittee"><b>Comité de Ética:</b> Órgano o comité de la Alta Gerencia con una orientación práctica enfocada en la implementación y seguimiento al cumplimiento de esta Política. Ejerce funciones enfocadas en decisiones estratégicas sobre dilemas éticos y conflictos de interés, y rinde cuentas y emite recomendaciones directamente al máximo órgano y al órgano de administración.</li>
+                    
+                    <li><b>{{ displayLegalRep }}:</b> Tiene asignados los roles fundamentales de <b>suscripción</b> inicial del documento, materialización de la <b>implementación</b> asegurando que se cumpla en la operación diaria, el <b>seguimiento</b> constante a la ejecución de las políticas, y el <b>reporte</b> oportuno de los avances y alertas ante los órganos superiores o entes de control, alineado con las definiciones estatutarias.</li>
+                    
+                    <li v-if="form.hasRiskManagement"><b>Gestión de Riesgos:</b> Ejerce un rol direccionador desde el aspecto técnico-metodológico del riesgo. Actúa en transversalidad y constante articulación con la función de Cumplimiento y PTEE para enriquecer las matrices de riesgo, garantizando metodologías sólidas, actualizadas y con los correspondientes controles preventivos.</li>
+
+                    <li><b>Responsables de Procesos:</b> Líderes y empleados de las áreas funcionales. Ejercen la <b>gestión de riesgos</b> mediante la implementación y monitoreo de <b>controles</b>. Dentro de sus <b>funciones</b> integran labores de <b>ejecución, revisión y aprobación</b> de operaciones para prevenir situaciones de Corrupción y Soborno Transnacional (C/ST). Asimismo, son directamente responsables de llevar a cabo la <b>debida diligencia de sus procesos, actividades y terceros</b> vinculados a su gestión diaria.</li>
+
+                    <!-- Lógica condicional de Riesgo para el Responsable de Cumplimiento -->
+                    <li v-if="form.riskLevel === 'bajo'">
+                        <b>Responsable de Cumplimiento (Riesgo Bajo):</b> Dada la clasificación normativa de la Entidad, se asigna el rol de <i>Responsable de Ética y Transparencia</i>, el cual recae operativamente sobre la figura de {{ displayLegalRep }} u otro rol interno designado por esta. Tiene como principales funciones la <b>facilitación y monitoreo de la gestión del riesgo</b>, liderar las actividades de <b>capacitación y comunicación</b>, y <b>acompañar el trámite de denuncias y su respectiva investigación</b>.
+                    </li>
+                    <li v-if="form.riskLevel === 'medio'">
+                        <b>Responsable de Cumplimiento (Riesgo Medio):</b> Dada la clasificación normativa, se asigna el rol de <i>Responsable de Ética y Transparencia</i>. Puede ser designado al representante legal o a un directivo designado por la administración. Tiene como principales funciones la <b>facilitación y monitoreo de la gestión del riesgo</b>, liderar las actividades de <b>capacitación y comunicación</b>, y <b>acompañar el trámite de denuncias y su respectiva investigación</b>.
+                    </li>
+                    <li v-if="form.riskLevel === 'alto'">
+                        <b>Responsable de Cumplimiento - Oficial de Cumplimiento (Riesgo Alto):</b> 
+                        <span v-if="form.isOutsourced === 'tercerizado'">Al requerir independencia especializada, este rol será ejercido por una persona natural <b>externa</b> a la ESAL (Tercerizado).</span>
+                        <span v-if="form.isOutsourced === 'interno'">Este rol será ejercido por personal <b>interno</b> vinculado a la Entidad, garantizando siempre su debida independencia.</span>
+                        <br>
+                        Sus principales funciones se centran en la <b>facilitación y monitoreo de la gestión del riesgo</b>, liderar las actividades de <b>capacitación y comunicación</b> del programa, y <b>acompañar exhaustivamente los canales de denuncia y procesos de investigación</b>. Sus requisitos de ley incluyen:
+                        <ul class="text-sm mt-2">
+                            <li>Facultad de toma de decisiones y comunicación jerárquica directa con {{ form.adminOrgan || 'la Junta' }}.</li>
+                            <li>Conocimiento en administración de riesgos C/ST y entendimiento del giro ordinario de la ESAL.</li>
+                            <li>No formar parte de la administración, órganos sociales, revisoría fiscal, auditoría ni control interno.</li>
+                            <li>No desempeñar este cargo en más de diez (10) entidades simultáneamente.</li>
+                            <li>Estar domiciliado en Colombia y ser formalmente aprobado por el órgano de gobierno competente.</li>
+                        </ul>
+                    </li>
+
+                    <li v-if="form.hasAuditoria"><b>Auditoría Interna:</b> Apoya a la Alta Gerencia y al órgano de gobierno mediante evaluaciones independientes y objetivas sobre la gobernanza, la gestión de riesgos y la efectividad del diseño de los controles preventivos y detectivos del PTEE, promoviendo de manera transversal el mejoramiento continuo del sistema de gestión y la mitigación de los riesgos de C/ST  y relacionados.</li>
+
+                    <li v-if="form.hasRevisoria"><b>Revisoría Fiscal:</b> Tiene la obligación y alcance funcional, ético y legal de valorar el diseño y operatividad del Programa de Transparencia y Ética Empresarial; y de ser necesario, emitir una opinión explícita en su informe o dictamen anual, dictaminando cualquier hallazgo de riesgo o acto de corrupción y apoyando la legalidad y transparencia financiera de la Entidad.</li>
+                </ul>
+
+                <!-- 7. Entorno y Compromisos -->
+                <div v-if="form.guilds || form.commitments || form.supervisionEntities">
+                    <h2>7. Relación con el entorno, organismos de control y compromisos adquiridos</h2>
+                    <p>
+                        La entidad reconoce que su operación interactúa dinámicamente con múltiples actores del sector público y privado dentro de un ecosistema social. En este sentido, consideramos fundamental alinear nuestras prácticas institucionales con los más altos estándares nacionales e internacionales de ética, transparencia y buen gobierno corporativo.
+                    </p>
+                    <p v-if="form.supervisionEntities">
+                        Dentro de nuestro estricto marco de cumplimiento normativo, la entidad colabora proactivamente y mantiene un relacionamiento transparente y libre de cualquier acto de injerencia o corrupción con aquellas entidades que ejercen labores de inspección, supervisión, vigilancia y/o control sobre nuestra actividad, incluyendo especialmente a: <b>{{ form.supervisionEntities }}</b>.
+                    </p>
+                    <p v-if="form.guilds">
+                        Actualmente, la entidad participa activamente en el entorno gremial y civil a través de su vinculación a: <b>{{ form.guilds }}</b>.
+                    </p>
+                    <p v-if="form.commitments">
+                        Como reflejo de nuestro elevado compromiso, hemos suscrito pactos e iniciativas reconocidas para la lucha contra la corrupción, tales como: <b>{{ form.commitments }}</b>.
+                    </p>
+                </div>
+                <div v-else>
+                    <h2>7. Relación con el entorno</h2>
+                    <p>
+                        La entidad mantendrá un relacionamiento transparente con instituciones gubernamentales, autoridades de control y la sociedad civil, promoviendo en todos los escenarios su cultura de integridad, independientemente de la suscripción formal actual a pactos anticorrupción, los cuales podrán integrarse a futuro bajo principios de mejora continua.
+                    </p>
+                </div>
+
+                <!-- 8. Vigencia -->
+                <h2>8. Vigencia, revisión y difusión</h2>
+                <p>
+                    Los requisitos para la aplicación material de esta política entrarán en pleno vigor a partir de su aprobación formal por parte del {{ form.adminOrgan || '[Órgano de Administración]' }} y su subsecuente adopción. 
+                </p>
+                <p>
+                    La fecha oficial de aprobación de la presente versión es el <b>{{ formatDisplayDate(form.approvalDate) || '[Día/Mes/Año]' }}</b>.
+                </p>
+                <p>
+                    <b>Difusión y Revisión:</b> Esta Política de Cumplimiento deberá ser comunicada y socializada a todos los niveles de la organización, publicándose en nuestras partes internas y externas, instalaciones, medios físicos y digitales institucionales que dispongamos. Será objeto de revisión al menos una vez al año (o cuando haya cambios materiales normativos o estructurales) para garantizar su pertinencia frente al perfil de riesgos.
+                </p>
+
+                <table style="width: 100%; margin-top: 80px; margin-bottom: 40px; text-align: center; font-size: 14px; font-weight: bold;" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                            {{ displayLegalRep }}
+                        </td>
+                        <td style="width: 20%;"></td>
+                        <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                            Presidente/a {{ form.adminOrgan || 'del Órgano de Administración' }}
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Anexo: Glosario -->
+                <br clear="all" style="page-break-before:always" />
+                <div class="page-break-before" style="page-break-before: always; margin-top: 40px;">
+                    <h2 class="text-center">ANEXO A: Glosario de términos clave</h2>
+                    <p class="text-sm mb-4">
+                        Para efectos de la interpretación, aplicación y cumplimiento de la presente Política y del Programa de Transparencia y Ética Empresarial (PTEE), se adoptan las siguientes definiciones:
+                    </p>
+                    <ul class="text-sm space-y-2">
+                        <li><b>Alta Gerencia:</b> Personas naturales del más alto nivel jerárquico responsables del desarrollo y ejecución del objeto social de la entidad (incluyendo al Representante Legal y miembros de nivel directivo).</li>
+                        <li><b>Beneficiario Final:</b> Persona natural que finalmente posee o controla, directa o indirectamente, a un cliente, contraparte, o a la persona natural en cuyo nombre o beneficio se realiza una transacción.</li>
+                        <li><b>C/ST:</b> Acrónimo referente a Corrupción y Soborno Transnacional.</li>
+                        <li><b>Conflicto de Interés:</b> Situación en la cual los intereses personales, directos o indirectos, de los empleados, directivos, o sus familiares, interfieren o parecen interferir con los intereses de la entidad, comprometiendo su objetividad al tomar decisiones.</li>
+                        <li><b>Contraparte:</b> Cualquier persona natural o jurídica con la que la Entidad tenga o establezca vínculos comerciales, de cooperación, suministro, donación, laborales o cualquier otro tipo de vínculo contractual o jurídico.</li>
+                        <li><b>Debida Diligencia (DD):</b> Procedimientos orientados a obtener, verificar y analizar información de las contrapartes, con el propósito de conocerlas, evaluar su perfil de riesgo y adoptar medidas razonables para prevenir la materialización de riesgos de C/ST.</li>
+                        <li><b>Debida Diligencia Intensificada (DDI):</b> Procedimientos de Debida Diligencia más rigurosos, profundos y frecuentes que se aplican a aquellas contrapartes o actividades (como sectores de alto riesgo o PEPs) que representan un mayor riesgo de C/ST.</li>
+                        <li><b>Grupo de Valor:</b> Partes interesadas (stakeholders) que se ven afectadas por las decisiones de la organización o que pueden influir en el cumplimiento de los objetivos de la Entidad.</li>
+                        <li><b>Oficial de Cumplimiento:</b> Persona natural designada por el Órgano de Administración para liderar y administrar el PTEE. En entidades de riesgo menor, sus funciones recaerán en la figura denominada "Responsable de Ética y Transparencia".</li>
+                        <li><b>PEP (Persona Expuesta Políticamente):</b> Individuos que desempeñan o han desempeñado funciones públicas destacadas, así como directivos de organizaciones internacionales, junto con sus familiares y asociados cercanos, de acuerdo con la normatividad vigente.</li>
+                        <li><b>PTEE:</b> Programa de Transparencia y Ética Empresarial elaborado e implementado por la entidad; comprende las políticas, procedimientos, matrices de riesgo y anexos conexos.</li>
+                        <li><b>Señales de Alerta:</b> Hechos, situaciones, operaciones o comportamientos que se salen de los patrones de normalidad, no tienen una justificación lógica o razonable, y que pueden indicar un riesgo inminente o materialización de C/ST.</li>
+                        <li><b>Tercer Sector:</b> Agrupación de organizaciones privadas, legalmente constituidas, sin ánimo de lucro, de carácter voluntario, constituidas para perseguir fines de beneficio social, solidario o comunitario (ESAL).</li>
+                    </ul>
+                <!-- Fin Anexo: Glosario -->
+
+            </div>
+        </main>
+        
+        </div> <!-- Cierra div de APLICACIÓN PRINCIPAL v-if="isAuthenticated" -->
+    </div> <!-- Cierra div id="app" -->
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    // CONFIGURACIÓN DE SEGURIDAD
+                    // Puedes cambiar este número o palabra por la clave que desees
+                    ACCESS_PIN: '7852',
+                    isAuthenticated: false,
+                    enteredPin: '',
+                    pinError: false,
+
+                    form: {
+                        entityName: '',
+                        entityType: 'Fundación',
+                        impactAreas: [],
+                        socialPurpose: '',
+                        mainActivities: '',
+                        operationZones: '',
+                        reach: 'nacional',
+                        localAreas: '',
+                        internationalCountries: '',
+                        publicResources: false,
+                        privateResources: false,
+                        cooperationResources: false,
+                        hasSubsidiaries: false,
+                        hasController: false,
+                        highRiskSectors: [],
+                        customHighRiskSector: '',
+                        hasExceptions: false,
+                        exceptionDetails: '',
+                        hasGovCode: false,
+                        hasEthicsCode: false,
+                        maxOrgan: 'Asamblea General',
+                        adminOrgan: 'Junta Directiva / Consejo Directivo',
+                        legalRepType: 'Dirección Ejecutiva',
+                        otherLegalRepType: '',
+                        riskLevel: 'bajo',
+                        isOutsourced: 'interno',
+                        hasAuditoria: false,
+                        hasRevisoria: false,
+                        hasEthicsCommittee: false,
+                        hasRiskManagement: false,
+                        supervisionEntities: '',
+                        guilds: '',
+                        commitments: '',
+                        thirdParties: ['Proveedores', 'Empleados', 'Beneficiarios'],
+                        fundingSources: [],
+                        customFundingSource: '',
+                        approvalDate: '',
+                        normativas: ['ley_1474_2011', 'ley_1778_2016', 'ley_2195_2022', 'guia_propositiva_2024']
+                    },
+                    fuentesFinanciacionDisponibles: [
+                        'Donaciones privadas',
+                        'Subvenciones gubernamentales',
+                        'Generación de recursos por actividad propia',
+                        'Cooperación internacional',
+                        'Financiación del sector financiero',
+                        'Aportes de asociados o fundadores',
+                        'Rendimientos financieros y de inversiones'
+                    ],
+                    tercerosDisponibles: [
+                        'Fundadores', 'Asociados', 'Corporados', 'Sector público', 
+                        'Entidades de vigilancia y control', 'Proveedores', 'Clientes', 
+                        'Empleados', 'Comunidad', 'Aliados / Colaboradores', 
+                        'Beneficiarios', 'Sociedad civil', 'Donantes', 'Voluntarios'
+                    ],
+                    sectoresRiesgoDisponibles: [
+                        'Juegos de suerte y azar',
+                        'Comercio de bienes suntuarios y de alto valor',
+                        'Construcción e infraestructura',
+                        'Comercio exterior y cambiario',
+                        'Minero energético',
+                        'Farmacéutico e inmobiliario',
+                        'Servicios jurídicos y contables',
+                        'Activos virtuales (Criptoactivos)',
+                        'Armas y defensa'
+                    ],
+                    normativasDisponibles: [
+                        { id: 'ley_1474_2011', titulo: 'Ley 1474/2011: Estatuto Anticorrupción', html: '<b>Ley 1474 de 2011:</b> Estatuto Anticorrupción.' },
+                        { id: 'ley_1778_2016', titulo: 'Ley 1778/2016: Responsabilidad corporativa', html: '<b>Ley 1778 de 2016:</b> Responsabilidad de personas jurídicas.' },
+                        { id: 'ley_2195_2022', titulo: 'Ley 2195/2022: Medidas de transparencia', html: '<b>Ley 2195 de 2022:</b> Medidas en transparencia y lucha contra la corrupción.' },
+                        { id: 'guia_propositiva_2024', titulo: 'Guía Propositiva/2024: PTEE - DAPRE', html: '<b>Guía Propositiva (2024):</b> Para la elaboración e implementación de los Programas de Transparencia y Ética Empresarial -PTEE, del Departamento administrativo de la Presidencia de la República – DAPRE.' },
+                        { id: 'borrador_dur_2025', titulo: 'Borrador DUR/2025: Lineamientos PTEE', html: '<b>Borrador DUR (2025):</b> Lineamientos mínimos para los PTEE. Para autoridades de inspección, vigilancia y control, del Departamento administrativo de la Presidencia de la República – DAPRE.' },
+                        { id: 'borrador_directiva_005_2025', titulo: 'Borrador Directiva 005/2025: Recomendaciones', html: '<b>Borrador Directiva 005 (2025):</b> Recomendaciones PTEE. Deroga las anteriores.' },
+                        { id: 'res_s2024060000475_2024', titulo: 'Resolución S2024060000475/2024 - Antioquia', html: '<b>Resolución S2024060000475 (2024):</b> PTEE para ESAL Antioquia.' },
+                        { id: 'res_2024060075354_2024', titulo: 'Resolución 2024060075354/2024 - Antioquia', html: '<b>Resolución 2024060075354 (2024):</b> Modifica plazo de presentación para ESAL en Antioquia.' },
+                        { id: 'circular_100_000004_2023', titulo: 'Circular 100-000004/2023 / Cap. X y XIII CBJ', html: '<b>Capítulos X y XIII CBJ / Circular Externa 100-000004 (2023):</b> Incluye PTEE ESAL extranjeras.' }
+                    ]
+                }
+            },
+            computed: {
+                formattedImpactAreas() {
+                    const areas = this.form.impactAreas;
+                    if (!areas || areas.length === 0) return '[Áreas de impacto]';
+                    if (areas.length === 1) return areas[0];
+                    const init = areas.slice(0, -1).join(', ');
+                    const last = areas[areas.length - 1];
+                    return `${init} y ${last}`;
+                },
+                formattedThirdParties() {
+                    const parties = this.form.thirdParties;
+                    if (!parties || parties.length === 0) return '[Terceros seleccionados]';
+                    if (parties.length === 1) return parties[0].toLowerCase();
+                    const lowerParties = parties.map(p => p.toLowerCase());
+                    const init = lowerParties.slice(0, -1).join(', ');
+                    const last = lowerParties[lowerParties.length - 1];
+                    return `${init} y ${last}`;
+                },
+                formattedFundingSources() {
+                    let sources = [...(this.form.fundingSources || [])];
+                    if (this.form.customFundingSource && this.form.customFundingSource.trim() !== '') {
+                        sources.push(this.form.customFundingSource.trim());
+                    }
+                    if (!sources || sources.length === 0) return '';
+                    if (sources.length === 1) return sources[0].toLowerCase();
+                    const lowerSources = sources.map(s => s.toLowerCase());
+                    const init = lowerSources.slice(0, -1).join(', ');
+                    const last = lowerSources[lowerSources.length - 1];
+                    return `${init} y ${last}`;
+                },
+                hasHighRiskSectors() {
+                    return this.form.highRiskSectors.length > 0 || this.form.customHighRiskSector.trim().length > 0;
+                },
+                formattedHighRiskSectors() {
+                    let sectors = [...this.form.highRiskSectors];
+                    if (this.form.customHighRiskSector.trim()) {
+                        sectors.push(this.form.customHighRiskSector.trim());
+                    }
+                    if (sectors.length === 0) return '';
+                    if (sectors.length === 1) return sectors[0].toLowerCase();
+                    const lowerSectors = sectors.map(s => s.toLowerCase());
+                    const init = lowerSectors.slice(0, -1).join(', ');
+                    const last = lowerSectors[lowerSectors.length - 1];
+                    return `${init} y ${last}`;
+                },
+                displayLegalRep() {
+                    return this.form.legalRepType === 'Otra figura' ? (this.form.otherLegalRepType || 'Representante Legal') : this.form.legalRepType;
+                }
+            },
+            methods: {
+                verifyPin() {
+                    // Si el PIN coincide con la configuración
+                    if (this.enteredPin === this.ACCESS_PIN.toString()) {
+                        this.isAuthenticated = true;
+                        this.pinError = false;
+                    } else {
+                        this.pinError = true;
+                        this.enteredPin = '';
+                    }
+                },
+                getNormativaHTML(normativaId) {
+                    const norm = this.normativasDisponibles.find(n => n.id === normativaId);
+                    return norm ? norm.html : '';
+                },
+                formatDisplayDate(dateStr) {
+                    if (!dateStr) return '';
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    // Arreglo para zonas horarias al instanciar fechas en JS
+                    const [year, month, day] = dateStr.split('-');
+                    const date = new Date(year, month - 1, day);
+                    return date.toLocaleDateString('es-CO', options);
+                },
+                exportWord() {
+                    const contentElement = document.getElementById('exportable-document');
+                    if (!contentElement) return;
+                    
+                    const content = contentElement.innerHTML;
+                    
+                    const css = `
+                        <style>
+                            @page { margin: 2.54cm; }
+                            body { font-family: "Arial", sans-serif; font-size: 11pt; color: #000; text-align: justify; }
+                            h1 { font-size: 14pt; text-align: center; font-weight: bold; text-transform: uppercase; margin-bottom: 20pt; border-bottom: 1px solid black; padding-bottom: 5px;}
+                            h2 { font-size: 12pt; font-weight: bold; margin-top: 18pt; margin-bottom: 6pt; color: #000; }
+                            p { margin-bottom: 12pt; }
+                            ul { margin-left: 20pt; margin-bottom: 12pt; list-style-type: disc;}
+                            li { margin-bottom: 6pt; text-align: justify; }
+                            .org-chart { display: none; } /* En Word, los organigramas de CSS complejos pueden romperse, es mejor usar listas */
+                        </style>
+                    `;
+
+                    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Política PTEE</title>" + css + "</head><body>";
+                    const footer = "</body></html>";
+                    const sourceHTML = header + content + footer;
+
+                    const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const fileDownload = document.createElement("a");
+                    document.body.appendChild(fileDownload);
+                    fileDownload.href = url;
+                    
+                    const name = this.form.entityName ? this.form.entityName.replace(/\s+/g, '_') : 'ESAL';
+                    fileDownload.download = `Politica_PTEE_${name}.doc`;
+                    fileDownload.click();
+                    document.body.removeChild(fileDownload);
+                    URL.revokeObjectURL(url);
+                },
+                exportCSV() {
+                    const data = [
+                        ["Categoría", "Criterio", "Valor Seleccionado"],
+                        ["Contexto", "Razón Social", this.form.entityName],
+                        ["Contexto", "Naturaleza Jurídica", this.form.entityType],
+                        ["Contexto", "Áreas de Impacto", (this.form.impactAreas || []).join(' | ')],
+                        ["Contexto", "Propósito Social", this.form.socialPurpose],
+                        ["Contexto", "Actividades Principales", this.form.mainActivities],
+                        ["Contexto", "Zonas de Operación", this.form.operationZones],
+                        ["Ámbito", "Alcance", this.form.reach],
+                        ["Ámbito", "Zonas Locales/Regionales", this.form.localAreas],
+                        ["Ámbito", "Países Internacionales", this.form.internationalCountries],
+                        ["Entorno", "Recursos Públicos", this.form.publicResources ? 'Sí' : 'No'],
+                        ["Entorno", "Recursos Privados", this.form.privateResources ? 'Sí' : 'No'],
+                        ["Entorno", "Recursos Cooperación", this.form.cooperationResources ? 'Sí' : 'No'],
+                        ["Entorno", "Fuentes de Financiación", [...(this.form.fundingSources || []), this.form.customFundingSource].filter(Boolean).join(' | ')],
+                        ["Entorno", "Entidades Subsidiarias", this.form.hasSubsidiaries ? 'Sí' : 'No'],
+                        ["Entorno", "Entidad Controlante", this.form.hasController ? 'Sí' : 'No'],
+                        ["Señales Alerta", "Sectores de Alto Riesgo", [...(this.form.highRiskSectors || []), this.form.customHighRiskSector].filter(Boolean).join(' | ')],
+                        ["Control", "Entidades de Supervisión", this.form.supervisionEntities],
+                        ["Políticas", "Régimen de Excepciones", this.form.hasExceptions ? 'Sí' : 'No'],
+                        ["Políticas", "Detalle Excepciones", this.form.exceptionDetails],
+                        ["Políticas", "Código de Buen Gobierno", this.form.hasGovCode ? 'Sí' : 'No'],
+                        ["Políticas", "Código de Ética", this.form.hasEthicsCode ? 'Sí' : 'No'],
+                        ["Gobernanza", "Máximo Órgano", this.form.maxOrgan],
+                        ["Gobernanza", "Órgano de Administración", this.form.adminOrgan],
+                        ["Gobernanza", "Representante Legal", this.form.legalRepType === 'Otra figura' ? this.form.otherLegalRepType : this.form.legalRepType],
+                        ["Gobernanza", "Nivel de Riesgo Evaluado", this.form.riskLevel],
+                        ["Gobernanza", "Oficial de Cumplimiento", this.form.isOutsourced],
+                        ["Gobernanza", "Tiene Comité de Ética", this.form.hasEthicsCommittee ? 'Sí' : 'No'],
+                        ["Gobernanza", "Tiene Gestión de Riesgos", this.form.hasRiskManagement ? 'Sí' : 'No'],
+                        ["Gobernanza", "Tiene Auditoría Interna", this.form.hasAuditoria ? 'Sí' : 'No'],
+                        ["Gobernanza", "Tiene Revisoría Fiscal", this.form.hasRevisoria ? 'Sí' : 'No'],
+                        ["Compromiso", "Compromisos Específicos", this.form.commitments],
+                        ["Grupos Interés", "Terceros Relacionados", (this.form.thirdParties || []).join(' | ')],
+                        ["Normatividad", "Marco Normativo Asignado", (this.form.normativas || []).join(' | ')],
+                        ["Documento", "Fecha de Aprobación", this.form.approvalDate]
+                    ];
+
+                    let csvContent = "\uFEFF"; 
+                    data.forEach(row => {
+                        let escapedRow = row.map(item => {
+                            let cell = (item === null || item === undefined) ? '' : String(item);
+                            cell = cell.replace(/"/g, '""');
+                            return `"${cell}"`;
+                        });
+                        csvContent += escapedRow.join(";") + "\r\n";
+                    });
+
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement("a");
+                    document.body.appendChild(link);
+                    link.setAttribute("href", url);
+                    
+                    const name = this.form.entityName ? this.form.entityName.replace(/\s+/g, '_') : 'ESAL';
+                    link.setAttribute("download", `Parametros_PTEE_${name}.csv`);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

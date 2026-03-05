@@ -1,0 +1,445 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador - Código de Ética y Conducta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .word-doc {
+            width: 100%;
+            max-width: 21cm;
+            min-height: 29.7cm;
+            padding: 2.54cm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-family: 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #000;
+            text-align: justify;
+        }
+        .word-doc h1 { font-size: 14pt; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 24pt; border-bottom: 2px solid #000; padding-bottom: 10px;}
+        .word-doc h2 { font-size: 12pt; font-weight: bold; margin-top: 20pt; margin-bottom: 10pt; color: #1a365d; }
+        .word-doc h3 { font-size: 11pt; font-weight: bold; margin-top: 15pt; margin-bottom: 8pt; color: #2d3748; }
+        .word-doc p { margin-bottom: 12pt; }
+        .word-doc ul { list-style-type: disc; margin-left: 20pt; margin-bottom: 12pt; }
+        .word-doc li { margin-bottom: 6pt; }
+        
+        @media (max-width: 768px) {
+            .word-doc {
+                padding: 1.5cm 1cm;
+                font-size: 10pt;
+            }
+            .word-doc h1 { font-size: 12pt !important; margin-bottom: 16pt !important; }
+            .word-doc h2 { font-size: 11pt !important; margin-top: 14pt !important; margin-bottom: 8pt !important; }
+        }
+        @media print {
+            body { background: white; margin: 0; padding: 0; }
+            #app, main, .word-doc { height: auto; overflow: visible !important; }
+            .no-print { display: none !important; }
+            .word-doc { box-shadow: none !important; padding: 0 !important; width: 100% !important; margin: 0 !important; min-height: auto !important; }
+            h1, h2, h3 { page-break-after: avoid; }
+            ul, p, li { page-break-inside: avoid; widows: 3; orphans: 3; }
+        }
+    </style>
+</head>
+<body class="bg-gray-200 h-screen flex flex-col overflow-hidden font-sans">
+    <div id="app" class="h-full w-full relative">
+        
+        <!-- PANTALLA DE ACCESO (PIN) -->
+        <div v-if="!isAuthenticated" class="absolute inset-0 bg-indigo-900 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full text-center">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2">Acceso restringido</h2>
+                <p class="text-gray-600 mb-6 text-sm">Ingrese su código PIN para acceder al Generador de Código de Ética y Conducta.</p>
+                <input type="password" v-model="enteredPin" @keyup.enter="verifyPin" class="w-full text-center text-2xl tracking-[0.5em] border-2 border-indigo-200 rounded p-3 mb-4 focus:outline-none focus:border-indigo-600 font-mono" placeholder="••••" maxlength="4">
+                <button @click="verifyPin" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded transition">Ingresar</button>
+                <p v-if="pinError" class="text-red-500 text-sm mt-3 animate-pulse">PIN incorrecto, intente nuevamente.</p>
+            </div>
+        </div>
+
+        <!-- APLICACIÓN PRINCIPAL -->
+        <div v-else class="flex flex-col md:flex-row h-full w-full">
+            
+            <!-- SIDEBAR DE FORMULARIO -->
+            <aside class="w-full md:w-1/3 bg-white h-[50vh] md:h-full overflow-y-auto shadow-xl border-b md:border-b-0 md:border-r border-gray-300 flex flex-col no-print z-10">
+                <div class="bg-indigo-900 text-white p-5 sticky top-0 z-20">
+                    <h2 class="text-xl font-bold">Código de ética y conducta</h2>
+                    <p class="text-sm text-indigo-200">Personalización institucional</p>
+                    <div class="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
+                        <button @click="exportWord" class="bg-green-600 hover:bg-green-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap">📥 Word</button>
+                        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap">🖨️ PDF</button>
+                        <button @click="exportCSV" class="bg-yellow-600 hover:bg-yellow-500 px-3 py-2 rounded text-sm font-bold flex-1 transition whitespace-nowrap text-white">📊 Datos (CSV)</button>
+                    </div>
+                    <p class="block md:hidden text-center text-xs text-indigo-200 mt-3 font-medium">↓ Desplázate hacia abajo para ver el documento en vivo ↓</p>
+                </div>
+
+                <div class="p-6 flex flex-col gap-6">
+                    <!-- Sección 1 -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">1. Identidad de la entidad</h3>
+                        <label class="block text-sm font-medium">Razón Social</label>
+                        <input v-model="form.entityName" class="w-full border p-2 rounded mb-3" placeholder="Ej. Fundación Solidaridad">
+
+                        <label class="block text-sm font-medium">Naturaleza Jurídica</label>
+                        <select v-model="form.entityType" class="w-full border p-2 rounded mb-3">
+                            <option>Fundación</option>
+                            <option>Corporación</option>
+                            <option>Asociación</option>
+                            <option>Entidad Cooperativa</option>
+                            <option>Otra ESAL</option>
+                        </select>
+
+                        <label class="block text-sm font-medium">Misión / Propósito Social</label>
+                        <textarea v-model="form.socialPurpose" class="w-full border p-2 rounded mb-3 text-sm h-20" placeholder="Ej. Mejorar la calidad de vida de poblaciones vulnerables..."></textarea>
+                    </section>
+
+                    <!-- Sección 2 -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">2. Gobernanza y contacto</h3>
+                        <label class="block text-sm font-medium">Órgano de Administración</label>
+                        <input v-model="form.adminOrgan" class="w-full border p-2 rounded mb-3" placeholder="Ej. Junta Directiva">
+                        
+                        <label class="block text-sm font-medium">Canal de Denuncias (Email o Enlace)</label>
+                        <input v-model="form.reportingChannel" class="w-full border p-2 rounded mb-3" placeholder="Ej. lineaetica@entidad.org">
+                        
+                        <label class="block text-sm font-medium">Responsable del Seguimiento y Ética</label>
+                        <select v-model="form.ethicsRole" class="w-full border p-2 rounded mb-3">
+                            <option>Comité de Ética</option>
+                            <option>Oficial de Cumplimiento</option>
+                            <option>Responsable de Ética e Integridad</option>
+                            <option>Dirección / Representación Legal</option>
+                        </select>
+                    </section>
+
+                    <!-- Sección 3 -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">3. Valores</h3>
+                        <div class="space-y-2 mb-4 bg-gray-50 p-3 border rounded shadow-inner max-h-64 overflow-y-auto">
+                            <label v-for="(valor, index) in predefinedValues" :key="index" class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1">
+                                <input type="checkbox" :value="valor.nombre" v-model="form.selectedValues" class="mt-1">
+                                <div>
+                                    <span class="font-bold block leading-tight">{{ valor.nombre }}</span>
+                                    <span class="text-xs text-gray-500 leading-tight">{{ valor.descripcion }}</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Agregar nuevo valor</label>
+                            <input v-model="newValorName" class="w-full border p-2 rounded mb-2 text-sm" placeholder="Nombre (Ej. Innovación)">
+                            <textarea v-model="newValorDesc" class="w-full border p-2 rounded mb-2 text-sm h-16" placeholder="Descripción breve..."></textarea>
+                            <button @click="addCustomValue" type="button" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-sm transition">
+                                + Añadir y seleccionar
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Sección 4 -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">4. Prevención, sanciones y normas</h3>
+                        
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.includeZeroTolerance" class="mt-1">
+                            Incluir Política de cumplimiento del Programa de transparencia y ética empresarial - PTEE -.
+                        </label>
+                        
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.hasRIT" class="mt-1">
+                            ¿La entidad cuenta con un Reglamento Interno de Trabajo (RIT) para remitir y articular el régimen de sanciones?
+                        </label>
+
+                        <div v-if="!form.hasRIT" class="mb-3">
+                            <label class="block text-sm font-medium text-red-600">Al no tener RIT, indique bajo qué norma se amparan las sanciones:</label>
+                            <input v-model="form.alternativeSanction" class="w-full border border-red-300 p-2 rounded text-sm" placeholder="Ej. Estatutos Sociales, Código Sustantivo del Trabajo...">
+                        </div>
+
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.includeConflictInterest" class="mt-1">
+                            Incluir política específica de Conflictos de Interés.
+                        </label>
+
+                        <label class="block text-sm font-medium mt-4">Fecha de Aprobación del Código</label>
+                        <input type="date" v-model="form.approvalDate" class="w-full border p-2 rounded mb-3">
+                    </section>
+                </div>
+            </aside>
+
+            <!-- DOCUMENT PREVIEW -->
+            <main class="w-full md:w-2/3 bg-gray-300 h-[50vh] md:h-full overflow-y-auto p-4 md:p-8 relative">
+                <div id="exportable-document" class="word-doc relative bg-white mx-auto shadow-2xl p-4 md:p-10 max-w-[21cm] min-h-[29.7cm]">
+                    
+                    <div class="text-center mb-8 pb-4 border-b-2 border-gray-800 flex flex-col items-center">
+                        <h1 class="text-lg md:text-xl font-bold uppercase text-center !border-none !mb-2 !pb-0">CÓDIGO DE ÉTICA Y CONDUCTA</h1>
+                        <p class="font-bold text-md uppercase tracking-wider text-indigo-900">{{ form.entityName || '[Nombre de la Entidad]' }}</p>
+                    </div>
+
+                    <!-- 1. Identificación -->
+                    <h2>1. Identificación y características de la entidad</h2>
+                    <p>
+                        <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> es una entidad sin ánimo de lucro constituida como {{ form.entityType || '[Naturaleza Jurídica]' }}, comprometida con altos estándares de transparencia y legalidad en el desarrollo de su objeto social. Nuestro propósito fundamental u objeto social se centra en: <i>"{{ form.socialPurpose || '[Propósito/Misión de la entidad]' }}"</i>.
+                    </p>
+                    <p>
+                        El presente Código de Ética y Conducta constituye la norma de rango ético y de integridad superior dentro de nuestra organización. Expresa de forma pública y manifiesta los estándares de comportamiento que esperamos de todo nuestro equipo humano, cuerpo directivo, personal laboral, voluntariado, contratistas y colaboradores externos con los que nos relacionamos. Tiene la doble finalidad de hacer públicos los principios que rigen a la entidad y establecer una clara protección institucional de cumplimiento normativo y prevención de riesgos, estableciendo líneas rojas innegociables.
+                    </p>
+
+                    <!-- 2. Principios y Valores -->
+                    <h2>2. Declaración de valores</h2>
+                    <p>
+                        En <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> consideramos que nuestros valores institucionales son los pilares sobre los cuales sustentamos todas nuestras decisiones, programas y vinculaciones. Estos valores rigen nuestra forma de trabajar diariamente, siendo un marco de referencia inquebrantable de lo que somos y lo que representamos.
+                    </p>
+                    <ul v-if="form.selectedValues && form.selectedValues.length > 0">
+                        <li v-for="nombreValor in form.selectedValues" :key="nombreValor">
+                            <b>{{ nombreValor }}:</b> {{ getValorDescripcion(nombreValor) }}
+                        </li>
+                    </ul>
+                    <p v-else class="text-red-500 italic">
+                        [Seleccione al menos un valor en el panel de configuración para visualizar esta sección].
+                    </p>
+                    <p>
+                        El conjunto de estos valores no pretende ser un listado exhaustivo de todas las situaciones posibles de la cotidianidad, pero provee un marco inequívoco de juicio que guiará y respaldará actuaciones íntegras.
+                    </p>
+
+                    <!-- 3. Normas Generales -->
+                    <h2>3. Normas generales de conducta</h2>
+                    <p>
+                        Todas las personas vinculadas orgánicamente con la entidad asumen el compromiso ineludible de observar las siguientes normas generales de conducta, cuya exigencia aplica indistintamente del cargo o jerarquía:
+                    </p>
+                    <ul>
+                        <li><b>Cumplimiento normativo:</b> Se debe cumplir y promover el cumplimiento estricto de las leyes nacionales y normatividad vigente, así como las directrices y manuales internos.</li>
+                        <li><b>Respeto y trato digno:</b> Mantener relaciones basadas en el respeto mutuo, sin tolerar ningún tipo de discriminación por raza, género, religión, estrato sociocultural u orientación.</li>
+                        <li><b>Uso adecuado de recursos:</b> Preservar, cuidar y utilizar y exclusivamente en beneficio de las labores y finalidades de la entidad todos los bienes, dineros, equipos e información puestos a su disposición. Queda estrictamente prohibido su uso en beneficio propio o de terceros ajenos a la organización.</li>
+                        <li><b>Representación y reputación:</b> Salvaguardar la imagen institucional de la {{ form.entityType || '[Naturaleza Jurídica]' }} frente a su entorno y grupos de valor, actuando de forma transparente en las relaciones públicas.</li>
+                    </ul>
+
+                    <!-- 4. Políticas Generales -->
+                    <h2>4. Políticas generales de ética, transparencia y cumplimiento</h2>
+                    
+                    <div v-if="form.includeZeroTolerance">
+                        <h3>Política de cumplimiento del Programa de transparencia y ética empresarial - PTEE -</h3>
+                        <p>
+                            Nuestra organización adopta y ejecuta de manera tajante una política de <b>"Tolerancia Cero"</b> frente a cualquier conducta, acción u omisión que constituya corrupción, fraude, lavado de activos (LA/FT) o soborno (nacional o transnacional). Ningún empleado, directivo o representante podrá ofrecer, prometer, autorizar, aceptar, ni solicitar directamente, ni indirectamente ventajas financieras, ni pagos indebidos para obtener un trato de favor, concesión de contratos u otros beneficios indebidos. Quien incurra en dichas conductas se enfrentará inmediatamente a procedimientos sancionatorios severos y denuncias ante las autoridades judiciales.
+                        </p>
+                    </div>
+
+                    <div v-if="form.includeConflictInterest">
+                        <h3>Conflicto de interés</h3>
+                        <p>
+                            Entendemos el conflicto de interés como cualquier situación donde el interés personal o directo de un colaborador (o de sus familiares/personas cercanas) pudiera interferir con su objetividad para tomar decisiones en el mejor interés de <b>{{ form.entityName || '[Entidad]' }}</b>. Exigimos que todas las relaciones se mantengan con estricta separación de los beneficios particulares. Cualquier conflicto real, potencial o aparente, o duda razonable, debe ser declarado sin demora ante el superior jerárquico o el responsable de la ética.
+                        </p>
+                    </div>
+
+                    <h3>Relación con terceros y transparencia</h3>
+                    <p>
+                        Este Código se extiende de forma colaborativa hacia nuestros proveedores, contratistas y alianzas externas. Estos actores son una extensión de nuestro quehacer y por ende se encuentran sujetos al escrutinio ético de sus operaciones. Ellos utilizarán este Código para estar informados sobre aquellas conductas éticas que la Entidad respalda incondicionalmente, así como para reconocer cuáles son las conductas y líneas rojas estrictamente prohibidas y no autorizadas. Constituye una guía referencial de nuestra confianza.
+                    </p>
+
+                    <!-- 5. Aplicación del Código -->
+                    <h2>5. Aplicación, responsabilidades y canal de denuncia</h2>
+                    <p>
+                        Hacer de la integridad una realidad viviente requiere responsabilidades claras. El fomento institucional, revisión y mejora de este Código le atañe al {{ form.adminOrgan || '[Órgano de Administración]' }}. No obstante, la supervisión de campo y la orientación directa diaria recaerá sobre las funciones designadas al <b>{{ form.ethicsRole || '[Responsable de Ética]' }}</b>.
+                    </p>
+                    <p>
+                        <b>Canal de comunicación y denuncias:</b> Hemos habilitado y puesto a disposición de todo nuestro personal, beneficiarios, contrapartes y la ciudadanía en general, un mecanismo para consultar dilemas éticos, reportar presuntas violaciones del Código y denunciar en cualquier momento posibles indicios de actos corruptos o delictivos. Este canal cuenta con garantías de confidencialidad y no-represalias. Las comunicaciones pueden enviarse a: <b>{{ form.reportingChannel || '[Indicación del Canal de Denuncias]' }}</b>. Todos los reportes serán recibidos e investigados por el {{ form.ethicsRole || '[Responsable de Ética]' }}.
+                    </p>
+
+                    <!-- 6. Sanciones -->
+                    <h2>6. Régimen de sanciones y medidas disciplinarias</h2>
+                    <p>
+                        El cumplimiento del presente Código es de carácter estrictamente obligatorio. Cualquier incumplimiento no supone únicamente consecuencias reputacionales graves, sino que acarreará implicaciones disciplinarias inmediatas y, de ser el caso, escalamiento a instancias civiles o penales por el presunto quebrantamiento del margen legal constituido.
+                    </p>
+                    <p>
+                        <span v-if="form.hasRIT">
+                            Toda omisión, transgresión a los valores, conductas reprobables y líneas rojas descritas dentro de los compromisos acá expuestos, se articulará de forma inmediata con las disposiciones y medidas establecidas formalmente en el <b>Reglamento Interno de Trabajo (RIT)</b> vigente de la organización, acudiendo rigurosamente a las sanciones o cancelaciones contractuales y descargos allí contemplados.
+                        </span>
+                        <span v-else>
+                            Toda omisión, transgresión a los valores, conductas reprobables y líneas rojas descritas dentro de los compromisos acá expuestos, se articulará y derivará inmediatamente para sanción de conformidad con lo estipulado bajo {{ form.alternativeSanction || 'el Código Sustantivo del Trabajo y/o los vigentes Estatutos Sociales' }}. Las medidas correctivas aplicadas serán proporcionales a la gravedad del quebranto, abarcando desde el llamamiento de atención formal hasta la posible desvinculación justificada por falta grave, cancelación de relaciones civiles y acciones correspondientes por afectaciones ocasionadas.
+                        </span>
+                    </p>
+
+                    <!-- 7. Difusión, Vigencia y Seguimiento -->
+                    <h2>7. Difusión, entrada en vigor y seguimiento</h2>
+                    <p>
+                        <b>Difusión:</b> El Código será socializado y entregado a todas las personas que hacen parte del equipo desde el momento de su ingreso, y permanecerá publicado en los medios internos y comunicacionales externos de la organización para el público general. Se integrarán capacitaciones periódicas para afianzar el conocimiento de sus directrices.
+                    </p>
+                    <p>
+                        <b>Seguimiento y evaluación:</b> El {{ form.ethicsRole || '[Responsable de Ética]' }} deberá revisar activamente la efectividad y pertinencia de este instrumento. Presentará un reporte periódico frente al {{ form.adminOrgan || '[Órgano de Administración]' }} proponiendo las actualizaciones o mejoras razonables nacidas de los cambios operativos de la entidad o situaciones que así lo requieran.
+                    </p>
+                    <p>
+                        El presente Código de Ética y Conducta entra en pleno vigor para toda la Entidad a partir del <b>{{ formatDisplayDate(form.approvalDate) || '[Día/Mes/Año]' }}</b>, obligando a todos quienes por un vínculo u otro pertenezcan a la organización y dejando derogado cualquier manual institucional ético de fechas anteriores.
+                    </p>
+
+                    <table style="width: 100%; margin-top: 80px; margin-bottom: 40px; text-align: center; font-size: 14px; font-weight: bold;" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                                Representante Legal
+                            </td>
+                            <td style="width: 20%;"></td>
+                            <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                                Presidente/a {{ form.adminOrgan || 'del Órgano de Administración' }}
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    isAuthenticated: false,
+                    enteredPin: '',
+                    ACCESS_PIN: '7852',
+                    pinError: false,
+                    newValorName: '',
+                    newValorDesc: '',
+                    predefinedValues: [
+                        { nombre: "Transparencia", descripcion: "Garantizamos claridad y verdad en nuestro actuar, asegurando el acceso a la información y gestionando los recursos de forma visible." },
+                        { nombre: "Integridad", descripcion: "Actuamos con rectitud, honradez y coherencia entre lo que pensamos, decimos y ejecutamos, tanto en asuntos profesionales como personales vinculados." },
+                        { nombre: "Respeto", descripcion: "Reconocemos y valoramos el buen trato, escuchando la diversidad del otro, aceptando la pluralidad y dignificando a todo individuo." },
+                        { nombre: "Solidaridad", descripcion: "Nos moviliza la empatía activa por el bienestar colectivo y especialmente por las poblaciones más vulnerables o necesidades sociales." },
+                        { nombre: "Compromiso", descripcion: "Cumplimos de manera responsable y proactiva nuestras obligaciones, apropiándonos de la misión y buscando el mayor impacto social posible." },
+                        { nombre: "Equidad e Inclusión", descripcion: "Rechazamos toda forma de exclusión, otorgando a cada individuo y grupo sus derechos con justicia e igualdad de oportunidades." },
+                        { nombre: "Responsabilidad", descripcion: "Asumimos las consecuencias de nuestras decisiones y velamos por el cumplimiento de nuestros deberes con excelencia." }
+                    ],
+
+                    form: {
+                        entityName: '',
+                        entityType: 'Fundación',
+                        socialPurpose: '',
+                        adminOrgan: 'Junta Directiva',
+                        reportingChannel: '',
+                        ethicsRole: 'Comité de Ética',
+                        selectedValues: ['Transparencia', 'Integridad', 'Respeto'],
+                        includeZeroTolerance: true,
+                        includeConflictInterest: true,
+                        hasRIT: true,
+                        alternativeSanction: 'las disposiciones disciplinarias en el Código Sustantivo del Trabajo y Estatutos',
+                        approvalDate: ''
+                    }
+                }
+            },
+            methods: {
+                verifyPin() {
+                    if (this.enteredPin === this.ACCESS_PIN) {
+                        this.isAuthenticated = true;
+                        this.pinError = false;
+                    } else {
+                        this.pinError = true;
+                        this.enteredPin = '';
+                    }
+                },
+                addCustomValue() {
+                    if (this.newValorName.trim() && this.newValorDesc.trim()) {
+                        const nuevo = {
+                            nombre: this.newValorName.trim(),
+                            descripcion: this.newValorDesc.trim()
+                        };
+                        this.predefinedValues.push(nuevo);
+                        this.form.selectedValues.push(nuevo.nombre);
+                        this.newValorName = '';
+                        this.newValorDesc = '';
+                    } else {
+                        alert("Por favor ingrese el nombre del valor y su descripción para agregarlo.");
+                    }
+                },
+                getValorDescripcion(nombre) {
+                    const valor = this.predefinedValues.find(v => v.nombre === nombre);
+                    return valor ? valor.descripcion : '';
+                },
+                formatDisplayDate(dateStr) {
+                    if (!dateStr) return '';
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    const [year, month, day] = dateStr.split('-');
+                    const date = new Date(year, month - 1, day);
+                    return date.toLocaleDateString('es-CO', options);
+                },
+                exportWord() {
+                    const contentElement = document.getElementById('exportable-document');
+                    if (!contentElement) return;
+                    
+                    const content = contentElement.innerHTML;
+                    
+                    const css = `
+                        <style>
+                            @page { margin: 2.54cm; }
+                            body { font-family: "Arial", sans-serif; font-size: 11pt; color: #000; text-align: justify; }
+                            h1 { font-size: 14pt; text-align: center; font-weight: bold; text-transform: uppercase; margin-bottom: 20pt; border-bottom: 1px solid black; padding-bottom: 5px;}
+                            h2 { font-size: 12pt; font-weight: bold; margin-top: 18pt; margin-bottom: 6pt; color: #000; }
+                            h3 { font-size: 11pt; font-weight: bold; margin-top: 15pt; margin-bottom: 8pt; color: #000; }
+                            p { margin-bottom: 12pt; }
+                            ul { margin-left: 20pt; margin-bottom: 12pt; list-style-type: disc;}
+                            li { margin-bottom: 6pt; text-align: justify; }
+                        </style>
+                    `;
+
+                    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Código Ética y Conducta</title>" + css + "</head><body>";
+                    const footer = "</body></html>";
+                    const sourceHTML = header + content + footer;
+
+                    const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const fileDownload = document.createElement("a");
+                    document.body.appendChild(fileDownload);
+                    fileDownload.href = url;
+                    
+                    const name = this.form.entityName ? this.form.entityName.replace(/\s+/g, '_') : 'ESAL';
+                    fileDownload.download = `${name}_Codigo_Etica_y_Conducta.doc`;
+                    fileDownload.click();
+                    document.body.removeChild(fileDownload);
+                    URL.revokeObjectURL(url);
+                },
+                exportCSV() {
+                    let valoresSeleccionados = Array.isArray(this.form.selectedValues) ? this.form.selectedValues.join(' | ') : '';
+
+                    const data = [
+                        ["Categoría", "Criterio", "Valor Seleccionado"],
+                        ["Identidad", "Razón Social", this.form.entityName],
+                        ["Identidad", "Naturaleza Jurídica", this.form.entityType],
+                        ["Identidad", "Propósito Social", this.form.socialPurpose],
+                        ["Gobernanza", "Órgano de Administración", this.form.adminOrgan],
+                        ["Gobernanza", "Canal de Denuncias", this.form.reportingChannel],
+                        ["Gobernanza", "Responsable Ético", this.form.ethicsRole],
+                        ["Principios", "Valores Seleccionados", valoresSeleccionados],
+                        ["Políticas", "Política de Cumplimiento PTEE", this.form.includeZeroTolerance ? 'Sí' : 'No'],
+                        ["Políticas", "Conflicto de Interés", this.form.includeConflictInterest ? 'Sí' : 'No'],
+                        ["Sanciones", "Tiene R.I.T.", this.form.hasRIT ? 'Sí' : 'No'],
+                        ["Sanciones", "Soporte Alternativo", this.form.hasRIT ? 'N/A' : this.form.alternativeSanction],
+                        ["Documento", "Fecha de Aprobación", this.form.approvalDate]
+                    ];
+
+                    let csvContent = "\uFEFF"; 
+                    data.forEach(row => {
+                        let escapedRow = row.map(item => {
+                            let cell = (item === null || item === undefined) ? '' : String(item);
+                            cell = cell.replace(/"/g, '""');
+                            return `"${cell}"`;
+                        });
+                        csvContent += escapedRow.join(";") + "\r\n";
+                    });
+
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement("a");
+                    document.body.appendChild(link);
+                    link.setAttribute("href", url);
+                    
+                    const name = this.form.entityName ? this.form.entityName.replace(/\s+/g, '_') : 'ESAL';
+                    link.setAttribute("download", `${name}_Parametros_Etica.csv`);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
