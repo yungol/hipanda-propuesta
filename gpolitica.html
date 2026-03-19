@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -85,15 +85,18 @@
                     <h2 class="text-xl font-bold">Configuración PTEE</h2>
                     
                     <!-- Tabs -->
-                    <div class="flex mt-3 gap-1 grid grid-cols-3">
-                        <div @click="showPolitica = !showPolitica" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                    <div class="flex mt-3 gap-1 grid grid-cols-5">
+                        <div @click="showPolitica = true; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false;" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             1. Política
                         </div>
-                        <div @click="showProtocolos = !showProtocolos" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showProtocolos = true; showPolitica = false; showDiagnostico = false; showRiesgos = false; showControles = false;" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             2. Protocolos
                         </div>
-                        <div @click="showDiagnostico = !showDiagnostico" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDiagnostico = true; showPolitica = false; showProtocolos = false; showRiesgos = false; showControles = false;" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             3. Diagnóstico
+                        </div>
+                        <div @click="showRiesgos = true; riesgosTab = 'matriz'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showControles = false;" :class="[showRiesgos && riesgosTab !== 'controles' ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'col-span-2 py-1 text-xs sm:text-sm text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                            4. Riesgos y Controles
                         </div>
                     </div>
                     
@@ -590,6 +593,211 @@
                     </div>
                 </section>
             </div>
+
+            <!-- SIDEBAR: RIESGOS Y CONTROLES -->
+            <div class="p-6 flex flex-col gap-6 bg-gray-50" v-show="showRiesgos">
+                <p class="text-sm text-gray-600 mb-2">Aquí podrá configurar e ingresar su matriz de riesgos.</p>
+                
+                <section class="border border-gray-200 bg-white p-4 rounded shadow-sm">
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">Base de Riesgos (Esquema preliminar)</h3>
+                    <p class="text-xs text-gray-500 mb-3">Este espacio permitirá cargar y clasificar cada riesgo detectado en la matriz central.</p>
+                    
+                    <div class="mt-4 flex flex-col gap-2">
+                        <div class="relative">
+                            <select v-model="pendingRiskId" class="w-full border border-gray-300 p-2 rounded text-sm text-gray-700 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500 appearance-none pr-8" :disabled="!riskBank.length">
+                                <option value="" disabled>-- Seleccione un riesgo del banco --</option>
+                                <optgroup label="Corrupción">
+                                    <option v-for="br in riskBank.filter(r => r.riskType === 'Corrupción')" :key="br.id" :value="br.id">
+                                        [{{ br.id }}] {{ br.name }}
+                                    </option>
+                                </optgroup>
+                                <optgroup label="Soborno Transnacional">
+                                    <option v-for="br in riskBank.filter(r => r.riskType === 'Soborno Transnacional')" :key="br.id" :value="br.id">
+                                        [{{ br.id }}] {{ br.name }}
+                                    </option>
+                                </optgroup>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                        
+                        <div v-if="pendingRiskId" class="bg-blue-50 p-3 rounded border border-blue-100 text-xs text-blue-900 shadow-inner mt-1 mb-1">
+                            <span class="font-bold block mb-1">Detalle del Riesgo a Agregar:</span>
+                            <span class="block"><b>Proceso:</b> {{ riskBank.find(r => r.id === pendingRiskId)?.process }}</span>
+                            <span class="block mt-1"><b>Factor:</b> {{ riskBank.find(r => r.id === pendingRiskId)?.factor }}</span>
+                        </div>
+
+                        <button class="w-full bg-blue-800 hover:bg-blue-700 text-white p-2 rounded text-sm font-bold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="addRiskFromBank"
+                                :disabled="!pendingRiskId">
+                            + Agregar Riesgo a la Matriz
+                        </button>
+
+                        <button class="w-full bg-green-600 hover:bg-green-500 text-white p-2 mt-1 rounded text-sm font-bold transition-colors shadow-sm"
+                                @click="addNewCustomRisk">
+                            + Crear Nuevo Riesgo Manual
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 border-t border-gray-200 pt-4" v-if="selectedRisk">
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <div class="flex-grow">
+                                <span class="text-[0.65rem] font-bold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded mb-1 inline-block">{{ selectedRisk.id }}</span>
+                                <textarea v-model="selectedRisk.name" @change="saveDraft" class="w-full text-sm font-bold text-blue-900 bg-white border border-gray-300 rounded p-1 focus:ring-blue-500 focus:border-blue-500 shadow-sm" rows="2" placeholder="Describa el evento de riesgo..."></textarea>
+                            </div>
+                            <button @click="selectedRisk = null" class="text-gray-500 hover:text-red-500 font-bold ml-1 shrink-0" title="Cerrar detalle">&times;</button>
+                        </div>
+                        <div class="bg-white p-3 rounded shadow-sm border border-gray-100 text-xs">
+                            <div class="mb-3">
+                                <select v-model="selectedRisk.riskType" @change="saveDraft" class="bg-blue-50 text-blue-800 font-semibold border border-blue-200 rounded px-2 py-1 text-xs shadow-sm focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
+                                    <option value="Corrupción">Corrupción</option>
+                                    <option value="Soborno Transnacional">Soborno Transnacional</option>
+                                    <option value="Fraude">Fraude / Otros</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 flex flex-col gap-1">
+                                <strong>Macroproceso asociado:</strong>
+                                <select v-model="selectedRisk.process" @change="saveDraft" class="border border-gray-300 rounded p-1 text-xs w-full bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm cursor-pointer">
+                                    <option v-if="!activeMacroprocesses.includes(selectedRisk.process)" :value="selectedRisk.process">{{ selectedRisk.process }} (No activo)</option>
+                                    <option v-for="proc in activeMacroprocesses" :key="proc" :value="proc">{{ proc }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 flex flex-col gap-1">
+                                <strong>Factor de Riesgo:</strong>
+                                <textarea v-model="selectedRisk.factor" @change="saveDraft" class="border border-gray-300 rounded p-1 text-xs w-full bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm" rows="1" placeholder="Ej. Procesos manuales, falta de supervisión..."></textarea>
+                            </div>
+                            <div class="mb-3 flex flex-col gap-1">
+                                <strong>Causa / Modalidad:</strong>
+                                <textarea v-model="selectedRisk.causa" @change="saveDraft" class="border border-gray-300 rounded p-1 text-xs w-full bg-white focus:ring-blue-500 focus:border-blue-500 shadow-sm" rows="2" placeholder="¿Cómo podría materializarse el riesgo?"></textarea>
+                            </div>
+                            
+                            <h5 class="font-bold text-xs border-b border-gray-200 pb-1 mb-2 mt-4 text-gray-700 uppercase tracking-wide">Calificación Inherente</h5>
+                            <div class="flex items-center gap-2 mb-4 justify-between bg-gray-50 p-2 rounded border border-gray-200">
+                                <div class="text-center w-full">
+                                    <span class="block text-[0.65rem] text-gray-500 font-bold mb-1 uppercase">Prob</span>
+                                    <select v-model.number="selectedRisk.prob" @change="updateRiskSeverity(selectedRisk)" class="border border-gray-300 rounded p-1 text-xs bg-white font-bold w-full text-center focus:ring-blue-500 focus:border-blue-500 shadow-sm cursor-pointer">
+                                        <option :value="1">1 - Rara vez</option>
+                                        <option :value="2">2 - Poco probable</option>
+                                        <option :value="3">3 - Posible</option>
+                                        <option :value="4">4 - Probable</option>
+                                        <option :value="5">5 - Casi seguro</option>
+                                    </select>
+                                </div>
+                                <div class="text-center w-full">
+                                    <span class="block text-[0.65rem] text-gray-500 font-bold mb-1 uppercase">Imp</span>
+                                    <select v-model.number="selectedRisk.imp" @change="updateRiskSeverity(selectedRisk)" class="border border-gray-300 rounded p-1 text-xs bg-white font-bold w-full text-center focus:ring-blue-500 focus:border-blue-500 shadow-sm cursor-pointer">
+                                        <option :value="1">1 - Insignificante</option>
+                                        <option :value="3">3 - Menor</option>
+                                        <option :value="5">5 - Moderado</option>
+                                        <option :value="10">10 - Mayor</option>
+                                        <option :value="20">20 - Catastrófico</option>
+                                    </select>
+                                </div>
+                                <div class="text-center border-l border-gray-300 pl-2 w-full pt-1 flex flex-col justify-center items-center">
+                                    <span class="block text-[0.65rem] text-gray-500 font-bold mb-1 uppercase">Sev</span>
+                                    <span class="px-2 py-1 rounded text-[0.65rem] font-bold w-full inline-block text-center flex-1 shadow-sm" :class="getSeverityClass(selectedRisk.sev).replace('h-16', '').replace('sm:h-20', '')">
+                                        {{ selectedRisk.sev }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <h5 class="font-bold text-xs border-b border-gray-200 pb-1 mb-2 mt-4 text-purple-800 uppercase tracking-wide">Calificación Residual (Post-Control / Tratamiento)</h5>
+                            <div class="flex items-center gap-2 mb-4 justify-between bg-purple-50 p-2 rounded border border-purple-200">
+                                <div class="text-center w-full">
+                                    <span class="block text-[0.65rem] text-purple-600 font-bold mb-1 uppercase">Prob</span>
+                                    <span :title="getProbLabel(getResidualRisk(selectedRisk).prob)" class="block border border-purple-300 rounded p-1 text-xs bg-white font-bold w-full text-center text-gray-700 shadow-sm whitespace-nowrap overflow-hidden text-ellipsis cursor-help">
+                                        {{ getResidualRisk(selectedRisk).prob }} - {{ getProbLabel(getResidualRisk(selectedRisk).prob) }}
+                                    </span>
+                                </div>
+                                <div class="text-center w-full">
+                                    <span class="block text-[0.65rem] text-purple-600 font-bold mb-1 uppercase">Imp</span>
+                                    <span :title="getImpLabel(getResidualRisk(selectedRisk).imp)" class="block border border-purple-300 rounded p-1 text-xs bg-white font-bold w-full text-center text-gray-700 shadow-sm whitespace-nowrap overflow-hidden text-ellipsis cursor-help">
+                                        {{ getResidualRisk(selectedRisk).imp }} - {{ getImpLabel(getResidualRisk(selectedRisk).imp) }}
+                                    </span>
+                                </div>
+                                <div class="text-center border-l border-purple-300 pl-2 w-full pt-1 flex flex-col justify-center items-center">
+                                    <span class="block text-[0.65rem] text-purple-600 font-bold mb-1 uppercase">Sev Residual</span>
+                                    <span class="px-2 py-1 rounded text-[0.65rem] font-bold w-full inline-block text-center flex-1 shadow-sm" :class="getSeverityClass(getResidualRisk(selectedRisk).sev).replace('h-16', '').replace('sm:h-20', '')">
+                                        {{ getResidualRisk(selectedRisk).sev }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <h5 class="font-bold text-xs border-b border-gray-200 pb-1 mb-2 mt-4 text-gray-700 uppercase tracking-wide">Tratamiento / Respuesta</h5>
+                            <div class="mb-4 bg-gray-50 p-2 rounded border border-gray-200">
+                                <span class="block text-[0.65rem] text-gray-500 font-bold mb-1 uppercase">Opción de Manejo</span>
+                                <select v-model="selectedRisk.treatment" @change="handleTreatmentChange(selectedRisk)" class="border border-gray-300 rounded p-1.5 text-xs bg-white font-bold w-full focus:ring-blue-500 focus:border-blue-500 shadow-sm cursor-pointer mb-2 text-blue-900">
+                                    <option value="Reducir">Reducir (Mitigar/Controlar)</option>
+                                    <option value="Transferir">Transferir (Asegurar/Tercerizar)</option>
+                                    <option value="Aceptar">Aceptar (Asumir)</option>
+                                    <option value="Evitar">Evitar (Terminar actividad)</option>
+                                </select>
+                                <div class="text-[0.65rem] text-gray-600 bg-white p-1.5 rounded border border-gray-100 shadow-sm">
+                                    <strong class="text-gray-800">Plan:</strong> 
+                                    <span v-if="selectedRisk.treatment === 'Reducir'">Diseñar e implementar controles para mitigar probabilidad e impacto.</span>
+                                    <span v-if="selectedRisk.treatment === 'Transferir'">Adquirir pólizas de seguro, fianzas o trasladar el riesgo en negociación a un tercero.</span>
+                                    <span v-if="selectedRisk.treatment === 'Aceptar'">Reconocer el riesgo y no tomar medidas adicionales a las actuales (Monitoreo pasivo).</span>
+                                    <span v-if="selectedRisk.treatment === 'Evitar'">Cesación inmediata de la actividad, proyecto o alianza que genera este riesgo.</span>
+                                </div>
+                            </div>
+
+                            <!-- Controls Section (Only shown if Reducir or occasionally others, but user says "cuando se seleccione reducir, lleve a la definición y caracterización de los controles") -->
+                            <div v-show="selectedRisk.treatment === 'Reducir'">
+                                <!-- Controles Recomendados -->
+                                <div v-if="selectedRisk.suggestedControls && selectedRisk.suggestedControls.length > 0" class="mb-4">
+                                    <h5 class="font-bold text-[0.65rem] border-b border-blue-200 pb-1 mb-2 mt-4 text-blue-800 uppercase tracking-wide flex justify-between items-center">
+                                        <span>✨ Controles Recomendados</span>
+                                        <span class="text-blue-400 font-normal normal-case tracking-normal" style="font-size:0.6rem">Asumen mejor diseño · Residual recalculado</span>
+                                    </h5>
+                                    <div class="flex flex-col gap-2">
+                                        <div v-for="(sugg, sIdx) in selectedRisk.suggestedControls" :key="'sugg-'+sIdx" class="bg-blue-50 border border-blue-200 rounded p-2 text-xs flex flex-col gap-2 shadow-sm">
+                                            <div class="flex justify-between items-start gap-1">
+                                                <div class="font-bold text-blue-900" v-if="sugg.name">{{ sugg.name }}</div>
+                                                <span v-if="sugg.type" class="shrink-0 text-[0.55rem] bg-blue-200 text-blue-800 font-bold px-1.5 py-0.5 rounded">{{ sugg.type }}</span>
+                                            </div>
+                                            <div class="text-gray-700 italic border-t border-blue-100 pt-1">{{ sugg.description || sugg }}</div>
+                                            <div class="flex gap-2 justify-end">
+                                                <button @click="rejectSuggestedControl(sIdx)" class="bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 px-2 py-1 rounded text-[0.6rem] font-bold shadow-sm transition-colors">Descartar</button>
+                                                <button @click="acceptSuggestedControl(sugg, sIdx)" class="bg-green-600 hover:bg-green-500 text-white px-2 py-1 rounded text-[0.65rem] font-bold shadow-sm" title="Habilitar este control">+ Habilitar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h5 class="font-bold text-xs border-b border-gray-200 pb-1 mb-2 mt-4 text-green-800 uppercase tracking-wide flex justify-between items-center">
+                                    Controles Asociados
+                                    <button @click="addControl" class="bg-green-600 hover:bg-green-500 text-white px-2 py-0.5 rounded text-[0.6rem] font-bold">+</button>
+                                </h5>
+                                <div class="flex flex-col gap-2">
+                                    <div v-for="(ctrl, index) in selectedRisk.controls" :key="index" class="relative group">
+                                        <div class="flex flex-col mb-1 border border-green-200 rounded p-2 bg-green-50 group">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-[0.65rem] font-bold text-green-800 bg-green-200 px-1.5 py-0.5 rounded">{{ ctrl.code || 'Nuevo' }}</span>
+                                                <button @click="gotoControlTabAndSelect(ctrl.id)" class="text-[0.6rem] bg-blue-100 hover:bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded shadow-sm font-bold flex items-center gap-1 transition-colors">
+                                                    <span>⚙️</span> Editar Control 
+                                                </button>
+                                            </div>
+                                            <textarea v-model="ctrl.name" @change="saveDraft" class="w-full text-green-900 bg-white p-1.5 rounded border border-green-300 font-medium text-xs focus:ring-green-500 focus:border-green-500" rows="2" placeholder="Describa la actividad de control..."></textarea>
+                                        </div>
+                                        <button @click="removeControl(index)" class="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar control">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                    <div v-if="!selectedRisk.controls || selectedRisk.controls.length === 0" class="text-gray-500 italic p-2 border border-dashed rounded text-center">
+                                        Sin controles. Haga clic en "+" para agregar.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Feedback for other treatments -->
+                            <div v-show="selectedRisk.treatment !== 'Reducir'" class="mt-4 p-3 bg-gray-100 border border-gray-300 rounded text-center text-xs text-gray-600">
+                                <i>El tratamiento seleccionado (<strong>{{ selectedRisk.treatment }}</strong>) no requiere el diseño ni caracterización de controles operativos detallados en la matriz. Las acciones se ejecutarán a nivel directivo.</i>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
         </aside>
 
         <!-- DOCUMENTO EN VIVO -->
@@ -918,10 +1126,831 @@
                 </div>
             </div>
 
-            <div id="exportable-document" v-show="showPolitica || showProtocolos" class="word-doc relative bg-white mx-auto shadow-2xl p-4 md:p-10 max-w-[21cm] min-h-[29.7cm]">
+            <!-- PANEL DE GESTIÓN DE RIESGOS -->
+            <div id="riesgos-view" v-show="showRiesgos" class="bg-gray-50 mx-auto shadow-2xl p-4 md:p-8 max-w-[29.7cm] mb-8 rounded">
+                <h1 class="text-xl md:text-2xl font-bold uppercase text-center border-b-2 border-blue-900 pb-2 mb-6 text-blue-900">Mapa de Calor y Gestión de Riesgos</h1>
                 
-                <div v-show="showPolitica">
-                    <h1 class="text-lg md:text-xl font-bold uppercase text-center border-b-2 border-black pb-2 mb-6">Política de cumplimiento del Programa de Transparencia y Ética Empresarial (PTEE)</h1>
+                <!-- Sub Pestañas Riesgos -->
+                <div class="flex justify-between items-end mb-6 border-b border-gray-300">
+                    <div class="flex gap-2">
+                        <button @click="riesgosTab = 'gestion'" :class="riesgosTab === 'gestion' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">Flujograma</button>
+                        <button @click="riesgosTab = 'cadena'" :class="riesgosTab === 'cadena' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none">Cadena de valor</button>
+                        <button @click="riesgosTab = 'matriz'" :class="riesgosTab === 'matriz' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none">Matriz de riesgos</button>
+                        <button @click="riesgosTab = 'controles'" :class="riesgosTab === 'controles' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">Controles</button>
+                    </div>
+                    
+                    <button onclick="window.print()" class="mb-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-1.5 rounded shadow text-sm font-bold flex items-center gap-2 transition-all no-print relative bottom-1">
+                        <span class="text-base">🖨️</span> Imprimir
+                    </button>
+                </div>
+
+                <!-- TAB 0: Cadena de Valor -->
+                <div v-show="riesgosTab === 'cadena'" class="mb-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h2 class="text-xl font-bold text-blue-900 mb-2 border-b border-gray-300 pb-2">Cadena de Valor Institucional (Macroprocesos)</h2>
+                        <p class="text-sm text-gray-700 mb-6 text-justify">
+                            La cadena de valor permite visualizar e identificar de manera gráfica los procesos estructurales de la entidad. Seleccione todos aquellos macroprocesos aplicables a su ESAL que pueden generar exposición al riesgo de C/ST, puede editar su nombre o agregar elementos no considerados.
+                        </p>
+
+                        <!-- Diagrama Gráfico (Moderno) -->
+                        <div class="flex flex-col gap-6 bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-inner overflow-x-auto">
+                            
+                            <!-- Procesos Estratégicos -->
+                            <div class="flex flex-col md:flex-row relative">
+                                <div class="w-full md:w-32 bg-indigo-800 text-white rounded-t-lg md:rounded-r-none md:rounded-l-lg shadow-sm flex items-center justify-center p-3 font-bold z-10 shrink-0">
+                                    <span class="md:-rotate-90 md:whitespace-nowrap tracking-wider text-sm uppercase">Estratégicos</span>
+                                </div>
+                                <div class="flex-1 border-2 border-indigo-200 bg-indigo-50 rounded-b-lg md:rounded-l-none md:rounded-r-lg p-4 flex flex-wrap gap-3 relative min-h-[100px]">
+                                    <div v-for="(proc, index) in valueChain.strategic" :key="proc.id" 
+                                         class="relative group bg-white shadow-sm p-3 rounded-lg border-l-4 min-w-[200px] flex-grow flex flex-col justify-between transition-all"
+                                         :class="proc.active ? 'border-indigo-600 ring-1 ring-indigo-100' : 'border-gray-300 opacity-60'">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" v-model="proc.active" class="form-checkbox text-indigo-600 rounded cursor-pointer">
+                                                <span class="ml-2 text-xs font-bold" :class="proc.active ? 'text-indigo-800' : 'text-gray-500'">Aplica</span>
+                                            </label>
+                                            <button @click="valueChain.strategic.splice(index, 1)" class="text-red-400 hover:text-red-600 text-xs hidden group-hover:block transition-colors" title="Eliminar">🗑️</button>
+                                        </div>
+                                        <input v-model="proc.name" :disabled="!proc.active" class="w-full text-sm font-semibold bg-transparent border-b border-dashed border-gray-300 focus:border-indigo-500 focus:outline-none" :class="proc.active ? 'text-gray-800': 'text-gray-400'" placeholder="Nombre del proceso">
+                                    </div>
+                                    <button @click="addProcess('strategic')" class="min-w-[150px] border-2 border-dashed border-indigo-300 text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg p-2 text-xs font-bold flex flex-col items-center justify-center transition-colors">
+                                        <span class="text-lg mb-1">+</span> Añadir Estratégico
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Procesos Misionales -->
+                            <div class="flex flex-col md:flex-row relative">
+                                <div class="w-full md:w-32 bg-emerald-700 text-white rounded-t-lg md:rounded-r-none md:rounded-l-lg shadow-sm flex items-center justify-center p-3 font-bold z-10 shrink-0">
+                                    <span class="md:-rotate-90 md:whitespace-nowrap tracking-wider text-sm uppercase">Misionales</span>
+                                </div>
+                                <div class="flex-1 border-2 border-emerald-200 bg-emerald-50 rounded-b-lg md:rounded-l-none md:rounded-r-lg p-4 flex flex-wrap gap-3 relative min-h-[100px] items-center">
+                                    <!-- Flecha decorativa de fondo -->
+                                    <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center overflow-hidden">
+                                        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full text-emerald-900 fill-current ml-20"><polygon points="0,20 80,20 100,50 80,80 0,80 20,50"/></svg>
+                                    </div>
+                                    
+                                    <div v-for="(proc, index) in valueChain.primary" :key="proc.id" 
+                                         class="relative group bg-white shadow-md p-4 rounded-lg flex-grow flex flex-col justify-between transition-all min-w-[220px] z-10"
+                                         :class="proc.active ? 'border-b-4 border-emerald-600' : 'border-b-4 border-gray-300 opacity-60'">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" v-model="proc.active" class="form-checkbox text-emerald-600 rounded cursor-pointer">
+                                                <span class="ml-2 text-xs font-bold" :class="proc.active ? 'text-emerald-800' : 'text-gray-500'">Aplica</span>
+                                            </label>
+                                            <button @click="valueChain.primary.splice(index, 1)" class="text-red-400 hover:text-red-600 text-xs hidden group-hover:block transition-colors" title="Eliminar">🗑️</button>
+                                        </div>
+                                        <input v-model="proc.name" :disabled="!proc.active" class="w-full text-[15px] font-bold bg-transparent border-b border-dashed border-gray-300 focus:border-emerald-500 focus:outline-none" :class="proc.active ? 'text-gray-900': 'text-gray-500'" placeholder="Nombre del proceso">
+                                    </div>
+                                    <button @click="addProcess('primary')" class="min-w-[150px] z-10 border-2 border-dashed border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 rounded-lg p-2 text-xs font-bold flex flex-col items-center justify-center transition-colors">
+                                        <span class="text-lg mb-1">+</span> Añadir Misional
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Procesos de Apoyo -->
+                            <div class="flex flex-col md:flex-row relative">
+                                <div class="w-full md:w-32 bg-orange-600 text-white rounded-t-lg md:rounded-r-none md:rounded-l-lg shadow-sm flex items-center justify-center p-3 font-bold z-10 shrink-0">
+                                    <span class="md:-rotate-90 md:whitespace-nowrap tracking-wider text-sm uppercase">Apoyo / Soporte</span>
+                                </div>
+                                <div class="flex-1 border-2 border-orange-200 bg-orange-50 rounded-b-lg md:rounded-l-none md:rounded-r-lg p-4 flex flex-wrap gap-3 relative min-h-[100px]">
+                                    <div v-for="(proc, index) in valueChain.support" :key="proc.id" 
+                                         class="relative group bg-white shadow-sm p-3 rounded-lg border-l-4 min-w-[200px] flex-grow flex flex-col justify-between transition-all"
+                                         :class="proc.active ? 'border-orange-500 ring-1 ring-orange-100' : 'border-gray-300 opacity-60'">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" v-model="proc.active" class="form-checkbox text-orange-500 rounded cursor-pointer">
+                                                <span class="ml-2 text-xs font-bold" :class="proc.active ? 'text-orange-800' : 'text-gray-500'">Aplica</span>
+                                            </label>
+                                            <button @click="valueChain.support.splice(index, 1)" class="text-red-400 hover:text-red-600 text-xs hidden group-hover:block transition-colors" title="Eliminar">🗑️</button>
+                                        </div>
+                                        <input v-model="proc.name" :disabled="!proc.active" class="w-full text-sm font-semibold bg-transparent border-b border-dashed border-gray-300 focus:border-orange-500 focus:outline-none" :class="proc.active ? 'text-gray-800': 'text-gray-400'" placeholder="Nombre del proceso">
+                                    </div>
+                                    <button @click="addProcess('support')" class="min-w-[150px] border-2 border-dashed border-orange-300 text-orange-600 hover:bg-orange-100 hover:text-orange-700 rounded-lg p-2 text-xs font-bold flex flex-col items-center justify-center transition-colors">
+                                        <span class="text-lg mb-1">+</span> Añadir Apoyo
+                                    </button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 1: Matriz -->
+                <div v-show="riesgosTab === 'matriz'">
+
+                    <!-- Descriptor Contextual -->
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4 rounded shadow-sm">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-1 mr-3 text-blue-500">
+                               <!-- Icono de información -->
+                               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-blue-900 mb-1">Contexto y Perfil de Riesgo Transnacional/Local</h4>
+                                <p class="text-xs text-blue-800 leading-relaxed" v-html="dynamicRiskDescriptor"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex justify-end mb-4">
+                        <button @click="suggestRisksFromContext" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-bold flex items-center gap-2 transition shadow-sm">
+                            <span>🤖</span> Valoración sugerida por Diagnóstico
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6 flex flex-col items-center">
+                    
+                    <!-- Filters UI -->
+                    <div class="w-full flex flex-col md:flex-row justify-between mb-6 items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div>
+                            <span class="font-bold text-sm text-gray-700 block mb-2">Filtrar por Tipología:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" v-model="activeRiskTypes" value="Corrupción" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Corrupción</span>
+                                </label>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" v-model="activeRiskTypes" value="Soborno Transnacional" class="form-checkbox h-4 w-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Soborno Transnacional</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <span class="font-bold text-sm text-gray-700 block mb-2 md:text-right">Niveles de Riesgo (<span class="font-normal text-xs text-gray-500">Clic para filtrar</span>):</span>
+                            <div class="flex flex-wrap gap-2 justify-end">
+                                <button v-for="level in ['Extremo', 'Alto', 'Moderado', 'Bajo']" :key="level"
+                                        @click="toggleSeverityFilter(level)"
+                                        :class="activeSeverities.includes(level) ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'"
+                                        class="px-3 py-1 text-xs rounded-full font-bold transition-colors shadow-sm focus:outline-none">
+                                    {{ level }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center items-center mb-4 gap-4">
+                        <h2 class="text-lg font-bold text-gray-700 m-0">Matriz de Probabilidad vs Impacto</h2>
+                        <div class="flex gap-3 text-xs justify-center items-center bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-black bg-opacity-70"></div> Inherente</span>
+                            <span class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-white border border-dashed border-gray-500"></div> Residual</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid relative" style="grid-template-columns: 30px 100px repeat(5, minmax(80px, 1fr)); gap: 4px; max-width: 800px; margin: 0 auto; width: 100%;">
+                        <!-- Y Axis Title (Probabilidad) -->
+                        <div class="font-bold text-sm text-gray-800 bg-gray-200 rounded flex items-center justify-center" style="grid-row: 1 / span 5; grid-column: 1; writing-mode: vertical-rl; transform: rotate(180deg);">Probabilidad</div>
+
+                        <!-- Rows for Probabilidad (5 down to 1) -->
+                        <template v-for="probReverse in 5" :key="probReverse">
+                            
+                            <div class="flex items-center justify-end pr-2 font-medium text-xs text-gray-600 text-right bg-white rounded" style="grid-column: 2;">
+                                <span v-if="6-probReverse === 5">Casi seguro</span>
+                                <span v-if="6-probReverse === 4">Probable</span>
+                                <span v-if="6-probReverse === 3">Posible</span>
+                                <span v-if="6-probReverse === 2">Poco probable</span>
+                                <span v-if="6-probReverse === 1">Rara vez</span>
+                            </div>
+                            
+                            <!-- Cells -->
+                            <template v-for="imp in 5" :key="imp">
+                                  <div class="w-full h-16 sm:h-20 flex flex-wrap-reverse content-start justify-end p-1 gap-1 rounded transition-colors"
+                                       :class="getSeverityClass(getImpactValue(imp) * (6 - probReverse))"
+                                       :title="`Impacto: ${getImpactValue(imp)}, Probabilidad: ${6 - probReverse}, Severidad: ${getImpactValue(imp) * (6 - probReverse)}`">
+                                    <!-- Badges para Riesgos Inherentes -->
+                                    <div v-for="item in getItemsInCell(6 - probReverse, getImpactValue(imp), 'risk')" :key="'inh-'+item.id"
+                                         class="w-5 h-5 rounded-full flex items-center justify-center text-[0.6rem] font-bold text-white cursor-pointer shadow transform transition-transform hover:scale-125 z-10 bg-black bg-opacity-70"
+                                         :style="selectedRisk && selectedRisk.id === item.id ? 'transform: scale(1.3); border: 2px solid white; z-index: 20;' : ''"
+                                         @click.stop="selectRisk(item)"
+                                         :title="item.name + ' (Inherente)'">
+                                        {{ item.id.replace('R','') }}
+                                    </div>
+
+                                    <!-- Badges para Riesgos Residuales -->
+                                    <div v-for="item in getResidualItemsInCell(6 - probReverse, getImpactValue(imp), 'risk')" :key="'res-'+item.id"
+                                         class="w-5 h-5 rounded-full flex items-center justify-center text-[0.6rem] font-bold text-gray-800 cursor-pointer shadow transform transition-transform hover:scale-125 z-10 bg-white border border-dashed border-gray-500 opacity-90"
+                                         :style="selectedRisk && selectedRisk.id === item.id ? 'transform: scale(1.3); border: 2px solid black; z-index: 20;' : ''"
+                                         @click.stop="selectRisk(item)"
+                                         :title="item.name + ' (Residual)'">
+                                        {{ item.id.replace('R','') }}
+                                    </div>
+                                    
+                                </div>
+                            </template>
+                        </template>
+
+                        <!-- X Axis Labels (Impacto) moved under the grid -->
+                        <div style="grid-column: 1 / span 2; grid-row: 6;"></div>
+                        <div class="flex items-start justify-center pt-2 font-medium text-xs text-gray-600 text-center" style="grid-row: 6;">Insignificante</div>
+                        <div class="flex items-start justify-center pt-2 font-medium text-xs text-gray-600 text-center" style="grid-row: 6;">Menor</div>
+                        <div class="flex items-start justify-center pt-2 font-medium text-xs text-gray-600 text-center" style="grid-row: 6;">Moderado</div>
+                        <div class="flex items-start justify-center pt-2 font-medium text-xs text-gray-600 text-center" style="grid-row: 6;">Mayor</div>
+                        <div class="flex items-start justify-center pt-2 font-medium text-xs text-gray-600 text-center" style="grid-row: 6;">Catastrófico</div>
+
+                        <!-- X Axis Title (Impacto) -->
+                        <div style="grid-column: 1 / span 2; grid-row: 7;"></div>
+                        <div class="font-bold text-sm text-gray-800 bg-gray-200 rounded flex items-center justify-center mt-2 p-1" style="grid-column: 3 / span 5; grid-row: 7;">Impacto</div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">Inventario Base de Riesgos ({{ filteredRisksTable.length }} visibles)</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-700 bg-white border border-gray-300">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 border-b">ID</th>
+                                    <th class="px-4 py-2 border-b">Tipo</th>
+                                    <th class="px-4 py-2 border-b w-1/4">Factor de Riesgo</th>
+                                    <th class="px-4 py-2 border-b w-1/4">Evento de Riesgo</th>
+                                    <th class="px-4 py-2 border-b">Macroproceso</th>
+                                    <th class="px-4 py-2 border-b text-center">Inherente</th>
+                                    <th class="px-4 py-2 border-b text-center">Residual</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr v-if="filteredRisksTable.length === 0">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">No hay riesgos que coincidan con los filtros actuales.</td>
+                                </tr>
+                                <tr v-for="risk in filteredRisksTable" :key="risk.id" class="hover:bg-gray-50 cursor-pointer transition-colors" @click="selectRisk(risk)" :class="{'bg-blue-100': selectedRisk && selectedRisk.id === risk.id}">
+                                    <td class="px-4 py-2 font-bold text-xs">{{ risk.id }}</td>
+                                    <td class="px-4 py-2 text-xs font-semibold text-gray-600">{{ risk.riskType }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-600"><em>{{ risk.factor }}</em></td>
+                                    <td class="px-4 py-2 font-medium text-gray-800">
+                                        {{ risk.name }}
+                                    </td>
+                                    <td class="px-4 py-2 text-xs">{{ risk.process }}</td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span class="px-2 py-1 rounded text-xs font-bold w-24 inline-block shadow-sm text-center" :class="getSeverityClass(risk.sev).replace('h-16', '').replace('sm:h-20', '')" title="Severidad Inherente">
+                                            {{ getSeverityLabel(risk.sev) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span class="px-2 py-1 rounded text-xs font-bold w-24 inline-block shadow-sm text-center border border-gray-400" :class="getSeverityClass(getResidualRisk(risk).sev).replace('h-16', '').replace('sm:h-20', '')" title="Severidad Residual (Post-Control)">
+                                            {{ getSeverityLabel(getResidualRisk(risk).sev) }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div> <!-- Cierra TAB 1 Matriz -->
+
+                <!-- TAB 2: Flujograma de Gestión de Riesgos C/ST -->
+                <div v-show="riesgosTab === 'gestion'" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <h2 class="text-xl font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">Procedimiento Base: Sistema de Gestión de Riesgos C/ST</h2>
+                    <p class="text-sm text-gray-700 mb-6 text-justify">
+                        El proceso de gestión de riesgos comprende diversos mecanismos de prevención, control, evaluación y mejoramiento continuo. Su enfoque principal es desarrollar lo definido en la Política de prevención frente a: <span class="font-semibold">identificar, medir, detectar, prevenir, gestionar y mitigar</span> los riesgos relacionados con la Corrupción y el Soborno Transnacional (C/ST).
+                    </p>
+
+                    <!-- Flujograma Interactivo -->
+                    <div class="flex flex-col md:flex-row gap-6 mb-8 mt-10">
+                        
+                        <!-- Columna Izquierda: Steps Visuales -->
+                        <div class="w-full md:w-5/12 flex flex-col gap-0 items-center print:hidden">
+                            
+                            <!-- Step 1: Identificación -->
+                            <div @click="activeProcessStep = 1" :class="activeProcessStep === 1 ? 'border-blue-600 bg-blue-50 transform scale-105 shadow-md' : 'border-gray-300 hover:border-blue-400 bg-white hover:bg-gray-50'" class="w-full max-w-xs border-2 rounded-lg p-4 cursor-pointer transition-all text-center relative z-10">
+                                <span class="block text-2xl mb-1">🔍</span>
+                                <h3 class="font-bold text-gray-800" :class="activeProcessStep === 1 ? 'text-blue-800' : ''">Paso 1. Identificación y análisis (contexto)</h3>
+                                <p class="text-xs text-gray-500 mt-1">Reconocer escenarios de riesgo C/ST</p>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <div class="h-8 border-l-2 border-dashed border-gray-400 w-1 pt-1 -my-1 z-0 relative"></div>
+                            
+<!-- Step 2: Apetito y Tolerancia -->
+                            <div @click="activeProcessStep = 2" :class="activeProcessStep === 2 ? 'border-teal-600 bg-teal-50 transform scale-105 shadow-md' : 'border-gray-300 hover:border-teal-400 bg-white hover:bg-gray-50'" class="w-full max-w-xs border-2 rounded-lg p-4 cursor-pointer transition-all text-center relative z-10">
+                                <span class="block text-2xl mb-1">⚖️</span>
+                                <h3 class="font-bold text-gray-800" :class="activeProcessStep === 2 ? 'text-teal-800' : ''">Paso 2. Apetito y Tolerancia</h3>
+                                <p class="text-xs text-gray-500 mt-1">Definir límites de exposición</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="h-8 border-l-2 border-dashed border-gray-400 w-1 pt-1 -my-1 z-0 relative"></div>
+
+                            <!-- Step 3: Medición y Evaluación -->
+                            <div @click="activeProcessStep = 3" :class="activeProcessStep === 3 ? 'border-purple-600 bg-purple-50 transform scale-105 shadow-md' : 'border-gray-300 hover:border-purple-400 bg-white hover:bg-gray-50'" class="w-full max-w-xs border-2 rounded-lg p-4 cursor-pointer transition-all text-center relative z-10">
+                                <span class="block text-2xl mb-1">📊</span>
+                                <h3 class="font-bold text-gray-800" :class="activeProcessStep === 3 ? 'text-purple-800' : ''">Paso 3. Medición / Valoración</h3>
+                                <p class="text-xs text-gray-500 mt-1">Calcular Probabilidad x Impacto</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="h-8 border-l-2 border-dashed border-gray-400 w-1 pt-1 -my-1 z-0 relative"></div>
+
+                            <!-- Step 4: Prevención y Control -->
+                            <div @click="activeProcessStep = 4" :class="activeProcessStep === 4 ? 'border-orange-600 bg-orange-50 transform scale-105 shadow-md' : 'border-gray-300 hover:border-orange-400 bg-white hover:bg-gray-50'" class="w-full max-w-xs border-2 rounded-lg p-4 cursor-pointer transition-all text-center relative z-10">
+                                <span class="block text-2xl mb-1">🛡️</span>
+                                <h3 class="font-bold text-gray-800" :class="activeProcessStep === 4 ? 'text-orange-800' : ''">Paso 4. Tratamiento y control</h3>
+                                <p class="text-xs text-gray-500 mt-1">Prevenir, detectar y gestionar</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="h-8 border-l-2 border-dashed border-gray-400 w-1 pt-1 -my-1 z-0 relative"></div>
+
+                            <!-- Step 5: Auditoría y Mejora -->
+                            <div @click="activeProcessStep = 5" :class="activeProcessStep === 5 ? 'border-green-600 bg-green-50 transform scale-105 shadow-md' : 'border-gray-300 hover:border-green-400 bg-white hover:bg-gray-50'" class="w-full max-w-xs border-2 rounded-lg p-4 cursor-pointer transition-all text-center relative z-10">
+                                <span class="block text-2xl mb-1">♻️</span>
+                                <h3 class="font-bold text-gray-800" :class="activeProcessStep === 5 ? 'text-green-800' : ''">Paso 5. Evaluación y Mejora</h3>
+                                <p class="text-xs text-gray-500 mt-1">Mejora continua del PTEE</p>
+                            </div>
+
+                        </div>
+
+                        <!-- Columna Derecha: Descriptores (Detalles del Paso) -->
+                        <div class="w-full md:w-7/12 flex items-stretch print:w-full print:flex-col print:gap-6">
+                            <div v-show="!activeProcessStep" class="border-2 border-dashed border-gray-300 rounded-lg p-8 w-full flex flex-col items-center justify-center text-gray-400 bg-gray-50 print:hidden">
+                                <span class="text-4xl mb-4 opacity-50">🖱️</span>
+                                <p class="text-center font-medium">Haga clic en cualquiera de las fases del diagrama <br> para ver sus actividades, escalas y descriptores principales.</p>
+                            </div>
+
+                            <!-- Detail: Identificacion -->
+                            <div v-show="activeProcessStep === 1" class="border-t-4 border-blue-600 bg-blue-50 rounded-lg shadow-sm p-6 w-full fade-in print:!block print:mb-0">
+                                <h3 class="text-xl font-bold text-blue-900 mb-3"><span class="text-2xl mr-2">🔍</span> 1. Identificación y análisis (contexto)</h3>
+                                <p class="text-sm text-gray-700 mb-4">Consiste en reconocer y describir los eventos potenciales donde la ESAL podría verse involucrada en actos de corrupción, soborno o soborno transnacional. Se define el riesgo en su contexto macroprocesal.</p>
+                                
+                                <h4 class="font-bold text-sm text-gray-800 mt-4 border-b border-gray-300 pb-1 mb-2">Definición de Riesgos C/ST:</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 mb-4">
+                                    <li><strong>Corrupción:</strong> Posibilidad de que, por acción u omisión se desvíen los propósitos de la administración pública, o se afecte el patrimonio público hacia un beneficio privado.</li>
+                                    <li><strong>Soborno:</strong> Acto de dar, ofrecer, prometer, solicitar o recibir cualquier dádiva, regalo o beneficio, a cambio de que se realice, omita o retarde un acto, a fin de obtener una ventaja competitiva ilegítima para sí mismo o para un tercero.</li>
+                                    <li><strong>Soborno Transnacional:</strong> Posibilidad de que una persona jurídica, directa o indirectamente dé, ofrezca o prometa a un servidor público extranjero sumas de dinero, objetos de valor pecuniario o cualquier beneficio o utilidad a cambio de que dicho servidor público realice, omita o retarde cualquier acto relacionado con sus funciones y en relación con un negocio o transacción internacional.</li>
+                                </ul>
+
+                                <h4 class="font-bold text-sm text-gray-800 mt-2 border-b border-gray-300 pb-1 mb-2">Estructura del Escenario de Riesgo:</h4>
+                                <div class="bg-white p-3 rounded border border-blue-200 shadow-sm text-sm mb-4">
+                                    <p class="text-xs text-gray-700 mb-2 italic">Cada escenario de riesgo se determinará bajo dos elementos centrales, asociados a los riesgos de Corrupción y/o Soborno Transnacional:</p>
+                                    <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                                        <li><strong>Factor de riesgo:</strong> Fuente, circunstancia o condición (interna o externa) que tiene el entorno propicio y/o la capacidad de generar un riesgo.</li>
+                                        <li><strong>Evento de riesgo:</strong> Es la acción específica que actúa como detonante. Es el "hecho" que activa el riesgo.</li>
+                                    </ul>
+                                </div>
+
+                                <h4 class="font-bold text-sm text-gray-800 mt-2 border-b border-gray-300 pb-1 mb-2">Actividades Clave:</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                                    <li><strong>Mapeo de la estrategia, contexto y cadena de valor institucional</strong>, y parametrización de factores de riesgo por macroprocesos (Estratégicos, Misionales o de Apoyo).</li>
+                                    <li>Mapeo de la interacción con el sector público (licitaciones, donaciones).</li>
+                                    <li>Estudio del contexto internacional (relacionamiento con donantes globales y agentes extranjeros).</li>
+                                    <li>Diagnóstico de vínculos con contrapartes privadas y terceros que obren a nombre de la entidad.</li>
+                                    <li>Identificación de presiones por tráfico de influencias institucionales.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Detail: Apetito y Tolerancia -->
+                            <div v-show="activeProcessStep === 2" class="border-t-4 border-teal-600 bg-teal-50 rounded-lg shadow-sm p-6 w-full fade-in print:!block print:mb-0">
+                                <h3 class="text-xl font-bold text-teal-900 mb-3"><span class="text-2xl mr-2">⚖️</span> 2. Apetito y Tolerancia al Riesgo</h3>
+                                <p class="text-sm text-gray-700 mb-4 text-justify">
+                                    El <strong>Apetito de Riesgo</strong> representa el nivel máximo de riesgo de C/ST que la entidad está dispuesta a asumir. 
+                                    La <strong>Tolerancia</strong> establece los niveles aceptables de desviación en la búsqueda de sus objetivos orgánicos.
+                                </p>
+
+                                <div class="bg-white p-4 rounded border border-teal-200 shadow-sm mb-4">
+                                    <h4 class="font-bold text-teal-800 border-b border-teal-100 pb-1 mb-2">Postura Institucional frente al C/ST</h4>
+                                    <p class="text-xs text-gray-700 mt-2 text-justify leading-relaxed">
+                                        Dada la gravedad normativa y reputacional de estos delitos, la Entidad declara desde la Alta Dirección una premisa absoluta de <strong>Tolerancia CERO (0)</strong> frente a la materialización de actos de Corrupción y Soborno Transnacional.<br><br>
+                                        Sin embargo, reconociendo que en la práctica operacional <strong>no es posible mitigar al 100% de manera inmediata</strong> todos los escenarios de riesgo inherentes, la Entidad adopta un enfoque basado en riesgos. Esto significa que la gestión y aplicación de controles se <strong>priorizará desde los escenarios de mayor a menor criticidad</strong>.<br><br>
+                                        El propósito táctico es movilizar temporal y progresivamente los riesgos hacia escenarios aceptables (aprobados por el apetito), e irlos <strong>madurando en el tiempo</strong> hasta alcanzar una capacidad de control robusta que blinde integralmente los factores, eventos y consecuencias organizacionales.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white p-4 rounded border border-teal-200 shadow-sm">
+                                    <h4 class="font-bold text-teal-800 border-b border-teal-100 pb-2 mb-3">Nivel de Aceptación (Apetito Paramétrico)</h4>
+                                    <p class="text-xs text-gray-700 mb-3">
+                                        Todos los controles de tratamiento (Paso 4) deberán diseñarse buscando reducir y llevar el riesgo inherente hasta alcanzar al menos este nivel paramétrico como zona de aceptación obligatoria.
+                                    </p>
+                                    <div class="flex items-center gap-3">
+                                        <select v-model="form.riskAppetite" class="w-full border border-teal-300 rounded p-2 text-sm bg-teal-50 focus:ring-teal-500 focus:border-teal-500 text-teal-900 font-bold">
+                                            <option value="Bajo">Nivel Bajo (Estricto - Recomendado)</option>
+                                            <option value="Moderado">Nivel Moderado (Flexible)</option>
+                                        </select>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500 mt-2 italic">*Exigencia: los riesgos residuales deben ubicarse preferiblemente en la zona "{{ form.riskAppetite || 'Bajo' }}" para ser validados como gestionados.</p>
+                                </div>
+                            </div>
+                            <div v-show="activeProcessStep === 3" class="border-t-4 border-purple-600 bg-purple-50 rounded-lg shadow-sm p-6 w-full fade-in print:!block print:mb-0">
+                                <h3 class="text-xl font-bold text-purple-900 mb-3"><span class="text-2xl mr-2">📊</span> 3. Medición / Valoración</h3>
+                                <p class="text-sm text-gray-700 mb-4">Se estima el Nivel de Riesgo Inherente combinando la Probabilidad (frecuencia) de ocurrencia del riesgo de C/ST con el Impacto (consecuencia) económico, legal y reputacional.</p>
+
+                                <div class="grid grid-cols-1 gap-6 mt-4">
+                                    <div class="bg-white p-3 rounded border border-purple-200 shadow-sm text-sm">
+                                        <h4 class="font-bold text-purple-800 border-b border-purple-100 pb-1 mb-2">Escalas de Probabilidad</h4>
+                                        <table class="w-full text-left border-collapse mt-2">
+                                            <thead>
+                                                <tr class="bg-purple-100 text-purple-900 border-b border-purple-200">
+                                                    <th class="p-1 font-bold">Escala</th>
+                                                    <th class="p-1 font-bold">Descripción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-gray-700 space-y-1">
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold">1. Rara vez</td><td class="p-1">Ocurre de manera excepcional (menos del 5%)</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold">2. Poco probable</td><td class="p-1">Ocurre de manera no habitual (5% a 30%)</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold">3. Posible</td><td class="p-1">Ocurre de manera ocasional (30% a 60%)</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold">4. Probable</td><td class="p-1">Ocurre con cierta regularidad (60% a 90%)</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="p-1 font-semibold">5. Casi seguro</td><td class="p-1">Ocurre la mayoría de las veces (más del 90%)</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="bg-white p-3 rounded border border-purple-200 shadow-sm text-sm">
+                                        <h4 class="font-bold text-purple-800 border-b border-purple-100 pb-1 mb-2">Escalas de Impacto</h4>
+                                        <table class="w-full text-left border-collapse mt-2 text-xs">
+                                            <thead>
+                                                <tr class="bg-purple-100 text-purple-900 border-b border-purple-200">
+                                                    <th class="p-1 font-bold">Escala</th>
+                                                    <th class="p-1 font-bold">Económico</th>
+                                                    <th class="p-1 font-bold">Reputacional</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-gray-700 space-y-1">
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold whitespace-nowrap">1. Insignificante</td>
+                                                    <td class="p-1 whitespace-nowrap">0% a 5%</td>
+                                                    <td class="p-1">Sin impacto notable. No se afecta percepción en general</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold whitespace-nowrap">2. Menor</td>
+                                                    <td class="p-1 whitespace-nowrap">&gt; 5% a 20%</td>
+                                                    <td class="p-1">Impacto limitado: reacciones menores, en grupos pequeños, efectos leves de percepción de imagen</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold whitespace-nowrap">3. Moderado</td>
+                                                    <td class="p-1 whitespace-nowrap">&gt; 20% a 50%</td>
+                                                    <td class="p-1">Daño notable a la imagen, desconfianza moderada, afecta percepción pública pero manejable</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-semibold whitespace-nowrap">4. Mayor</td>
+                                                    <td class="p-1 whitespace-nowrap">&gt; 50% a 80%</td>
+                                                    <td class="p-1">Grave afectación a la imagen, pérdida considerable de confianza, posible cobertura mediática negativa</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="p-1 font-semibold whitespace-nowrap">5. Catastrófico</td>
+                                                    <td class="p-1 whitespace-nowrap">&gt; 80% a 100%</td>
+                                                    <td class="p-1">Daño irreparable a la imagen, crisis difícil de manejar, demandas legales masivas. Puede generar quiebra o cierre</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <p class="text-xs text-gray-600 mt-2 italic leading-relaxed text-justify">
+                                            *Económico: % sobre el objeto de impacto. Estos objetos se determinan en función de los rubros económicos que hagan mayor sentido a la entidad, tales como: Activos, Ingresos, Donaciones, Excedentes, Presupuesto, etc.
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded border border-purple-200 shadow-sm text-sm">
+                                        <h4 class="font-bold text-purple-800 border-b border-purple-100 pb-1 mb-2">Nivel de Riesgo (Severidad)</h4>
+                                        <table class="w-full text-left border-collapse mt-2 text-xs">
+                                            <thead>
+                                                <tr class="bg-purple-100 text-purple-900 border-b border-purple-200">
+                                                    <th class="p-1 font-bold">Nivel</th>
+                                                    <th class="p-1 font-bold">Valor</th>
+                                                    <th class="p-1 font-bold">Descripción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-gray-700 space-y-1">
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-bold text-red-600"><span class="inline-block w-2 h-2 rounded-full bg-red-600 mr-1"></span>Extremo</td>
+                                                    <td class="p-1 whitespace-nowrap">&ge; 50 a &le; 100</td>
+                                                    <td class="p-1">Inaceptable. Acción inmediata y plan a nivel Junta Directiva.</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-bold text-orange-500"><span class="inline-block w-2 h-2 rounded-full bg-orange-500 mr-1"></span>Alto</td>
+                                                    <td class="p-1 whitespace-nowrap">&ge; 20 a &lt; 50</td>
+                                                    <td class="p-1">Requiere atención urgente y controles rigurosos.</td>
+                                                </tr>
+                                                <tr class="border-b border-gray-100">
+                                                    <td class="p-1 font-bold text-yellow-500"><span class="inline-block w-2 h-2 rounded-full bg-yellow-400 mr-1"></span>Moderado</td>
+                                                    <td class="p-1 whitespace-nowrap">&ge; 10 a &lt; 20</td>
+                                                    <td class="p-1">Tolerable con monitoreo periódico de controles.</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="p-1 font-bold text-green-600"><span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-1"></span>Bajo</td>
+                                                    <td class="p-1 whitespace-nowrap">&ge; 0 a &lt; 10</td>
+                                                    <td class="p-1">Aceptable. Mantener la operación bajo rutinas estándar.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-xs font-semibold text-center text-gray-600 bg-purple-100 p-2 rounded">
+                                    Nivel de Riesgo C/ST = Probabilidad (Frecuencia) × Impacto (Consecuencia)
+                                </div>
+                            </div>
+
+                            <!-- Detail: Control -->
+                            <div v-show="activeProcessStep === 4" class="border-t-4 border-orange-600 bg-orange-50 rounded-lg shadow-sm p-6 w-full fade-in print:!block print:mb-0">
+                                <h3 class="text-xl font-bold text-orange-900 mb-3"><span class="text-2xl mr-2">🛡️</span> 4. Tratamiento y control</h3>
+                                <p class="text-sm text-gray-700 mb-4">Es el diseño e implementación de las medidas tendientes a disminuir la probabilidad y/o mitigar el impacto para llevar los riesgos C/ST a un <em>Nivel de Riesgo Residual o Aceptable</em>, parametrizado mediante la asignación y caracterización exhaustiva de controles preventivos y mitigadores. Se evalúa sistemáticamente la fortaleza de los controles sobre el diseño de la cadena de valor.</p>
+
+                                <div class="bg-white p-4 rounded border border-orange-200 shadow-sm text-sm mb-4">
+                                    <h4 class="font-bold text-orange-800 border-b pb-1 mb-2">Actividades de control tácticas</h4>
+                                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                                        <li><strong>Prevenir:</strong> Evitar que ocurra el riesgo (Ej. controles de acceso, segregación de funciones, debida diligencia previa).</li>
+                                        <li><strong>Detectar:</strong> Identificar el riesgo una vez que ha ocurrido o está ocurriendo (Ej. conciliaciones, auditorías, canal de denuncias, monitoreo transaccional).</li>
+                                        <li><strong>Corregir:</strong> Mitigar las consecuencias de la materialización del riesgo (Ej. planes de contingencia, acciones disciplinarias).</li>
+                                    </ul>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 mb-4">
+                                    <div class="bg-white p-3 rounded border border-orange-200 shadow-sm text-sm">
+                                        <h4 class="font-bold text-orange-800 border-b border-orange-100 pb-1 mb-2">1. Cobertura del Control</h4>
+                                        <p class="text-xs text-gray-700 mb-2">Depende de su orientación hacia las causas o consecuencias del riesgo, pudiendo ser:</p>
+                                        <ul class="list-disc list-inside text-gray-700 text-xs space-y-1">
+                                            <li><strong>Alta en Probabilidad:</strong> Controles preventivos para causas raíz.</li>
+                                            <li><strong>Alta en Impacto:</strong> Controles detectivos/correctivos para fallas materializadas.</li>
+                                            <li><strong>Inexistente:</strong> Ninguna afectación real ante la manifestación del riesgo.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white p-3 rounded border border-orange-200 shadow-sm text-sm">
+                                        <h4 class="font-bold text-orange-800 border-b border-orange-100 pb-1 mb-2">2. Efectividad Cualitativa (Criterios)</h4>
+                                        <p class="text-xs text-gray-700 mb-2">Se valora matemáticamente promediando:</p>
+                                        <ul class="list-disc list-inside text-gray-700 text-xs space-y-1">
+                                            <li><strong>Eficiencia (EFC):</strong> indica si alcanza su objetivo satisfactoriamente frente al riesgo.</li>
+                                            <li><strong>Idoneidad del responsable y supervisión (IDO):</strong> indica si el responsable de su ejecución es competente (conocimiento, capacidad, habilidad) y objetivo (imparcial, sin sesgos), y alguien lo monitorea/supervisa.</li>
+                                            <li><strong>Formalización y evidencia (FRM):</strong> indica si el control está documentado (en políticas o procedimientos), comunicado, desplegado y adoptado por los responsables. Además, existe evidencia de que se ejecuta.</li>
+                                            <li><strong>Automatización (ATM):</strong> indica el nivel de apoyo en rutinas automatizadas para el control. Si el riesgo a cubrir lo requiere, a mayor automatización es mejor control.</li>
+                                            <li><strong>Frecuencia / periodicidad (FRQ):</strong> indica la frecuencia o periodicidad con la que se ejecuta el control. Ayuda a saber si es suficiente o en exceso para las necesidades del riesgo.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-4 rounded border-l-4 border-blue-600 mb-4 shadow-sm text-sm">
+                                    <h4 class="font-bold text-gray-800 border-b border-gray-200 pb-1 mb-2">Valoración Global Sistémica y Escalas de Fortaleza</h4>
+                                    <ul class="space-y-2 text-xs text-gray-700">
+                                        <li><span class="inline-block px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-bold border border-green-300 mr-2">Fuerte</span> (≥ 2.45) Controles optimizados en todo criterio. Modifican profundamente la estructura de riesgo.</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold border border-blue-300 mr-2">Moderado</span> (1.45 - 2.45) Controles ejecutados pero frecuentemente manuales o con fallas leves en formalización.</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 font-bold border border-yellow-300 mr-2">Débil</span> (< 1.45) Controles puramente documentales, reactivos o gravemente carentes de capacidad automatizada.</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-bold border border-red-300 mr-2">Inexistente</span> (0) Ausencia total de control formal o informal aplicable de manera trazable al macroproceso.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="bg-indigo-50 p-4 rounded border-l-4 border-indigo-600 mb-4 shadow-sm text-sm mt-4">
+                                    <h4 class="font-bold text-indigo-900 border-b border-indigo-200 pb-1 mb-2">Matriz de Reducción: Riesgo Inherente a Riesgo Residual</h4>
+                                    <p class="text-xs text-indigo-800 mb-2">Dependiendo del tratamiento elegido y la fortaleza del conjunto de controles (para el caso de Reducir), se aplica un desplazamiento en la matriz de calor para llegar al <strong>Riesgo Residual</strong>:</p>
+                                    <ul class="space-y-2 text-xs text-gray-800">
+                                        <li><span class="inline-block px-2 py-0.5 rounded bg-green-200 text-green-900 font-bold border border-green-400 mr-1 w-20 text-center">Fuerte</span> Disminuye 2 niveles el parámetro sobre el cual tiene cobertura (<strong>Probabilidad</strong> o <strong>Impacto</strong>).</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded bg-blue-200 text-blue-900 font-bold border border-blue-400 mr-1 w-20 text-center">Moderado</span> Disminuye 1 nivel el parámetro sobre el cual tiene cobertura (<strong>Probabilidad</strong> o <strong>Impacto</strong>).</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded bg-yellow-200 text-yellow-900 font-bold border border-yellow-400 mr-1 w-20 text-center">Débil</span> Solo disminuye 1 nivel si el control aplica al <strong>Impacto</strong>. No modifica la probabilidad.</li>
+                                        <li><span class="inline-block px-2 py-0.5 rounded bg-red-200 text-red-900 font-bold border border-red-400 mr-1 w-20 text-center">Inexistente</span> No genera reducción en la matriz operativa. Valor Inherente = Residual.</li>
+                                        <li class="mt-2 border-t border-indigo-200 pt-2 text-indigo-700 italic">Nota: Si el riesgo cuenta con varios controles, la reducción se aplica analizando la efectividad promedio de los controles orientados a la Probabilidad y, por separado, los orientados al Impacto. La opción de tratamiento "Transferir" reduce automáticamente 2 niveles de Impacto. La opción "Evitar" lleva el riesgo a 0 de forma inminente.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mt-4 p-3 border border-orange-300 bg-orange-100 rounded text-orange-900 text-sm shadow-sm">
+                                    <strong>Meta de Mitigación (Apetito de Riesgo):</strong> 
+                                    Los tratamientos y controles seleccionados deben tener la capacidad sistémica suficiente para desplazar todos los riesgos identificados 
+                                    hasta el nivel de aceptación parametrizado en la entidad: 
+                                    <span class="inline-block px-2 py-0.5 rounded font-bold text-white ml-1" :class="form.riskAppetite === 'Bajo' ? 'bg-green-600' : 'bg-yellow-500'">{{ form.riskAppetite || 'Bajo' }}</span>. 
+                                    Cualquier riesgo que tras la aplicación de controles supere dicho nivel, exigirá medidas correctivas o preventivas adicionales de manera obligatoria.
+                                </div>
+                            </div>
+
+                            <!-- Detail: Mejora -->
+                            <div v-show="activeProcessStep === 5" class="border-t-4 border-green-600 bg-green-50 rounded-lg shadow-sm p-6 w-full fade-in print:!block print:mb-0">
+                                <h3 class="text-xl font-bold text-green-900 mb-3"><span class="text-2xl mr-2">♻️</span> 5. Evaluación y Mejora</h3>
+                                <p class="text-sm text-gray-700 mb-4">Asegurar la sostenibilidad, adecuación y efectividad del sistema de gestión a través de la revisión del ambiente de control, del desempeño y resultados del Programa de Transparencia y Ética Empresarial y sus responsables, con un enfoque de mejoramiento continuo. Esto implica la definición de planes de acción preventivos y correctivos, con seguimiento riguroso para madurar y retroalimentar activamente el proceso.</p>
+
+                                <h4 class="font-bold text-sm text-gray-800 mt-4 border-b border-gray-300 pb-1 mb-2">Actividades Clave:</h4>
+                                <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                                    <li>Monitoreo de la eficacia de las medidas e indicadores C/ST del PTEE.</li>
+                                    <li>Auditorías independientes (opcionales y a demanda) del programa y su Sistema de Gestión de Riesgos.</li>
+                                    <li>Atención efectiva y planes de choque al recibir denuncias.</li>
+                                    <li>Ajuste a la matriz de riesgos ante cambios organizacionales, entrada de nuevos elementos del contexto de la entidad o cambios en la ley colombiana C/ST.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- Cierra TAB 2 Gestión -->
+
+                    <!-- TAB 3: Controles -->
+                    <div id="controles-view" v-show="riesgosTab === 'controles'" class="bg-gray-50 mx-auto p-4 md:p-8 mb-8 rounded shadow-none border border-gray-200">
+                        <h1 class="text-xl md:text-2xl font-bold uppercase text-center border-b-2 border-green-900 pb-2 mb-6 text-green-900">Caracterización y Efectividad de Controles</h1>
+
+                        <div class="mb-4 flex space-x-2">
+                            <button @click="controlsView = 'summary'; activeControl = null" :class="controlsView === 'summary' ? 'bg-green-700 text-white' : 'bg-white text-gray-700 border border-gray-300'" class="px-4 py-2 rounded font-bold text-sm shadow inline-flex items-center gap-2">
+                                <span>📋</span> Vista Resumen
+                            </button>
+                            <button @click="controlsView = 'detail'" :class="controlsView === 'detail' ? 'bg-green-700 text-white' : 'bg-white text-gray-700 border border-gray-300'" class="px-4 py-2 rounded font-bold text-sm shadow inline-flex items-center gap-2">
+                                <span>✏️</span> Matriz de Edición (Detalle)
+                            </button>
+                            <button @click="controlsView = 'bank'; activeControl = null" :class="controlsView === 'bank' ? 'bg-green-700 text-white' : 'bg-white text-gray-700 border border-gray-300'" class="px-4 py-2 rounded font-bold text-sm shadow inline-flex items-center gap-2">
+                                <span>🏦</span> Banco de Controles
+                            </button>
+                        </div>
+
+                        <!-- VISTA BANCO DE CONTROLES -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200" v-show="controlsView === 'bank'">
+                            <div class="flex justify-between items-center mb-4 border-b border-gray-300 pb-2">
+                                <div>
+                                    <h3 class="font-bold text-green-900 text-lg">Banco de Controles Globales y Sugeridos</h3>
+                                    <p class="text-sm text-gray-600 mb-1">Catálogo de controles típicos de C/ST. Puede visualizar qué riesgos cubren y vincularlos a su matriz.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <div v-for="bankCtrl in controlBank" :key="bankCtrl.id" 
+                                     class="border rounded p-4 shadow-sm hover:shadow transition-shadow"
+                                     :class="getBankCtrlAssociatedCount(bankCtrl) > 0 ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold text-green-800 text-sm truncate mr-2" :title="bankCtrl.name">{{ bankCtrl.name }}</h4>
+                                        <div class="flex flex-col items-end gap-1">
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-white border border-green-300 text-green-700 whitespace-nowrap">{{ bankCtrl.type }}</span>
+                                            <span v-if="getBankCtrlAssociatedCount(bankCtrl) > 0" class="text-[10px] font-bold px-2 py-0.5 rounded bg-green-600 text-white whitespace-nowrap">
+                                                ✓ Habilitado en {{ getBankCtrlAssociatedCount(bankCtrl) }} riesgo(s)
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-700 mb-3 text-justify">{{ bankCtrl.description }}</p>
+                                    
+                                    <div class="mt-2 pt-2 border-t border-green-200">
+                                        <p class="text-[10px] font-bold text-gray-600 uppercase mb-1">Riesgos cubiertos:</p>
+                                        <div class="flex flex-wrap gap-1">
+                                            <span v-for="rid in bankCtrl.relatedRisks" :key="rid" 
+                                                  class="text-[10px] px-1.5 py-0.5 rounded border cursor-help"
+                                                  :class="isRiskAssociated(rid, bankCtrl) ? 'bg-green-100 text-green-800 border-green-400 font-bold' : 'bg-white text-gray-800 border-gray-300'"
+                                                  :title="getRiskNameById(rid) + (isRiskAssociated(rid, bankCtrl) ? ' — Ya habilitado' : '')">
+                                                {{ rid }}{{ isRiskAssociated(rid, bankCtrl) ? ' ✓' : '' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-right">
+                                        <button @click="openLinkRiskModal(bankCtrl)" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold py-1 px-3 rounded shadow-sm">
+                                            🔗 Vincular a otro riesgo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODAL PARA VINCULAR CONTROL DESDE EL BANCO -->
+                        <div v-if="linkControlModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6 relative">
+                                <button @click="linkControlModalOpen = false" class="absolute top-3 right-4 text-gray-500 hover:text-gray-800 font-bold text-lg">&times;</button>
+                                <h3 class="font-bold text-blue-900 border-b pb-2 mb-3">Vincular control: {{ controlToLink.name }}</h3>
+                                <p class="text-xs text-gray-600 mb-4">{{ controlToLink.description }}</p>
+                                
+                                <label class="block text-sm font-bold mb-2">Seleccione el riesgo en su matriz al que desea agregar este control:</label>
+                                <select v-model="linkRiskId" class="w-full border border-gray-300 rounded p-2 text-sm bg-gray-50 focus:ring-blue-500 mb-4">
+                                    <option value="" disabled>-- Seleccione un riesgo --</option>
+                                    <option v-for="r in risks" :key="r.id" :value="r.id">[{{ r.id }}] {{ r.name }}</option>
+                                </select>
+                                
+                                <div class="flex justify-end gap-2">
+                                    <button @click="linkControlModalOpen = false" class="px-4 py-2 border rounded text-xs font-bold text-gray-600 hover:bg-gray-100">Cancelar</button>
+                                    <button @click="confirmLinkControl" :disabled="!linkRiskId" class="px-4 py-2 bg-blue-600 text-white rounded text-xs font-bold hover:bg-blue-700 disabled:opacity-50">Vincular Control</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VISTA RESUMEN -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200" v-show="controlsView === 'summary'">
+                            <div class="flex justify-between items-center mb-4 border-b border-gray-300 pb-2">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-1">Esta vista consolida todos los controles sugeridos. Use la "Vista Detallada" para modificarlos.</p>
+                                    <p class="text-xs"><strong>Valoración Global del Sistema de Control:</strong> 
+                                       <span class="px-2 py-1 rounded text-white font-bold ml-1 text-xs" 
+                                             :class="{'bg-green-600': getControlsGlobalRating() === 'Fuerte', 'bg-yellow-500': getControlsGlobalRating() === 'Moderado', 'bg-orange-500': getControlsGlobalRating() === 'Débil', 'bg-red-600': getControlsGlobalRating() === 'Inexistente'}">
+                                            {{ getControlsGlobalRating() }}
+                                       </span>
+                                    </p>
+                                </div>
+                                <span class="bg-green-100 text-green-900 font-bold px-3 py-1 rounded-full text-sm shadow-sm">{{ risks.reduce((acc, r) => acc + (r.controls ? r.controls.length : 0), 0) }} Controles</span>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm text-left text-gray-700 bg-white border border-gray-300">
+                                    <thead class="bg-green-50 border-b-2 border-green-200">
+                                        <tr>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold w-20 text-center">Código</th>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold w-1/4">Evento de Riesgo</th>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold w-1/4">Nombre del Control</th>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold">Responsable</th>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold text-center">Valoración Global</th>
+                                            <th class="px-4 py-3 border-b text-green-900 font-bold text-center">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr v-if="risks.length === 0">
+                                            <td colspan="6" class="px-4 py-8 text-center text-gray-500 italic">No hay riesgos ni controles configurados en este momento.</td>
+                                        </tr>
+                                        <template v-for="risk in risks" :key="'sum-'+risk.id">
+                                            <tr v-for="ctrl in risk.controls" :key="ctrl.id" class="hover:bg-green-50 transition-colors">
+                                                <td class="px-4 py-3 font-bold text-xs text-center border-r border-gray-100">
+                                                    <span class="bg-gray-200 px-2 py-1 rounded text-gray-700 shadow-sm">{{ ctrl.code }}</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-xs border-r border-gray-100">
+                                                    <span class="font-semibold text-gray-800">{{ risk.name }}</span>
+                                                </td>
+                                                <td class="px-4 py-3 font-medium border-r border-gray-100">
+                                                    {{ ctrl.name }}
+                                                </td>
+                                                <td class="px-4 py-3 text-xs border-r border-gray-100">
+                                                    {{ ctrl.responsible }}
+                                                </td>
+                                                <td class="px-4 py-3 text-center border-r border-gray-100 font-bold text-xs uppercase">
+                                                    <span :class="{'text-green-700': evaluateControl(ctrl) === 'Fuerte', 'text-yellow-600': evaluateControl(ctrl) === 'Moderado', 'text-orange-600': evaluateControl(ctrl) === 'Débil', 'text-red-600': evaluateControl(ctrl) === 'Inexistente'}">
+                                                        {{ evaluateControl(ctrl) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <button @click="controlsView = 'detail'; activeControl = ctrl" class="text-blue-600 hover:text-blue-800 font-bold text-xs underline">Detalle</button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- VISTA DETALLADA (Matriz de Edición) -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 overflow-x-auto" v-if="controlsView === 'detail'">
+                            <h3 class="font-bold text-green-900 mb-4 border-b border-gray-300 pb-2">Matriz de Edición Rápida de Atributos</h3>
+                            <p class="text-xs text-gray-600 mb-4">Ajuste directamente aquí las valoraciones de cada control. Los cambios se reflejarán instantáneamente en la efectividad global.</p>
+                            <table class="min-w-full text-xs text-left text-gray-700 bg-white border border-gray-300 whitespace-nowrap">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Riesgo / Control</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Cob. Prob / Imp</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Frecuencia</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Eficiencia</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Idoneidad</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Formalización</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold">Automatización</th>
+                                        <th class="px-2 py-2 border border-gray-300 font-bold bg-green-50 text-center">Valoración</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="risk in filteredRisksTable" :key="'mat-'+risk.id">
+                                        <tr class="bg-blue-50 border-t border-blue-200">
+                                            <td colspan="8" class="px-2 py-1 font-bold text-blue-900 truncate">
+                                                {{ risk.id }}: {{ risk.name.substring(0, 80) }}{{ risk.name.length > 80 ? '...' : '' }}
+                                            </td>
+                                        </tr>
+                                        <tr v-for="ctrl in risk.controls" :key="ctrl.id" class="hover:bg-gray-50 border-b border-gray-200">
+                                            <td class="px-2 py-1.5 border-r border-gray-200 max-w-[200px] truncate" :title="ctrl.name">
+                                                <span class="font-bold mr-1">{{ ctrl.code }}:</span>{{ ctrl.name }}
+                                            </td>
+                                            <td class="px-1 py-1.5 border-r border-gray-200">
+                                                <div class="flex gap-1">
+                                                    <select v-model="ctrl.covProb" class="w-1/2 p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white" title="Probabilidad">
+                                                        <option v-for="opt in ['Alta', 'Media', 'Baja', 'N/A']" :value="opt" :key="opt">{{ opt }}</option>
+                                                    </select>
+                                                    <select v-model="ctrl.covImp" class="w-1/2 p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white" title="Impacto">
+                                                        <option v-for="opt in ['Alta', 'Media', 'Baja', 'N/A']" :value="opt" :key="opt">{{ opt }}</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td class="px-2 py-1.5 border-r border-gray-200">
+                                                <select v-model="ctrl.frequency" class="w-full p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white">
+                                                    <option v-for="opt in ['Continuo', 'Diario', 'Semanal', 'Quincenal', 'Mensual', 'Bimestral', 'Trimestral', 'Semestral', 'Anual', 'A demanda']" :value="opt" :key="opt">{{ opt }}</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-2 py-1.5 border-r border-gray-200">
+                                                <select v-model="ctrl.efficiency" class="w-full p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white">
+                                                    <option v-for="opt in ['Optimizado', 'Definido', 'Reproducible', 'Inicial']" :value="opt" :key="opt">{{ opt }}</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-2 py-1.5 border-r border-gray-200">
+                                                <select v-model="ctrl.suitability" class="w-full p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white">
+                                                    <option v-for="opt in ['Optimizado', 'Definido', 'Reproducible', 'Inicial']" :value="opt" :key="opt">{{ opt }}</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-2 py-1.5 border-r border-gray-200">
+                                                <select v-model="ctrl.formalization" class="w-full p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white">
+                                                    <option v-for="opt in ['Optimizado', 'Definido', 'Reproducible', 'Inicial']" :value="opt" :key="opt">{{ opt }}</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-2 py-1.5 border-r border-gray-200">
+                                                <select v-model="ctrl.automation" class="w-full p-1 border border-gray-300 rounded text-xs focus:outline-none bg-white">
+                                                    <option v-for="opt in ['Automático', 'Combinado', 'Manual']" :value="opt" :key="opt">{{ opt }}</option>
+                                                </select>
+                                            </td>
+                                            <td class="px-2 py-1.5 bg-green-50 text-center border-l font-bold border-gray-200" 
+                                                :class="{'text-green-700': evaluateControl(ctrl) === 'Fuerte', 'text-yellow-600': evaluateControl(ctrl) === 'Moderado', 'text-orange-600': evaluateControl(ctrl) === 'Débil', 'text-red-600': evaluateControl(ctrl) === 'Inexistente'}">
+                                                {{ evaluateControl(ctrl) }}
+                                            </td>
+                                        </tr>
+                                        <tr v-if="!risk.controls || risk.controls.length === 0">
+                                            <td colspan="7" class="px-2 py-2 text-center text-gray-400 italic">Sin controles registrados.</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div> <!-- Cierra TAB 3 -->
+                </div>
+
+                <div id="exportable-document" v-show="showPolitica || showProtocolos" class="word-doc relative bg-white mx-auto shadow-2xl p-4 md:p-10 max-w-[21cm] min-h-[29.7cm] text-black">
+                    <div v-show="showPolitica">
+                        <h1 class="text-lg md:text-xl font-bold uppercase text-center border-b-2 border-black pb-2 mb-6">Política de cumplimiento del Programa de Transparencia y Ética Empresarial (PTEE)</h1>
 
                     <!-- 1. Contexto -->
                 <h2>1. Contexto de la entidad</h2>
@@ -1419,16 +2448,88 @@
         createApp({
             data() {
                 return {
+                    riesgosTab: 'gestion',
+                    controlsView: 'summary',
+                    activeControl: null,
+                    linkControlModalOpen: false,
+                    controlToLink: null,
+                    linkRiskId: '',
+                    activeProcessStep: null,
                     lastAutosaveTime: null,
                     showPolitica: true,
                     showProtocolos: false,
                     showDiagnostico: false,
+                    showRiesgos: false,
+                    showControles: false,
+                    valueChain: {
+                        strategic: [
+                            { id: 's1', name: 'Gobierno Corporativo', active: true },
+                            { id: 's2', name: 'Gestión estratégica y sostenibilidad', active: true },
+                            { id: 's3', name: 'Gestión de innovación y desarrollo', active: true },
+                            { id: 's4', name: 'Aseguramiento del negocio (Riesgos/Auditoría)', active: true }
+                        ],
+                        primary: [
+                            { id: 'p1', name: 'Gestión comercial / Recaudación', active: true },
+                            { id: 'p2', name: 'Gestión de operaciones (Proyectos/Programas)', active: true },
+                            { id: 'p3', name: 'Gestión logística', active: true }
+                        ],
+                        support: [
+                            { id: 'u1', name: 'Gestión de cultura y talento', active: true },
+                            { id: 'u2', name: 'Gestión financiera y contable', active: true },
+                            { id: 'u3', name: 'Gestión jurídica', active: true },
+                            { id: 'u4', name: 'Abastecimiento de bienes y/o servicios', active: true },
+                            { id: 'u5', name: 'Gestión de servicios administrativos', active: true },
+                            { id: 'u6', name: 'Gestión tecnológica y digital', active: true }
+                        ]
+                    },
+                    activeSeverities: ['Extremo', 'Alto', 'Moderado', 'Bajo'],
+                    activeRiskTypes: ['Corrupción', 'Soborno Transnacional'],
+                    selectedRisk: null,
+                    pendingRiskId: '',
+                    riskBank: [
+                        // Nuevos Riesgos Corrupción (basados en Violation of Trust/Fraud Risk)
+                        { id: 'C7', type: 'risk', riskType: 'Corrupción', name: 'Destinación de recursos propios a proselitismo político', defaultProb: 3, defaultImp: 10, process: 'Gestión financiera', factor: 'Ambiente de control débil y aportes políticos encubiertos', causa: 'Aprobación directa de fondos bajo el pretexto de gastos discrecionales o representación', controls: ['Revisión exhaustiva de donaciones y prohibición expresa', 'Auditoría a gastos de representación'] },
+                        { id: 'C8', type: 'risk', riskType: 'Corrupción', name: 'Contratación de familiares o vinculados a directivos (Nepotismo/Conflicto de interés)', defaultProb: 3, defaultImp: 20, process: 'Gobierno Corporativo', factor: 'Confianza excesiva en los miembros fundadores o alta dirección ("Tone at the top" relajado)', causa: 'Omisión deliberada en la declaración de conflictos de interés para adjudicar y desviar fondos', controls: ['Declaración anual y obligatoria de conflictos de interés', 'Matriz de aprobación independiente'] },
+                        { id: 'C9', type: 'risk', riskType: 'Corrupción', name: 'Colusión con proveedores para inflar precios (Kickbacks y facturación ficticia)', defaultProb: 3, defaultImp: 20, process: 'Abastecimiento de bienes y servicios', factor: 'Monopolio rutinario en la relación con proveedores "de confianza"', causa: 'Adjudicación reiterada sin análisis de mercado a cambio del cobro de comisiones clandestinas', controls: ['Rotación obligatoria de proveedores', 'Estudios de mercado e inteligencia de precios'] },
+                        { id: 'C10', type: 'risk', riskType: 'Corrupción', name: 'Aprobación de pagos espurios por ausencia de segregación de funciones', defaultProb: 4, defaultImp: 20, process: 'Gestión contable y financiera', factor: 'Limitaciones en el tamaño del staff administrativo (Multifuncionalidad extrema)', causa: 'Centralización de los roles de autorización, registro y ejecución del pago en una única persona', controls: ['Segregación estricta de funciones de nómina y pagos', 'Doble autorización bancaria'] },
+                        { id: 'C11', type: 'risk', riskType: 'Corrupción', name: 'Invisibilización de anomalías financieras por cultura de silencio o intimidación', defaultProb: 3, defaultImp: 20, process: 'Evaluación y Aseguramiento', factor: 'Ausencia de vías seguras y especializadas para levantar reportes', causa: 'Alta dirección desalienta u obstaculiza activamente la denuncia de presiones corruptas', controls: ['Línea de denuncias anónima gestionada por un tercero', 'Cultura estricta de no represalias (Whistleblower)'] },
+
+                        // Nuevos Riesgos de Soborno Transnacional (ST - adaptado sector solidario transfronterizo)
+                        { id: 'ST5', type: 'risk', riskType: 'Soborno Transnacional', name: 'Transferencias internacionales sin debida diligencia justificadas por "urgencia humanitaria"', defaultProb: 3, defaultImp: 20, process: 'Ejecución de proyectos', factor: 'Relajación excepcional de protocolos de control durante crisis o intervenciones rápidas', causa: 'Giro exprés de fondos para "facilitar" permisos aduaneros o logísticos con gobiernos extranjeros', controls: ['Protocolo acelerado pero auditable de Due Diligence', 'Aprobaciones de excepcción visadas por la Junta'] },
+                        { id: 'ST6', type: 'risk', riskType: 'Soborno Transnacional', name: 'Pagos a intermediarios aduaneros extranjeros soportados en "confianza interpersonal"', defaultProb: 4, defaultImp: 20, process: 'Logística internacional', factor: 'Uso de facilitadores informales o agentes logísticos no verificados en el exterior', causa: 'Instrucción verbal o informal para entregar viáticos que terminan en manos de servidores públicos foráneos', controls: ['Restricción de efectivo en frontera', 'Prohibición expresa de pagos de facilitación'] },
+                        { id: 'ST7', type: 'risk', riskType: 'Soborno Transnacional', name: 'Estructuras o vehículos jurídicos internacionales usados para encubrir la ruta del dinero', defaultProb: 3, defaultImp: 20, process: 'Gestión de alianzas y cooperación', factor: 'Opacidad o falta de rigurosidad al establecer convenios con ONG o agencias internacionales', causa: 'Recepción y redistribución "ciega" de recursos hacia funcionarios extranjeros bajo órdenes del donante', controls: ['Identificación del Beneficiario Final (UBO) en contrapartes', 'Auditorías de cumplimiento a fondos cooperativos'] }
+                    ],
+                    risks: [
+                        { id: 'C1', type: 'risk', riskType: 'Corrupción', name: 'Manipulación en la priorización de proyectos o alianzas', prob: 5, imp: 5, sev: 25, process: 'Gestión estratégica', factor: 'Influencia indebida de actores privados sobre decisiones estratégicas', causa: 'Lobbying no regulado u ofrecimiento encubierto de beneficios a miembros directivos', controls: ['Controles de trazabilidad en la gestión fiscal y administrativa'] },
+                        { id: 'ST1', type: 'risk', riskType: 'Soborno Transnacional', name: 'Influencia externa para direccionar decisiones hacia intereses extranjeros', prob: 5, imp: 5, sev: 25, process: 'Gestión estratégica', factor: 'Exposición a donantes o cooperantes internacionales sin políticas de transparencia', causa: 'Intercambio de dádivas o favores con funcionarios o agentes de gobiernos extranjeros', controls: ['Actividades de control y debida diligencia'] },
+                        { id: 'C2', type: 'risk', riskType: 'Corrupción', name: 'Captura del gobierno corporativo / abuso de poder', prob: 4, imp: 10, sev: 40, process: 'Gobierno Corporativo', factor: 'Participación de personas con conflictos de interés no declarados', causa: 'Omisión intencional en la declaración de intereses al asumir posiciones de decisión', controls: ['Comité de ética supervisado de forma independiente'] },
+                        { id: 'ST2', type: 'risk', riskType: 'Soborno Transnacional', name: 'Ofrecimientos de apoyo a cambio de decisiones favorables', prob: 5, imp: 20, sev: 100, process: 'Gestión de alianzas y cooperación', factor: 'Falta de rigurosidad en las políticas de aceptación de donaciones internacionales', causa: 'Aceptación de recursos condicionados a favorecimientos indebidos fuera del país', controls: ['Evaluación y debida diligencia ampliada para aportantes y donantes'] },
+                        { id: 'C3', type: 'risk', riskType: 'Corrupción', name: 'Celebración de contratos con proveedores vinculados a directivos', prob: 5, imp: 20, sev: 100, process: 'Abastecimiento de bienes y servicios', factor: 'Falta de segregación de funciones en procesos de compras', causa: 'Adjudicación directa o manipulación de pliegos para favorecer a un tercero específico', controls: ['Controles de autorización y asignación de recursos'] },
+                        { id: 'C4', type: 'risk', riskType: 'Corrupción', name: 'Facturación ficticia para justificar egresos indebidos', prob: 4, imp: 20, sev: 80, process: 'Gestión contable y financiera', factor: 'Cláusulas que permiten discrecionalidad o pagos adicionales ocultos', causa: 'Creación de empresas fachada o alteración documental de soportes de pago', controls: ['Auditorías cruzadas y control presupuestal'] },
+                        { id: 'ST3', type: 'risk', riskType: 'Soborno Transnacional', name: 'Canalización de pagos a través de consultores internacionales como fachada', prob: 3, imp: 10, sev: 30, process: 'Logística internacional / abastecimiento', factor: 'Estructuración de contratos que favorecen intereses particulares extranjeros', causa: 'Contratación de asesores foráneos sin entregables claros o precios inflados', controls: ['Evaluar riesgo país para proveedores internacionales'] },
+                        { id: 'ST4', type: 'risk', riskType: 'Soborno Transnacional', name: 'Uso de estructuras jurídicas internacionales para encubrir sobornos', prob: 3, imp: 10, sev: 30, process: 'Gestión legal', factor: 'Ausencia de control sobre el beneficiario final de estructuras legales complejas', causa: 'Creación rápida de vehículos societarios offshore para transferir recursos opacamente', controls: ['Monitorear transacciones relacionadas con reguladores extranjeros'] },
+                        { id: 'C5', type: 'risk', riskType: 'Corrupción', name: 'Pago de favores mediante nombramientos (Nepotismo)', prob: 2, imp: 5, sev: 10, process: 'Gestión del talento humano', factor: 'Inexistencia de perfiles de cargo objetivos o injerencia política externa', causa: 'Vinculación de personal no idóneo cediendo a presiones o padrinazgos indebidos', controls: ['Procesos de selección objetivos y basados en méritos'] },
+                        { id: 'C6', type: 'risk', riskType: 'Corrupción', name: 'Intermediación innecesaria y desvío de recursos misionales', prob: 3, imp: 5, sev: 15, process: 'Ejecución de proyectos / Operación', factor: 'Desconocimiento y falta de monitoreo de terceros subcontratistas ("Tercerización ciega")', causa: 'Delegación de la ejecución misional a operadores de papel o sin capacidad real', controls: ['Política estricta de Debida Diligencia para Terceros'] }
+                    ],
                     // CONFIGURACIÓN DE SEGURIDAD
                     // Puedes cambiar este número o palabra por la clave que desees
                     ACCESS_PIN: '7852',
                     isAuthenticated: false,
                     enteredPin: '',
                     pinError: false,
+
+                    controlBank: [
+                        { id: 'B-CTL-01', name: 'Debida Diligencia (Due Diligence) vinculante', description: 'Válidación en listas restrictivas y evaluación de antecedentes éticos y legales antes de formalizar cualquier contrato con terceros.', relatedRisks: ['C3', 'C6', 'ST1', 'ST2', 'ST3', 'ST5', 'C9'], type: 'Preventivo' },
+                        { id: 'B-CTL-02', name: 'Segregación Estricta de Funciones', description: 'Separar obligatoriamente las funciones de creación de proveedores, autorización de gastos, forma de pago y conciliación bancaria.', relatedRisks: ['C4', 'C10', 'ST3', 'ST6', 'C7'], type: 'Preventivo' },
+                        { id: 'B-CTL-03', name: 'Declaración Anual de Conflictos de Interés', description: 'Obligación para todos los niveles directivos y personal clave de declarar conflictos de interés y actualizar la información de forma periódica.', relatedRisks: ['C1', 'C2', 'C5', 'C8'], type: 'Preventivo' },
+                        { id: 'B-CTL-04', name: 'Auditoría Cruzada y Control Presupuestal', description: 'Revisión independiente y periódica del gasto ejecutado frente a los presupuestos aprobados, detectando facturas sin sustento o giros a proveedores sin contrato.', relatedRisks: ['C4', 'C7', 'C10', 'ST7', 'ST6'], type: 'Detectivo' },
+                        { id: 'B-CTL-05', name: 'Cláusulas Anticorrupción en Contratos y Convenios', description: 'Inclusión de cláusulas vinculantes en todo contrato (con terminación unilateral), obligando a las contrapartes a adherirse al PTEE y repudiar prácticas C/ST.', relatedRisks: ['C3', 'ST3', 'ST4', 'ST7', 'C6'], type: 'Prev/Correctivo' },
+                        { id: 'B-CTL-06', name: 'Línea Ética y Canal de Denuncias Anónimo', description: 'Canal seguro, confidencial y administrado preferiblemente por un tercero para reportar sospechas de fraude, corrupción, presiones indebidas o soborno.', relatedRisks: ['C11', 'C1', 'C2', 'ST1'], type: 'Detectivo' },
+                        { id: 'B-CTL-07', name: 'Identificación del Beneficiario Final (UBO)', description: 'Requisito obligatorio de identificar a las personas naturales que poseen o controlan las estructuras jurídicas donantes o contratistas internacionales.', relatedRisks: ['ST4', 'ST7', 'C4'], type: 'Preventivo' },
+                        { id: 'B-CTL-08', name: 'Procedimiento de Selección Basado en Méritos', description: 'Estandarización de las contrataciones laborales y nombramientos mediante convocatorias abiertas y evaluación por competencias, bloqueando la injerencia de recomendados.', relatedRisks: ['C5', 'C8'], type: 'Preventivo' },
+                        { id: 'B-CTL-09', name: 'Autorización Escalonada y Comité de Compras', description: 'Requerir autorizaciones múltiples y decisiones colegiadas por un comité para adquisiciones que superen un umbral establecido.', relatedRisks: ['C3', 'C9', 'C10'], type: 'Preventivo' },
+                        { id: 'B-CTL-10', name: 'Monitoreo de Aportes a Campañas y Lobbying', description: 'Sujetar toda interacción, donación y/o contribución política o de cabildeo a revisión exclusiva de la Alta Dirección en un registro público.', relatedRisks: ['C1', 'C7', 'ST2', 'ST1'], type: 'Control Directivo' }
+                    ],
 
                     protocols: {
                         political: { applies: false, allowContributions: 'no', approvalRole: 'Junta Directiva' },
@@ -1477,6 +2578,7 @@
                         reach: 'nacional',
                         localAreas: '',
                         internationalCountries: '',
+                        riskAppetite: 'Bajo',
                         publicResources: false,
                         privateResources: false,
                         cooperationResources: false,
@@ -1551,6 +2653,75 @@
                 }
             },
             computed: {
+                dynamicRiskDescriptor() {
+                    let text = `El perfil de riesgo C/ST de <b>${this.form.entityName || 'la entidad'}</b> se potencia principalmente por `;
+                    
+                    let factors = [];
+                    
+                    // Factores por tipo de entidad y áreas
+                    let areas = (this.form.impactAreas && this.form.impactAreas.length > 0) ? this.form.impactAreas.join(", ") : 'sus actividades';
+                    factors.push(`su naturaleza como <b>${this.form.entityType}</b> orientada a ${areas}`);
+                    
+                    // Factores de alcance y operación
+                    if (this.form.reach === 'internacional' || this.form.reach === 'nacional e internacional') {
+                        factors.push(`su <b>exposición transfronteriza</b> (operaciones en ${this.form.internationalCountries || 'el exterior'})`);
+                    } else if (this.form.operationZones) {
+                        factors.push(`su ámbito de operación en <b>${this.form.operationZones}</b>`);
+                    }
+
+                    // Factores por fuentes de financiación / recursos
+                    let funding = [];
+                    if (this.form.publicResources) funding.push('recursos públicos');
+                    if (this.form.privateResources) funding.push('recursos privados');
+                    if (this.form.cooperationResources) funding.push('cooperación internacional');
+                    if (this.form.customFundingSource) funding.push(this.form.customFundingSource);
+                    
+                    if (funding.length > 0) {
+                        factors.push(`la gestión y administración de <b>${funding.join(', ')}</b>`);
+                    }
+
+                    // Factores estructurales o protocolos críticos
+                    let structural = [];
+                    if (this.protocols.thirdParties && this.protocols.thirdParties.length > 0) {
+                        structural.push(`su relacionamiento con <b>terceros, contratistas o asociados</b>`);
+                    }
+                    if (this.form.hasSubsidiaries) structural.push('<b>entidades subordinadas o filiales</b>');
+                    
+                    if (structural.length > 0) {
+                        factors.push(structural.join(' y por '));
+                    }
+
+                    // Unir todo con comas y una 'y' final
+                    if (factors.length > 1) {
+                        const lastFactor = factors.pop();
+                        text += factors.join(', ') + ' y ' + lastFactor + '.';
+                    } else if (factors.length === 1) {
+                        text += factors[0] + '.';
+                    } else {
+                        text += `los macroprocesos operativos y de apoyo que adelanta a nivel interno.`;
+                    }
+
+                    // Añadir una conclusión sobre macroprocesos o contexto de diagnóstico
+                    text += ` Todos estos elementos de su cadena de valor e infraestructura financiera inciden directamente en las evaluaciones cualitativas y cuantitativas presentadas en la siguiente matriz.`;
+
+                    return text;
+                },
+                activeMacroprocesses() {
+                    let procs = [];
+                    if (this.valueChain) {
+                        if (this.valueChain.strategic) this.valueChain.strategic.filter(p => p.active && p.name).forEach(p => procs.push(p.name));
+                        if (this.valueChain.primary) this.valueChain.primary.filter(p => p.active && p.name).forEach(p => procs.push(p.name));
+                        if (this.valueChain.support) this.valueChain.support.filter(p => p.active && p.name).forEach(p => procs.push(p.name));
+                    }
+                    return procs;
+                },
+                // Computed for heatmap and risks
+                allItems() {
+                    return this.risks || [];
+                },
+                filteredRisksTable() {
+                    return this.allItems.filter(r => this.activeRiskTypes.includes(r.riskType) && this.activeSeverities.includes(this.getSeverityLabel(r.sev)));
+                },
                 formattedImpactAreas() {
                     const areas = this.form.impactAreas;
                     if (!areas || areas.length === 0) return '[Áreas de impacto]';
@@ -1734,16 +2905,574 @@
                         this.saveDraft();
                     },
                     deep: true
+                },
+                valueChain: {
+                    handler() {
+                        this.saveDraft();
+                    },
+                    deep: true
                 }
             },
             mounted() {
                 window.addEventListener('beforeunload', this.handleBeforeUnload);
                 this.loadDraft();
+                this.normalizeControls();
             },
             beforeUnmount() {
                 window.removeEventListener('beforeunload', this.handleBeforeUnload);
             },
             methods: {
+                normalizeControls() {
+                    // Crear nuevos objetos planos para cada riesgo (en lugar de mutar in-place)
+                    // para garantizar que Vue 3 realice el tracking reactivo completo desde cero.
+                    this.risks = this.risks.map(risk => {
+                        // Si el riesgo ya fue normalizado (e.g. llamadas repetidas), re-verificar banco pero no re-crear
+                        const treatment = risk.treatment || 'Reducir';
+
+                        // 1. Convertir controles STRING → OBJETO con valores de enumerado válidos
+                        const convertedControls = (risk.controls || []).map((ctrl, idx) => {
+                            if (typeof ctrl === 'string') {
+                                return {
+                                    id: `${risk.id}-CTL${idx+1}`,
+                                    code: `${risk.id}-C${idx+1}`,
+                                    name: ctrl,
+                                    objective: `Prevenir, detectar o mitigar el riesgo de ${risk.name.substring(0, 30)}...`,
+                                    responsible: 'Líder del Proceso',
+                                    operation: `Se ejecuta este control de forma recurrente mediante validación de soportes.`,
+                                    coverage: 'Ambos',
+                                    covProb: 'Media',
+                                    covImp: 'Media',
+                                    efficiency: 'Definido',
+                                    suitability: 'Definido',
+                                    formalization: 'Definido',
+                                    automation: 'Combinado',
+                                    frequency: 'Mensual'
+                                };
+                            }
+                            return ctrl;
+                        });
+
+                        // 2. Controles del Banco → se muestran como sugerencias (no se agregan directamente a controls)
+                        const bankSuggestions = [];
+                        this.controlBank
+                            .filter(cb => cb.relatedRisks && cb.relatedRisks.includes(risk.id))
+                            .forEach(cb => {
+                                // Solo sugerir si no está ya en los controles confirmados
+                                if (!convertedControls.some(c => c.name === cb.name)) {
+                                    bankSuggestions.push({ id: cb.id, name: cb.name, description: cb.description, type: cb.type });
+                                }
+                            });
+
+                        // Preservar sugerencias existentes del borrador; agregar del banco las que no estén ya
+                        const existingSugg = risk.suggestedControls || [];
+                        const mergedSugg = [...existingSugg];
+                        bankSuggestions.forEach(bs => {
+                            const alreadyInSugg = mergedSugg.some(s => s.name === bs.name);
+                            const alreadyInCtrl = convertedControls.some(c => c.name === bs.name);
+                            if (!alreadyInSugg && !alreadyInCtrl) {
+                                mergedSugg.push(bs);
+                            }
+                        });
+
+                        // Devolver nuevo objeto plano con todas las propiedades originales + las normalizadas
+                        return {
+                            ...risk,
+                            treatment,
+                            controls: convertedControls,
+                            suggestedControls: mergedSugg
+                        };
+                    });
+
+                    // Re-sincronizar selectedRisk con el nuevo objeto reactivo (si hay un riesgo seleccionado)
+                    if (this.selectedRisk) {
+                        const updated = this.risks.find(r => r.id === this.selectedRisk.id);
+                        if (updated) this.selectedRisk = updated;
+                    }
+                },
+                evaluateControl(ctrl) {
+                   let score = 0;
+                   if (ctrl.covProb === 'Alta') score += 2;
+                   else if (ctrl.covProb === 'Media') score += 1;
+                   
+                   if (ctrl.covImp === 'Alta') score += 2;
+                   else if (ctrl.covImp === 'Media') score += 1;
+                   
+                   const effMap = { 'Optimizado': 3, 'Definido': 2, 'Reproducible': 1, 'Inicial': 0 };
+                   score += effMap[ctrl.efficiency] || 0;
+                   score += effMap[ctrl.suitability] || 0;
+                   score += effMap[ctrl.formalization] || 0;
+                   
+                   const autoMap = { 'Automático': 2, 'Combinado': 1, 'Manual': 0 };
+                   score += autoMap[ctrl.automation] || 0;
+                   
+                   const freqMap = {
+                       'Continuo': 3,
+                       'Diario': 3,
+                       'Semanal': 2,
+                       'Quincenal': 2,
+                       'Mensual': 2,
+                       'Bimestral': 1,
+                       'Trimestral': 1,
+                       'Semestral': 1,
+                       'Anual': 0,
+                       'A demanda': 1
+                   };
+                   score += freqMap[ctrl.frequency] || 0;
+                   
+                   // Maximum score is now effectively higher: 4 + 9 + 2 + 3 = 18
+                   if (score >= 14) return 'Fuerte';
+                   if (score >= 9) return 'Moderado';
+                   if (score >= 4) return 'Débil';
+                   return 'Inexistente';
+                },
+                getControlsGlobalRating() {
+                   if (!this.risks || this.risks.length === 0) return 'Sin controles';
+                   let totalScore = 0;
+                   let count = 0;
+                   this.risks.forEach(risk => {
+                       if (risk.controls) {
+                           risk.controls.forEach(ctrl => {
+                               const rating = this.evaluateControl(ctrl);
+                               if (rating === 'Fuerte') totalScore += 3;
+                               else if (rating === 'Moderado') totalScore += 2;
+                               else if (rating === 'Débil') totalScore += 1;
+                               count++;
+                           });
+                       }
+                   });
+                   if (count === 0) return 'Inexistente';
+                   const avg = totalScore / count;
+                   if (avg >= 2.5) return 'Fuerte';
+                   if (avg >= 1.5) return 'Moderado';
+                   if (avg > 0.5) return 'Débil';
+                   return 'Inexistente';
+                },
+                addProcess(type) {
+                    const newId = type.charAt(0) + Date.now();
+                    this.valueChain[type].push({
+                        id: newId,
+                        name: '',
+                        active: true
+                    });
+                },
+                suggestRisksFromContext() {
+                    const impactScale = [1, 3, 5, 10, 20];
+
+                    this.risks.forEach((risk, index) => {
+                        const pname = risk.process ? risk.process.toLowerCase() : '';
+                        
+                        let probLevel = 0;
+                        let impLevel = 0;
+
+                        // Perfilamiento base inteligente según el macroproceso (dispersión inicial)
+                        if (pname.includes('financier') || pname.includes('tesorería') || pname.includes('pagos')) {
+                            probLevel = 3; impLevel = 4; // Alta exposición al manejo de recursos
+                        } else if (pname.includes('compra') || pname.includes('proveedor') || pname.includes('abastecimiento') || pname.includes('logística')) {
+                            probLevel = 4; impLevel = 3; // Frecuentes iteraciones con terceros y cadena de suministro
+                        } else if (pname.includes('alianzas') || pname.includes('cooperación') || pname.includes('donacion') || pname.includes('aportante')) {
+                            probLevel = 2; impLevel = 5; // Menos frecuente, pero de impacto máximo (pérdida de donantes/sanciones)
+                        } else if (pname.includes('talento') || pname.includes('human') || pname.includes('nómina')) {
+                            probLevel = 2; impLevel = 2; // Riesgo operativo moderado/bajo en C/ST
+                        } else if (pname.includes('estratégica') || pname.includes('gobierno') || pname.includes('dirección')) {
+                            probLevel = 1; impLevel = 5; // Rara vez ocurre a este nivel, pero si se materializa desestabiliza a la entidad
+                        } else if (pname.includes('sistemas') || pname.includes('tecnología') || pname.includes('ti')) {
+                            probLevel = 3; impLevel = 3; // Riesgos moderados de filtración/intervención
+                        } else {
+                            // Pseudo-aleatoriedad controlada basada en el índice para los que no crucen,
+                            // distribuyendo equilibradamente entre niveles medios-bajos
+                            probLevel = (index % 3) + 1; // 1 a 3
+                            impLevel = (index % 3) + 2;  // 2 a 4
+                        }
+
+                        // --- Ajuste Estratégico por Diagnóstico y Entorno ---
+                        if (this.form.highRiskSectors && this.form.highRiskSectors.length > 0) {
+                            probLevel += 1;
+                        }
+                        if (this.form.hasSubsidiaries || this.form.hasController) {
+                            impLevel += 1; // Tener filiales o matriz expone a riesgos de contagio reputacional severo
+                        }
+
+                        // --- Ajuste Estricto por Tipología C/ST ---
+                        if (risk.riskType === 'Soborno Transnacional') {
+                            if (this.form.reach && (this.form.reach.includes('internacional') || this.form.reach.includes('nacional e'))) {
+                                probLevel += 1;
+                                impLevel += 1;
+                            } else {
+                                // Una ESAL puramente local (ciudad/departamental) reduce drásticamente la probabilidad de soborno transnacional
+                                probLevel = Math.max(1, probLevel - 2); 
+                            }
+                            if (this.form.cooperationResources) impLevel += 1;
+                        }
+
+                        if (risk.riskType === 'Corrupción') {
+                            if (this.form.publicResources) {
+                                probLevel += 1; // Mayor atractivo y escrutinio
+                                impLevel += 1;
+                            }
+                            if (this.form.supervisionEntities && this.form.supervisionEntities.trim().length > 0) {
+                                impLevel += 1; // Doble impacto legal por entes de control
+                            }
+                        }
+
+                        // --- Análisis Específico de Políticas y Protocolos Declarados ---
+                        if (pname.includes('alianzas') || pname.includes('cooperación') || pname.includes('donacion')) {
+                            // Si aplican donaciones (se configuran protocolos), se eleva la probabilidad inherente detectada
+                            if (this.protocols.donations && this.protocols.donations.applies) probLevel += 1; 
+                        }
+                        
+                        if (pname.includes('estratégica') || pname.includes('gobierno')) {
+                            if (this.protocols.political && this.protocols.political.applies) impLevel += 1;
+                            if (this.protocols.lobbying && this.protocols.lobbying.applies) probLevel += 1;
+                        }
+                        
+                        if (pname.includes('abastecimiento') || pname.includes('logística') || pname.includes('compra')) {
+                            if (this.protocols.expenses && this.protocols.expenses.applies) probLevel += 1;
+                            if (this.protocols.gifts && this.protocols.gifts.applies) probLevel += 1;
+                        }
+
+                        // Normalización final a escalas 1-5 (Evitar desbordamientos)
+                        probLevel = Math.min(Math.max(probLevel, 1), 5);
+                        impLevel = Math.min(Math.max(impLevel, 1), 5);
+
+                        // Dispersión sutil extra: si por los factores diagnósticos todo tiende a (5,5),
+                        // redistribuimos levemente basándonos en elementos impares y pares para dar una visión más realista.
+                        if (probLevel === 5 && impLevel === 5 && index % 2 === 0) {
+                            probLevel -= 1; // Un Frecuente pero Catastrófico (4x5)
+                        }
+
+                        risk.prob = probLevel;
+                        risk.imp = impactScale[impLevel - 1];
+                        risk.sev = risk.prob * risk.imp;
+                    });
+
+                    alert('Análisis Inteligente Completo: La matriz de riesgos inherentes ha sido recalibrada utilizando parámetros de dispersión cruzada basándose en las variables de contexto, alcance, madurez y tipología corporativa.');
+                },
+                // Risk / Heatmap Methods
+                getRiskNameById(id) {
+                    const risk = this.risks.find(r => r.id === id);
+                    if (risk) return risk.name;
+                    const rBank = this.riskBank.find(r => r.id === id);
+                    if (rBank) return rBank.name;
+                    return id;
+                },
+                // Retorna cuántos riesgos (en la matriz activa) ya tienen este control del banco habilitado
+                getBankCtrlAssociatedCount(bankCtrl) {
+                    return this.risks.filter(risk =>
+                        risk.controls && risk.controls.some(c => c.name === bankCtrl.name)
+                    ).length;
+                },
+                // Indica si un riesgo específico ya tiene este control del banco habilitado
+                isRiskAssociated(riskId, bankCtrl) {
+                    const risk = this.risks.find(r => r.id === riskId);
+                    return risk && risk.controls && risk.controls.some(c => c.name === bankCtrl.name);
+                },
+                openLinkRiskModal(ctrl) {
+                    this.controlToLink = ctrl;
+                    this.linkRiskId = '';
+                    this.linkControlModalOpen = true;
+                },
+                confirmLinkControl() {
+                    const risk = this.risks.find(r => r.id === this.linkRiskId);
+                    if (risk && this.controlToLink) {
+                        if (!risk.controls) risk.controls = [];
+                        const newIndex = risk.controls.length + 1;
+                        risk.controls.push({
+                            id: `${risk.id}-CTL${newIndex}`,
+                            code: `${risk.id}-C${newIndex}`,
+                            name: this.controlToLink.name,
+                            objective: `Prevenir, detectar o mitigar el riesgo C/ST`,
+                            responsible: 'Líder del Proceso',
+                            operation: this.controlToLink.description,
+                            coverage: 'Ambos',
+                            covProb: 'Alta',
+                            covImp: 'Alta',
+                            efficiency: 'Optimizado',
+                            suitability: 'Definido',
+                            formalization: 'Definido',
+                            automation: 'Manual',
+                            frequency: 'Mensual'
+                        });
+                        this.saveDraft();
+                        this.linkControlModalOpen = false;
+                        alert('Control vinculado exitosamente al riesgo seleccionado.');
+                    }
+                },
+                addNewCustomRisk() {
+                    const idNum = Math.floor(Math.random() * 900) + 100;
+                    const newId = 'M-' + idNum;
+                    const defaultProc = this.activeMacroprocesses.length > 0 ? this.activeMacroprocesses[0] : 'Proceso General';
+                    
+                    const newRisk = {
+                        id: newId,
+                        type: 'risk',
+                        riskType: 'Corrupción',
+                        name: 'Riesgo Nuevo (Editar título)',
+                        prob: 3,
+                        imp: 5,
+                        sev: 15,
+                        treatment: 'Reducir',
+                        process: defaultProc,
+                        factor: 'Describa el factor...',
+                        causa: 'Describa la causa...',
+                        controls: [],
+                        suggestedControls: []
+                    };
+                    this.risks.push(newRisk);
+                    
+                    this.normalizeControls();
+                    
+                    const normalizedRisk = this.risks.find(r => r.id === newId) || newRisk;
+                    this.selectRisk(normalizedRisk);
+                    this.saveDraft();
+                },
+                addRiskFromBank() {
+                    if (!this.pendingRiskId) return;
+                    const bankItem = this.riskBank.find(r => r.id === this.pendingRiskId);
+                    if (bankItem) {
+                        const newRisk = {
+                            id: bankItem.id,
+                            type: bankItem.type,
+                            riskType: bankItem.riskType,
+                            name: bankItem.name,
+                            prob: bankItem.defaultProb,
+                            imp: bankItem.defaultImp,
+                            sev: bankItem.defaultProb * bankItem.defaultImp,
+                            treatment: 'Reducir',
+                            process: bankItem.process,
+                            factor: bankItem.factor,
+                            controls: [...bankItem.controls],
+                            suggestedControls: []
+                        };
+                        this.risks.push(newRisk);
+                        
+                        this.normalizeControls(); // Normalizar los controles del nuevo riesgo agregado
+
+                        // Remover del banco para que no se duplique
+                        this.riskBank = this.riskBank.filter(r => r.id !== this.pendingRiskId);
+                        this.pendingRiskId = '';
+                        // normalizeControls() crea nuevos objetos via map, buscar el objeto actualizado
+                        const normalizedRisk = this.risks.find(r => r.id === bankItem.id) || newRisk;
+                        this.selectRisk(normalizedRisk);
+                        this.saveDraft();
+                    }
+                },
+                updateRiskSeverity(risk) {
+                    risk.sev = risk.prob * risk.imp;
+                    this.saveDraft();
+                },
+                getResidualRisk(risk) {
+                    if (!risk.treatment) return { prob: risk.prob, imp: risk.imp, sev: risk.sev };
+                    if (risk.treatment === 'Evitar') return { prob: 1, imp: 1, sev: 1 };
+                    if (risk.treatment === 'Transferir') {
+                        // Transferir reduce impacto (ej. -2 niveles)
+                        const impValues = [1, 3, 5, 10, 20];
+                        let iIndex = impValues.indexOf(risk.imp);
+                        if (iIndex === -1) iIndex = 0;
+                        let newImp = Math.min(impValues[Math.max(0, iIndex - 2)], risk.imp);
+                        return { prob: risk.prob, imp: newImp, sev: risk.prob * newImp };
+                    }
+                    if (risk.treatment === 'Aceptar') return { prob: risk.prob, imp: risk.imp, sev: risk.sev };
+                    
+                    if (risk.treatment === 'Reducir') {
+                        const activeControls = risk.controls || [];
+                        const suggestedCtrls = risk.suggestedControls || [];
+
+                        if (activeControls.length === 0 && suggestedCtrls.length === 0) {
+                            return { prob: risk.prob, imp: risk.imp, sev: risk.sev };
+                        }
+                        
+                        let probScore = 0; let probCount = 0;
+                        let impScore = 0; let impCount = 0;
+                        
+                        // Evaluar controles confirmados con su diseño actual
+                        activeControls.forEach(ctrl => {
+                            const rating = this.evaluateControl(ctrl);
+                            let score = 0;
+                            if (rating === 'Fuerte') score = 3;
+                            else if (rating === 'Moderado') score = 2;
+                            else if (rating === 'Débil') score = 1;
+                            
+                            // Acumular puntaje según cobertura del control
+                            if (ctrl.coverage === 'Probabilidad' || ctrl.coverage === 'Ambos') {
+                                probScore += score;
+                                probCount++;
+                            }
+                            if (ctrl.coverage === 'Impacto' || ctrl.coverage === 'Ambos') {
+                                impScore += score;
+                                impCount++;
+                            }
+                        });
+
+                        // Controles sugeridos asumen el mejor diseño posible (Fuerte = 3) en Prob e Impacto
+                        suggestedCtrls.forEach(() => {
+                            probScore += 3; probCount++;
+                            impScore += 3; impCount++;
+                        });
+
+                        const avgProb = probCount > 0 ? probScore / probCount : 0;
+                        const avgImp = impCount > 0 ? impScore / impCount : 0;
+
+                        let probR = 0; let impR = 0;
+                        
+                        // Reducción a Probabilidad
+                        if (avgProb >= 2.5) probR = 2;
+                        else if (avgProb >= 1.5) probR = 1;
+                        else if (avgProb > 0) probR = 0; // Débil no modifica probabilidad
+                        
+                        // Reducción a Impacto
+                        if (avgImp >= 2.5) impR = 2;
+                        else if (avgImp >= 1.5) impR = 1;
+                        else if (avgImp > 0) impR = 1; // Débil disminuye 1 nivel de impacto
+
+                        const pVals = [1, 2, 3, 4, 5];
+                        let pIn = pVals.indexOf(risk.prob);
+                        if (pIn === -1) pIn = Math.min(risk.prob - 1, 4);
+                        let nP = Math.min(pVals[Math.max(0, pIn - probR)], risk.prob);
+
+                        const iVals = [1, 3, 5, 10, 20];
+                        let iIn = iVals.indexOf(risk.imp);
+                        if (iIn === -1) iIn = 0;
+                        let nI = Math.min(iVals[Math.max(0, iIn - impR)], risk.imp);
+
+                        return { prob: nP, imp: nI, sev: nP * nI };
+                    }
+                    return { prob: risk.prob, imp: risk.imp, sev: risk.sev };
+                },
+                handleTreatmentChange(risk) {
+                    this.saveDraft();
+                    if (risk.treatment === 'Reducir' && (!risk.controls || risk.controls.length === 0)) {
+                        this.addControl();
+                    }
+                },
+                gotoControlTabAndSelect(controlId) {
+                    this.riesgosTab = 'controles';
+                    this.controlsView = 'detail';
+                    const risk = this.risks.find(r => r.controls && r.controls.some(c => c.id === controlId));
+                    if (risk) {
+                        this.activeControl = risk.controls.find(c => c.id === controlId);
+                    }
+                    this.selectedRisk = null; // Close matrix details
+                },
+                acceptSuggestedControl(sugg, sIdx) {
+                    if (!this.selectedRisk.controls) this.selectedRisk.controls = [];
+                    const newIndex = this.selectedRisk.controls.length + 1;
+                    
+                    const isObj = typeof sugg === 'object';
+                    const ctrlName = isObj ? sugg.name : sugg;
+                    const ctrlDesc = isObj ? sugg.description : `Se ejecuta este control de forma recurrente mediante validación de soportes.`;
+                    
+                    this.selectedRisk.controls.push({
+                        id: `${this.selectedRisk.id}-CTL${newIndex}`,
+                        code: `${this.selectedRisk.id}-C${newIndex}`,
+                        name: ctrlName,
+                        objective: `Prevenir, detectar o mitigar el riesgo de ${this.selectedRisk.name.substring(0, 30)}...`,
+                        responsible: 'Líder del Proceso',
+                        operation: ctrlDesc,
+                        coverage: 'Ambos',
+                        covProb: 'Alta',
+                        covImp: 'Alta',
+                        efficiency: 'Optimizado',
+                        suitability: 'Optimizado',
+                        formalization: 'Optimizado',
+                        automation: 'Automático',
+                        frequency: 'Continuo'
+                    });
+                    this.selectedRisk.suggestedControls.splice(sIdx, 1);
+                    this.saveDraft();
+                },
+                rejectSuggestedControl(sIdx) {
+                    this.selectedRisk.suggestedControls.splice(sIdx, 1);
+                    this.saveDraft();
+                },
+                addControl() {
+                    if (this.selectedRisk) {
+                        if (!this.selectedRisk.controls) {
+                            this.selectedRisk.controls = [];
+                        }
+                        const newIndex = this.selectedRisk.controls.length + 1;
+                        this.selectedRisk.controls.push({
+                                    id: `${this.selectedRisk.id}-CTL${newIndex}`,
+                                    code: `${this.selectedRisk.id}-C${newIndex}`,
+                                    name: '',
+                                    objective: `Prevenir, detectar o mitigar el riesgo de ${this.selectedRisk.name.substring(0, 30)}...`,
+                                    responsible: 'Líder del Proceso',
+                                    operation: `Se ejecuta este control de forma recurrente mediante validación de soportes.`,
+                                    coverage: 'Ambos',
+                                    covProb: 'Alta',
+                                    covImp: 'Alta',
+                                    efficiency: 'Definido',
+                                    suitability: 'Definido',
+                                    formalization: 'Definido',
+                                    automation: 'Combinado',
+                                    frequency: 'Mensual'
+                        });
+                        this.saveDraft();
+                    }
+                },
+                removeControl(index) {
+                    if (this.selectedRisk && this.selectedRisk.controls) {
+                        this.selectedRisk.controls.splice(index, 1);
+                        this.saveDraft();
+                    }
+                },
+                toggleSeverityFilter(level) {
+                    const index = this.activeSeverities.indexOf(level);
+                    if (index > -1) {
+                        this.activeSeverities.splice(index, 1);
+                    } else {
+                        this.activeSeverities.push(level);
+                    }
+                },
+                getItemsInCell(prob, imp, type) {
+                    let items = this.allItems.filter(item => item.prob === prob && item.imp === imp);
+                    if (type) {
+                        items = items.filter(item => item.type === type);
+                    }
+                    return items.filter(item => {
+                        const labelSev = this.getSeverityLabel(item.sev);
+                        return this.activeSeverities.includes(labelSev) && this.activeRiskTypes.includes(item.riskType);
+                    });
+                },
+                getResidualItemsInCell(prob, imp, type) {
+                    let items = this.allItems.filter(item => {
+                        const residual = this.getResidualRisk(item);
+                        return residual.prob === prob && residual.imp === imp;
+                    });
+                    if (type) {
+                        items = items.filter(item => item.type === type);
+                    }
+                    return items.filter(item => {
+                        // Usamos la severidad inherente para que mantenga correspondencia con los filtros visuales (ambos puntos se filtran juntos)
+                        const labelSev = this.getSeverityLabel(item.sev);
+                        return this.activeSeverities.includes(labelSev) && this.activeRiskTypes.includes(item.riskType);
+                    });
+                },
+                selectRisk(item) {
+                    if (!item.treatment) item.treatment = 'Reducir';
+
+                    // Ya no cargamos dinámicamente sugerencias aquí si no existen, porque ahora se asocian 
+                    // de manera predeterminada al riesgo (en normalizeControls) para poder ver el efecto del residual.
+                    if (!item.suggestedControls) item.suggestedControls = [];
+
+                    this.selectedRisk = item;
+                },
+                getImpactValue(impIndex) {
+                    return [1, 3, 5, 10, 20][impIndex - 1];
+                },
+                getSeverityClass(sev) {
+                    // Tailwind generic classes logic for borders/colors
+                    if (sev >= 50) return 'bg-red-500 border border-red-700 text-white';
+                    if (sev >= 20) return 'bg-orange-400 border border-orange-600 text-white';
+                    if (sev >= 10) return 'bg-yellow-300 border border-yellow-500 text-black';
+                    return 'bg-green-400 border border-green-600 text-black';
+                },
+                getSeverityLabel(sev) {
+                    if (sev >= 50) return 'Extremo';
+                    if (sev >= 20) return 'Alto';
+                    if (sev >= 10) return 'Moderado';
+                    return 'Bajo';
+                },
+
                 initChart() {
                     const ctx = document.getElementById('radarChart');
                     if (!ctx) return;
@@ -1787,6 +3516,26 @@
                         }
                     });
                 },
+                getProbLabel(prob) {
+                    const probMap = {
+                        1: "Rara vez",
+                        2: "Poco probable",
+                        3: "Posible",
+                        4: "Probable",
+                        5: "Casi seguro"
+                    };
+                    return probMap[prob] || '';
+                },
+                getImpLabel(imp) {
+                    const impMap = {
+                        1: "Insignificante",
+                        3: "Menor",
+                        5: "Moderado",
+                        10: "Mayor",
+                        20: "Catastrófico"
+                    };
+                    return impMap[imp] || '';
+                },
                 selectDimTitle(key) {
                     const titles = {
                         gobernanza: '1. Gobernanza y Estructura',
@@ -1813,6 +3562,7 @@
                     const draft = {
                         form: this.form,
                         protocols: this.protocols,
+                        valueChain: this.valueChain,
                         timestamp: new Date().toISOString()
                     };
                     localStorage.setItem('ptee_esal_draft', JSON.stringify(draft));
@@ -1831,6 +3581,7 @@
                             if (confirm('Se ha encontrado un borrador guardado automáticamente de una sesión anterior. ¿Deseas recuperarlo?')) {
                                 if (parsed.form) this.form = { ...this.form, ...parsed.form };
                                 if (parsed.protocols) this.protocols = { ...this.protocols, ...parsed.protocols };
+                                if (parsed.valueChain) this.valueChain = { ...this.valueChain, ...parsed.valueChain };
                                 console.log('Borrador local cargado con éxito');
                             } else {
                                 localStorage.removeItem('ptee_esal_draft');
@@ -2211,12 +3962,6 @@
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
                 }
-            },
-            mounted() {
-                window.addEventListener('beforeunload', this.handleBeforeUnload);
-            },
-            beforeUnmount() {
-                window.removeEventListener('beforeunload', this.handleBeforeUnload);
             }
         }).mount('#app')
     </script>
