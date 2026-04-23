@@ -56,6 +56,20 @@
             ul, p, li { page-break-inside: avoid; widows: 3; orphans: 3; }
         }
         [v-cloak] { display: none !important; }
+        .nota-ilustrativa {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 7pt;
+            color: #c0c8d4;
+            font-style: italic;
+            text-align: right;
+            max-width: 220px;
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 20;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="bg-gray-200 h-screen flex flex-col overflow-hidden font-sans">
@@ -149,7 +163,10 @@
                     <p class="block md:hidden text-center text-xs text-blue-200 mt-3 font-medium"><span class="material-icons" style="font-size:inherit">arrow_downward</span> Desplázate hacia abajo para ver el documento en vivo <span class="material-icons" style="font-size:inherit">arrow_downward</span></p>
                 </div>
 
-            <div class="p-6 flex flex-col gap-6" v-show="showPolitica">
+            <div class="flex flex-col gap-6" v-show="showPolitica">
+
+                <!-- POLÍTICA DE CUMPLIMIENTO (formulario existente) -->
+                <div class="p-6 flex flex-col gap-6" v-show="politicaSubTab === 'politica'">
                 <!-- Sección 1 -->
                 <section>
                     <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">1. Contexto de la entidad</h3>
@@ -394,7 +411,117 @@
                         </label>
                     </div>
                 </section>
-            </div>
+                </div> <!-- fin politicaSubTab === 'politica' -->
+
+                <!-- CÓDIGO DE ÉTICA Y CONDUCTA (formulario) -->
+                <div class="p-6 flex flex-col gap-6" v-show="politicaSubTab === 'etica'">
+                    <div class="bg-indigo-50 border border-indigo-200 rounded p-3 mb-1 text-xs text-indigo-800">
+                        <b>📘 Código de Ética y Conducta</b><br>
+                        Aplica para las entidades donde se requiera un Código independiente de la Política de Cumplimiento. Comparte los datos generales de la entidad ya ingresados.
+                    </div>
+
+                    <!-- Botones de exportación del Código de Ética -->
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-2 pb-3 border-b border-indigo-100">
+                        <button @click="exportWordEtica" class="bg-green-600 hover:bg-green-500 px-3 py-2 rounded text-sm font-bold flex-1 transition text-white whitespace-nowrap">📥 Word</button>
+                        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded text-sm font-bold flex-1 transition text-white whitespace-nowrap">🖨️ PDF</button>
+                        <button @click="exportCSVEtica" class="bg-yellow-600 hover:bg-yellow-500 px-3 py-2 rounded text-sm font-bold flex-1 transition text-white whitespace-nowrap">📊 Datos (CSV)</button>
+                    </div>
+
+                    <!-- Sección 1: Identidad (campos compartidos con la Política) -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">1. Identidad de la entidad</h3>
+                        <p class="text-xs text-indigo-600 mb-3 italic">Los campos de Razón Social, Naturaleza Jurídica y Propósito Social se comparten con la Política de Cumplimiento.</p>
+                        <label class="block text-sm font-medium">Razón Social</label>
+                        <input v-model="form.entityName" class="w-full border p-2 rounded mb-3" placeholder="Ej. Fundación Solidaridad">
+
+                        <label class="block text-sm font-medium">Naturaleza Jurídica</label>
+                        <select v-model="form.entityType" class="w-full border p-2 rounded mb-3">
+                            <option>Fundación</option>
+                            <option>Corporación</option>
+                            <option>Asociación</option>
+                            <option>Entidad Cooperativa</option>
+                            <option>Otra ESAL</option>
+                        </select>
+
+                        <label class="block text-sm font-medium">Misión / Propósito Social</label>
+                        <textarea v-model="form.socialPurpose" class="w-full border p-2 rounded mb-3 text-sm h-20" placeholder="Ej. Mejorar la calidad de vida de poblaciones vulnerables..."></textarea>
+                    </section>
+
+                    <!-- Sección 2: Gobernanza -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">2. Gobernanza y contacto</h3>
+                        <label class="block text-sm font-medium">Órgano de Administración</label>
+                        <input v-model="form.adminOrgan" class="w-full border p-2 rounded mb-3" placeholder="Ej. Junta Directiva">
+
+                        <label class="block text-sm font-medium">Canal de Denuncias (Email o Enlace)</label>
+                        <input v-model="form.reportingChannel" class="w-full border p-2 rounded mb-3" placeholder="Ej. lineaetica@entidad.org">
+
+                        <label class="block text-sm font-medium">Responsable del Seguimiento y Ética</label>
+                        <select v-model="form.ethicsRole" class="w-full border p-2 rounded mb-3">
+                            <option>Comité de Ética</option>
+                            <option>Oficial de Cumplimiento</option>
+                            <option>Responsable de Ética e Integridad</option>
+                            <option>Dirección / Representación Legal</option>
+                        </select>
+                    </section>
+
+                    <!-- Sección 3: Valores -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">3. Valores institucionales</h3>
+                        <div class="space-y-2 mb-4 bg-gray-50 p-3 border rounded shadow-inner max-h-64 overflow-y-auto">
+                            <label v-for="(valor, index) in predefinedValues" :key="index" class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-1">
+                                <input type="checkbox" :value="valor.nombre" v-model="form.selectedValues" class="mt-1">
+                                <div>
+                                    <span class="font-bold block leading-tight">{{ valor.nombre }}</span>
+                                    <span class="text-xs text-gray-500 leading-tight">{{ valor.descripcion }}</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Agregar nuevo valor</label>
+                            <input v-model="newValorName" class="w-full border p-2 rounded mb-2 text-sm" placeholder="Nombre (Ej. Innovación)">
+                            <textarea v-model="newValorDesc" class="w-full border p-2 rounded mb-2 text-sm h-16" placeholder="Descripción breve..."></textarea>
+                            <button @click="addCustomValue" type="button" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded text-sm transition">
+                                + Añadir y seleccionar
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Sección 4: Prevención y sanciones -->
+                    <section>
+                        <h3 class="font-bold text-indigo-800 border-b border-indigo-200 pb-2 mb-3">4. Prevención, sanciones y normas</h3>
+
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.includeZeroTolerance" class="mt-1">
+                            Incluir Política de cumplimiento del Programa de transparencia y ética empresarial - PTEE -.
+                        </label>
+
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.hasRIT" class="mt-1">
+                            ¿La entidad cuenta con un Reglamento Interno de Trabajo (RIT) para remitir y articular el régimen de sanciones?
+                        </label>
+
+                        <div v-if="!form.hasRIT" class="mb-3">
+                            <label class="block text-sm font-medium text-red-600">Al no tener RIT, indique bajo qué norma se amparan las sanciones:</label>
+                            <input v-model="form.alternativeSanction" class="w-full border border-red-300 p-2 rounded text-sm" placeholder="Ej. Estatutos Sociales, Código Sustantivo del Trabajo...">
+                        </div>
+
+                        <label class="flex items-start gap-2 text-sm font-medium mb-3">
+                            <input type="checkbox" v-model="form.includeConflictInterest" class="mt-1">
+                            Incluir política específica de Conflictos de Interés.
+                        </label>
+
+                        <div v-show="form.includeConflictInterest" class="mb-3 border border-indigo-200 bg-indigo-50 rounded p-3">
+                            <label class="block text-sm font-medium text-indigo-800 mb-1">Definición de Conflicto de Interés</label>
+                            <p class="text-xs text-indigo-600 mb-2 italic">Compartida con el capítulo 8. Conflictos. Editar aquí actualiza también ese capítulo.</p>
+                            <textarea v-model="confDefinicion" rows="4" class="w-full border border-indigo-300 p-2 rounded text-xs text-gray-700 focus:ring-indigo-400 focus:border-indigo-400" placeholder="Ingrese la definición de conflicto de intereses de su entidad..."></textarea>
+                        </div>
+
+                        <label class="block text-sm font-medium mt-4">Fecha de Aprobación del Código</label>
+                        <input type="date" v-model="form.eticsApprovalDate" class="w-full border p-2 rounded mb-3">
+                    </section>
+                </div> <!-- fin politicaSubTab === 'etica' -->
+            </div> <!-- fin v-show="showPolitica" -->
 
             <!-- SIDEBAR: PROTOCOLOS -->
             <div class="p-6 flex flex-col gap-6 bg-gray-50" v-show="showProtocolos">
@@ -1306,8 +1433,14 @@
                 <section>
                     <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">Conflictos de intereses</h3>
                     <p class="text-sm text-gray-600 mb-4">
-                        Configure la política, procedimientos, formularios y cláusulas para la adecuada gestión de los conflictos de intereses.
+                        Configure de acuerdo al apetito, cultura y necesidades de su entidad, la política, procedimientos, formularios y/o cláusulas, que pueden apoyar la gestión de los conflictos de intereses.
                     </p>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Definición de "Conflictos de intereses"</label>
+                        <p class="text-[10px] text-gray-500 mb-1">Personalice la definición institucional que aparecerá en la política. Se mostrará como cita destacada en el documento.</p>
+                        <textarea v-model="confDefinicion" rows="4" class="w-full border border-gray-300 p-2 rounded text-xs text-gray-700 focus:ring-blue-400 focus:border-blue-400" placeholder="Ingrese la definición de conflicto de intereses de su entidad..."></textarea>
+                    </div>
                     
                     <div class="text-xs text-gray-500 italic mb-4">
                         Navegue las subpestañas en el panel derecho para visualizar cada componente del documento (Política, Procedimiento, Formulario, Cláusulas).
@@ -1320,6 +1453,10 @@
                         <div v-show="confIntegrarCodigoEtica" class="mb-3 pl-6">
                             <label class="block text-[11px] font-bold text-gray-700 mb-1">Nombre del documento:</label>
                             <select v-model="confNombreDocumentoEtica" class="w-full border p-1 rounded mt-0 bg-white text-xs">
+                                <option value="Código de ética">Código de ética</option>
+                                <option value="Código de conducta">Código de conducta</option>
+                                <option value="Código de integridad">Código de integridad</option>
+                                <option value="Política de cumplimiento">Política de cumplimiento</option>
                                 <option value="Código de Ética y Conducta">Código de Ética y Conducta</option>
                                 <option value="Código de Gobierno Corporativo">Código de Gobierno Corporativo</option>
                                 <option value="Manual de Integridad">Manual de Integridad</option>
@@ -1332,6 +1469,40 @@
                         <label class="block text-sm font-bold text-gray-700 mb-1">Tipos de Conflictos a incluir (Genéricos)</label>
                         <div class="flex flex-col gap-1 mb-4 text-xs">
                             <label class="flex items-center gap-2"><input type="checkbox" v-model="confTipos.familiares" class="w-3 h-3"> Relaciones personales y familiares / parentesco</label>
+                            <div v-if="confTipos.familiares" class="ml-5 mb-2 border border-blue-100 bg-blue-50 rounded p-2">
+                                <label class="block font-bold text-[11px] text-blue-900 mb-1">Alcance de vínculos familiares a incluir en la política</label>
+                                <p class="text-[10px] text-blue-800 mb-2">Defina hasta qué grado de consanguinidad, afinidad y civil aplica la política en su entidad.</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] text-gray-600 mb-1">Consanguinidad</label>
+                                        <select v-model.number="confAlcanceFamilia.consanguinidad" class="w-full border p-1 rounded bg-white text-[10px]">
+                                            <option :value="1">1° grado</option>
+                                            <option :value="2">2° grado</option>
+                                            <option :value="3">3° grado</option>
+                                            <option :value="4">4° grado</option>
+                                            <option :value="5">5° grado</option>
+                                            <option :value="6">6° grado</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] text-gray-600 mb-1">Afinidad</label>
+                                        <select v-model.number="confAlcanceFamilia.afinidad" class="w-full border p-1 rounded bg-white text-[10px]">
+                                            <option :value="1">1° grado</option>
+                                            <option :value="2">2° grado</option>
+                                            <option :value="3">3° grado</option>
+                                            <option :value="4">4° grado</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] text-gray-600 mb-1">Civil</label>
+                                        <select v-model.number="confAlcanceFamilia.civil" class="w-full border p-1 rounded bg-white text-[10px]">
+                                            <option :value="1">1° grado</option>
+                                            <option :value="2">2° grado</option>
+                                            <option :value="3">3° grado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <label class="flex items-center gap-2"><input type="checkbox" v-model="confTipos.financieros" class="w-3 h-3"> Intereses financieros en terceros</label>
                             <label class="flex items-center gap-2"><input type="checkbox" v-model="confTipos.regalos" class="w-3 h-3"> Regalos, atenciones y hospitalidad</label>
                             <label class="flex items-center gap-2"><input type="checkbox" v-model="confTipos.cargosExternos" class="w-3 h-3"> Cargos paralelos (otras Juntas o Empleos)</label>
@@ -1644,6 +1815,10 @@
                             <span class="text-xs font-semibold text-gray-700">Gestión de Riesgos</span>
                             <span :class="form.hasRiskManagement ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-600 border-red-100'" class="px-2 py-1 border rounded text-xs font-bold w-12 text-center">{{ form.hasRiskManagement ? 'SÍ' : 'NO' }}</span>
                         </div>
+                        <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded shadow-sm">
+                            <span class="text-xs font-semibold text-gray-700">Política de Conflictos de Interés</span>
+                            <span :class="((confTipos && Object.values(confTipos).some(v=>v)) || (customConfTipos && customConfTipos.length > 0)) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-600 border-red-100'" class="px-2 py-1 border rounded text-xs font-bold w-12 text-center">{{ ((confTipos && Object.values(confTipos).some(v=>v)) || (customConfTipos && customConfTipos.length > 0)) ? 'SÍ' : 'NO' }}</span>
+                        </div>
                     </div>
 
                     <!-- Detalles Adicionales SI/NO -->
@@ -1802,6 +1977,179 @@
                     </div>
                 </div>
 
+                <!-- SECCIÓN 3: GESTIÓN DE RIESGOS C/ST -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">3. Estado de la Gestión de Riesgos C/ST</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black" :class="risks && risks.length > 0 ? 'text-blue-700' : 'text-gray-400'">{{ risks ? risks.length : 0 }}</div>
+                            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Riesgos identificados</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black" :class="risks && risks.filter(r => r.controls && r.controls.length > 0).length > 0 ? 'text-green-700' : 'text-gray-400'">{{ risks ? risks.filter(r => r.controls && r.controls.length > 0).length : 0 }}</div>
+                            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Con controles definidos</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black" :class="risks && risks.length > 0 ? 'text-indigo-700' : 'text-gray-400'">{{ risks && risks.length > 0 ? Math.round(risks.filter(r => r.controls && r.controls.length > 0).length / risks.length * 100) : 0 }}%</div>
+                            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Cobertura de controles</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Cadena de Valor -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-blue-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wide">Cadena de Valor</h4>
+                            </div>
+                            <div class="p-3 space-y-2">
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 font-medium">Procesos Estratégicos</span>
+                                    <span class="font-bold text-blue-700">{{ valueChain && valueChain.strategic ? valueChain.strategic.filter(p=>p.active).length : 0 }} activos</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 font-medium">Procesos Misionales</span>
+                                    <span class="font-bold text-blue-700">{{ valueChain && valueChain.primary ? valueChain.primary.filter(p=>p.active).length : 0 }} activos</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 font-medium">Procesos de Soporte</span>
+                                    <span class="font-bold text-blue-700">{{ valueChain && valueChain.support ? valueChain.support.filter(p=>p.active).length : 0 }} activos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Severidades en la matriz -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-blue-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wide">Distribución por Severidad</h4>
+                            </div>
+                            <div class="p-3 space-y-2">
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-red-50 border border-red-100 rounded">
+                                    <span class="text-gray-700 font-medium">Extremo (≥80)</span>
+                                    <span class="font-bold text-red-700">{{ risks ? risks.filter(r => r.sev >= 80).length : 0 }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-orange-50 border border-orange-100 rounded">
+                                    <span class="text-gray-700 font-medium">Alto (40–79)</span>
+                                    <span class="font-bold text-orange-700">{{ risks ? risks.filter(r => r.sev >= 40 && r.sev < 80).length : 0 }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-yellow-50 border border-yellow-100 rounded">
+                                    <span class="text-gray-700 font-medium">Moderado / Bajo (&lt;40)</span>
+                                    <span class="font-bold text-yellow-700">{{ risks ? risks.filter(r => r.sev < 40).length : 0 }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 font-medium">Banco de controles</span>
+                                    <span class="font-bold text-gray-700">{{ controlBank ? controlBank.length : 0 }} controles</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 4: DEBIDA DILIGENCIA -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">4. Estado de la Debida Diligencia</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="flex flex-col items-center justify-center p-3 rounded-lg border text-center"
+                             :class="fv && (fv.tipoVinculacion || fv.pn_nombres || fv.pj_razonSocial) ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
+                            <span class="material-icons text-2xl mb-1" :class="fv && (fv.tipoVinculacion || fv.pn_nombres || fv.pj_razonSocial) ? 'text-green-600' : 'text-gray-400'">assignment_ind</span>
+                            <div class="text-xs font-bold" :class="fv && (fv.tipoVinculacion || fv.pn_nombres || fv.pj_razonSocial) ? 'text-green-800' : 'text-gray-500'">Formulario de Vinculación</div>
+                            <div class="text-xs mt-1 font-semibold" :class="fv && (fv.tipoVinculacion || fv.pn_nombres || fv.pj_razonSocial) ? 'text-green-700' : 'text-gray-400'">{{ fv && (fv.tipoVinculacion || fv.pn_nombres || fv.pj_razonSocial) ? 'Diligenciado' : 'Pendiente' }}</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-3 rounded-lg border text-center"
+                             :class="idd && (idd.id_razonSocial || idd.resumenEjecutivo || idd.decision) ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
+                            <span class="material-icons text-2xl mb-1" :class="idd && (idd.id_razonSocial || idd.resumenEjecutivo || idd.decision) ? 'text-green-600' : 'text-gray-400'">find_in_page</span>
+                            <div class="text-xs font-bold" :class="idd && (idd.id_razonSocial || idd.resumenEjecutivo || idd.decision) ? 'text-green-800' : 'text-gray-500'">Informe de DD</div>
+                            <div class="text-xs mt-1 font-semibold" :class="idd && (idd.id_razonSocial || idd.resumenEjecutivo || idd.decision) ? 'text-green-700' : 'text-gray-400'">{{ idd && (idd.id_razonSocial || idd.resumenEjecutivo || idd.decision) ? 'Generado' : 'Pendiente' }}</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-3 rounded-lg border text-center"
+                             :class="valueChain && (valueChain.strategic || valueChain.primary || valueChain.support) ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
+                            <span class="material-icons text-2xl mb-1 text-green-600">account_tree</span>
+                            <div class="text-xs font-bold text-green-800">Cadena de Valor</div>
+                            <div class="text-xs mt-1 font-semibold text-green-700">{{ (valueChain && valueChain.strategic ? valueChain.strategic.filter(p=>p.active).length : 0) + (valueChain && valueChain.primary ? valueChain.primary.filter(p=>p.active).length : 0) + (valueChain && valueChain.support ? valueChain.support.filter(p=>p.active).length : 0) }} procesos activos</div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-3 rounded-lg border text-center"
+                             :class="form.thirdParties && form.thirdParties.length > 0 ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'">
+                            <span class="material-icons text-2xl mb-1" :class="form.thirdParties && form.thirdParties.length > 0 ? 'text-green-600' : 'text-gray-400'">groups</span>
+                            <div class="text-xs font-bold" :class="form.thirdParties && form.thirdParties.length > 0 ? 'text-green-800' : 'text-gray-500'">Terceros / Grupos</div>
+                            <div class="text-xs mt-1 font-semibold" :class="form.thirdParties && form.thirdParties.length > 0 ? 'text-green-700' : 'text-gray-400'">{{ form.thirdParties ? form.thirdParties.length : 0 }} identificados</div>
+                        </div>
+                    </div>
+                    <div v-if="idd && idd.id_razonSocial" class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded text-xs text-blue-800">
+                        <strong>Última evaluación DD:</strong> {{ idd.id_razonSocial }} · Nivel: {{ idd.nivelDD || 'No definido' }} · Decisión: {{ idd.decision || 'Pendiente' }}
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 5: MONITOREO Y CANAL DE DENUNCIAS -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">5. Estado del Monitoreo y Canal de Denuncias</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded shadow-sm">
+                                <span class="text-xs font-semibold text-gray-700">Canal de denuncias configurado</span>
+                                <span :class="form.reportingChannel ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-600 border-red-100'" class="px-2 py-1 border rounded text-xs font-bold">{{ form.reportingChannel ? 'SÍ' : 'NO' }}</span>
+                            </div>
+                            <div v-if="form.reportingChannel" class="text-xs text-gray-600 px-2 italic">{{ form.reportingChannel }}</div>
+                            <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded shadow-sm">
+                                <span class="text-xs font-semibold text-gray-700">Tipo de gestión del canal</span>
+                                <span class="px-2 py-1 bg-blue-50 border border-blue-100 rounded text-xs font-bold text-blue-800 capitalize">{{ form.channelManagement || 'No definido' }}</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded shadow-sm">
+                                <span class="text-xs font-semibold text-gray-700">Formulario de denuncia usado</span>
+                                <span :class="rf && (rf.fechaRecepcion || rf.relatoHechos) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-500 border-gray-200'" class="px-2 py-1 border rounded text-xs font-bold">{{ rf && (rf.fechaRecepcion || rf.relatoHechos) ? 'SÍ' : 'Disponible' }}</span>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-blue-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wide">Informes Ejecutivos Habilitados</h4>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div v-for="ie in informesEjecutivos" :key="ie.id" class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">{{ ie.label }}</span>
+                                    <span :class="ie.enabled ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ ie.enabled ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 6: DIVULGACIÓN Y CAPACITACIÓN -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">6. Estado de Divulgación y Capacitación</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black" :class="divPlanCom && divPlanCom.items && divPlanCom.items.filter(i=>i.enabled).length > 0 ? 'text-blue-700' : 'text-gray-400'">{{ divPlanCom && divPlanCom.items ? divPlanCom.items.filter(i=>i.enabled).length : 0 }}<span class="text-lg font-normal text-gray-400">/{{ divPlanCom && divPlanCom.items ? divPlanCom.items.length : 0 }}</span></div>
+                            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Actividades de Comunicación Habilitadas</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black" :class="divPlanCap && divPlanCap.items && divPlanCap.items.filter(i=>i.enabled).length > 0 ? 'text-teal-700' : 'text-gray-400'">{{ divPlanCap && divPlanCap.items ? divPlanCap.items.filter(i=>i.enabled).length : 0 }}<span class="text-lg font-normal text-gray-400">/{{ divPlanCap && divPlanCap.items ? divPlanCap.items.length : 0 }}</span></div>
+                            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Actividades de Capacitación Habilitadas</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Plan de Comunicación -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-blue-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wide">Plan de Comunicación</h4>
+                            </div>
+                            <div class="p-2 space-y-1 max-h-48 overflow-y-auto">
+                                <div v-for="item in (divPlanCom && divPlanCom.items ? divPlanCom.items : [])" :key="item.id" class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">{{ item.label }}</span>
+                                    <span :class="item.enabled ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ item.enabled ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Plan de Capacitación -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-teal-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-teal-900 text-xs uppercase tracking-wide">Plan de Capacitación</h4>
+                            </div>
+                            <div class="p-2 space-y-1 max-h-48 overflow-y-auto">
+                                <div v-for="item in (divPlanCap && divPlanCap.items ? divPlanCap.items : [])" :key="item.id" class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">{{ item.label }}</span>
+                                    <span :class="item.enabled ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ item.enabled ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mt-8 border-t border-gray-300 pt-6">
                     <button @click="exportDiagnosticoCSV" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-4 px-4 rounded-lg shadow-lg transition-colors flex items-center justify-center gap-2 mb-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -1812,7 +2160,8 @@
             </div>
 
             <!-- PANEL DE GESTIÓN DE RIESGOS -->
-            <div id="riesgos-view" v-show="showRiesgos" class="bg-gray-50 mx-auto shadow-2xl p-4 md:p-8 max-w-[29.7cm] mb-8 rounded">
+            <div id="riesgos-view" v-show="showRiesgos" class="bg-gray-50 mx-auto shadow-2xl p-4 md:p-8 max-w-[29.7cm] mb-8 rounded relative">
+                <div class="nota-ilustrativa no-print">Esquema ilustrativo, cada entidad debe adaptarla a su naturaleza y capacidades</div>
                 <h1 class="text-xl md:text-2xl font-bold uppercase text-center border-b-2 border-blue-900 pb-2 mb-6 text-blue-900">Mapa de Calor y Gestión de Riesgos</h1>
                 
                 <!-- Sub Pestañas Riesgos -->
@@ -2648,7 +2997,19 @@
                 </div>
 
                 <div id="exportable-document" v-show="showPolitica || showProtocolos || showDebida" class="word-doc relative bg-white mx-auto shadow-2xl p-4 md:p-10 max-w-[21cm] min-h-[29.7cm] text-black">
-                    <div v-show="showPolitica">
+                    <div class="nota-ilustrativa no-print">Esquema ilustrativo, cada entidad debe adaptarla a su naturaleza y capacidades</div>
+
+                    <!-- Sub-pestañas Política -->
+                    <div v-show="showPolitica" class="flex gap-2 mb-6 border-b border-gray-300 no-print flex-wrap">
+                        <button @click="politicaSubTab = 'politica'" :class="politicaSubTab === 'politica' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">policy</span> Política de Cumplimiento
+                        </button>
+                        <button @click="politicaSubTab = 'etica'" :class="politicaSubTab === 'etica' ? 'border-b-2 border-indigo-700 text-indigo-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-indigo-700 bg-gray-100 opacity-80'" class="px-6 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">menu_book</span> Código de Ética y Conducta
+                        </button>
+                    </div>
+
+                    <div v-show="showPolitica && politicaSubTab === 'politica'">
                         <h1 class="text-lg md:text-xl font-bold uppercase text-center border-b-2 border-black pb-2 mb-6">Política de cumplimiento del Programa de Transparencia y Ética Empresarial (PTEE)</h1>
 
                     <!-- 1. Contexto -->
@@ -2933,6 +3294,117 @@
                 </div>
                 </div> <!-- Fin de bloque showPolitica -->
                 <!-- Fin Anexo: Glosario -->
+
+                <!-- DOCUMENTO: CÓDIGO DE ÉTICA Y CONDUCTA -->
+                <div v-show="showPolitica && politicaSubTab === 'etica'">
+                    <div class="text-center mb-8 pb-4 border-b-2 border-gray-800 flex flex-col items-center">
+                        <h1 class="text-lg md:text-xl font-bold uppercase text-center !border-none !mb-2 !pb-0">CÓDIGO DE ÉTICA Y CONDUCTA</h1>
+                        <p class="font-bold text-md uppercase tracking-wider text-indigo-900">{{ form.entityName || '[Nombre de la Entidad]' }}</p>
+                    </div>
+
+                    <h2>1. Identificación y características de la entidad</h2>
+                    <p>
+                        <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> es una entidad sin ánimo de lucro constituida como {{ form.entityType || '[Naturaleza Jurídica]' }}, comprometida con altos estándares de transparencia y legalidad en el desarrollo de su objeto social. Nuestro propósito fundamental u objeto social se centra en: <i>"{{ form.socialPurpose || '[Propósito/Misión de la entidad]' }}"</i>.
+                    </p>
+                    <p>
+                        El presente Código de Ética y Conducta constituye la norma de rango ético y de integridad superior dentro de nuestra organización. Expresa de forma pública y manifiesta los estándares de comportamiento que esperamos de todo nuestro equipo humano, cuerpo directivo, personal laboral, voluntariado, contratistas y colaboradores externos con los que nos relacionamos. Tiene la doble finalidad de hacer públicos los principios que rigen a la entidad y establecer una clara protección institucional de cumplimiento normativo y prevención de riesgos, estableciendo líneas rojas innegociables.
+                    </p>
+
+                    <h2>2. Declaración de valores</h2>
+                    <p>
+                        En <b>{{ form.entityName || '[Nombre de la Entidad]' }}</b> consideramos que nuestros valores institucionales son los pilares sobre los cuales sustentamos todas nuestras decisiones, programas y vinculaciones. Estos valores rigen nuestra forma de trabajar diariamente, siendo un marco de referencia inquebrantable de lo que somos y lo que representamos.
+                    </p>
+                    <ul v-if="form.selectedValues && form.selectedValues.length > 0">
+                        <li v-for="nombreValor in form.selectedValues" :key="nombreValor">
+                            <b>{{ nombreValor }}:</b> {{ getValorDescripcion(nombreValor) }}
+                        </li>
+                    </ul>
+                    <p v-else class="text-red-500 italic">
+                        [Seleccione al menos un valor en el panel de configuración para visualizar esta sección].
+                    </p>
+                    <p>
+                        El conjunto de estos valores no pretende ser un listado exhaustivo de todas las situaciones posibles de la cotidianidad, pero provee un marco inequívoco de juicio que guiará y respaldará actuaciones íntegras.
+                    </p>
+
+                    <h2>3. Normas generales de conducta</h2>
+                    <p>
+                        Todas las personas vinculadas orgánicamente con la entidad asumen el compromiso ineludible de observar las siguientes normas generales de conducta, cuya exigencia aplica indistintamente del cargo o jerarquía:
+                    </p>
+                    <ul>
+                        <li><b>Cumplimiento normativo:</b> Se debe cumplir y promover el cumplimiento estricto de las leyes nacionales y normatividad vigente, así como las directrices y manuales internos.</li>
+                        <li><b>Respeto y trato digno:</b> Mantener relaciones basadas en el respeto mutuo, sin tolerar ningún tipo de discriminación por raza, género, religión, estrato sociocultural u orientación.</li>
+                        <li><b>Uso adecuado de recursos:</b> Preservar, cuidar y utilizar exclusivamente en beneficio de las labores y finalidades de la entidad todos los bienes, dineros, equipos e información puestos a su disposición. Queda estrictamente prohibido su uso en beneficio propio o de terceros ajenos a la organización.</li>
+                        <li><b>Representación y reputación:</b> Salvaguardar la imagen institucional de la {{ form.entityType || '[Naturaleza Jurídica]' }} frente a su entorno y grupos de valor, actuando de forma transparente en las relaciones públicas.</li>
+                    </ul>
+
+                    <h2>4. Políticas generales de ética, transparencia y cumplimiento</h2>
+
+                    <div v-if="form.includeZeroTolerance">
+                        <h3>Política de cumplimiento del Programa de transparencia y ética empresarial - PTEE -</h3>
+                        <p>
+                            Nuestra organización adopta y ejecuta de manera tajante una política de <b>"Tolerancia Cero"</b> frente a cualquier conducta, acción u omisión que constituya corrupción, fraude, lavado de activos (LA/FT) o soborno (nacional o transnacional). Ningún empleado, directivo o representante podrá ofrecer, prometer, autorizar, aceptar, ni solicitar directamente, ni indirectamente ventajas financieras, ni pagos indebidos para obtener un trato de favor, concesión de contratos u otros beneficios indebidos. Quien incurra en dichas conductas se enfrentará inmediatamente a procedimientos sancionatorios severos y denuncias ante las autoridades judiciales.
+                        </p>
+                    </div>
+
+                    <div v-if="form.includeConflictInterest">
+                        <h3>Conflicto de interés</h3>
+                        <p>
+                            <b>Definición:</b> {{ confDefinicion }}
+                        </p>
+                        <p>
+                            En <b>{{ form.entityName || '[Entidad]' }}</b> exigimos que todas las relaciones se mantengan con estricta separación de los beneficios particulares. Cualquier conflicto real, potencial o aparente, o duda razonable, debe ser declarado sin demora ante el superior jerárquico o el responsable de la ética. Quien incumpla esta obligación de declaración estará sujeto a las medidas disciplinarias previstas en el presente Código.
+                        </p>
+                    </div>
+
+                    <h3>Relación con terceros y transparencia</h3>
+                    <p>
+                        Este Código se extiende de forma colaborativa hacia nuestros proveedores, contratistas y alianzas externas. Estos actores son una extensión de nuestro quehacer y por ende se encuentran sujetos al escrutinio ético de sus operaciones. Ellos utilizarán este Código para estar informados sobre aquellas conductas éticas que la Entidad respalda incondicionalmente, así como para reconocer cuáles son las conductas y líneas rojas estrictamente prohibidas y no autorizadas. Constituye una guía referencial de nuestra confianza.
+                    </p>
+
+                    <h2>5. Aplicación, responsabilidades y canal de denuncia</h2>
+                    <p>
+                        Hacer de la integridad una realidad viviente requiere responsabilidades claras. El fomento institucional, revisión y mejora de este Código le atañe al {{ form.adminOrgan || '[Órgano de Administración]' }}. No obstante, la supervisión de campo y la orientación directa diaria recaerá sobre las funciones designadas al <b>{{ form.ethicsRole || '[Responsable de Ética]' }}</b>.
+                    </p>
+                    <p>
+                        <b>Canal de comunicación y denuncias:</b> Hemos habilitado y puesto a disposición de todo nuestro personal, beneficiarios, contrapartes y la ciudadanía en general, un mecanismo para consultar dilemas éticos, reportar presuntas violaciones del Código y denunciar en cualquier momento posibles indicios de actos corruptos o delictivos. Este canal cuenta con garantías de confidencialidad y no-represalias. Las comunicaciones pueden enviarse a: <b>{{ form.reportingChannel || '[Indicación del Canal de Denuncias]' }}</b>. Todos los reportes serán recibidos e investigados por el {{ form.ethicsRole || '[Responsable de Ética]' }}.
+                    </p>
+
+                    <h2>6. Régimen de sanciones y medidas disciplinarias</h2>
+                    <p>
+                        El cumplimiento del presente Código es de carácter estrictamente obligatorio. Cualquier incumplimiento no supone únicamente consecuencias reputacionales graves, sino que acarreará implicaciones disciplinarias inmediatas y, de ser el caso, escalamiento a instancias civiles o penales por el presunto quebrantamiento del margen legal constituido.
+                    </p>
+                    <p>
+                        <span v-if="form.hasRIT">
+                            Toda omisión, transgresión a los valores, conductas reprobables y líneas rojas descritas dentro de los compromisos acá expuestos, se articulará de forma inmediata con las disposiciones y medidas establecidas formalmente en el <b>Reglamento Interno de Trabajo (RIT)</b> vigente de la organización, acudiendo rigurosamente a las sanciones o cancelaciones contractuales y descargos allí contemplados.
+                        </span>
+                        <span v-else>
+                            Toda omisión, transgresión a los valores, conductas reprobables y líneas rojas descritas dentro de los compromisos acá expuestos, se articulará y derivará inmediatamente para sanción de conformidad con lo estipulado bajo {{ form.alternativeSanction || 'el Código Sustantivo del Trabajo y/o los vigentes Estatutos Sociales' }}. Las medidas correctivas aplicadas serán proporcionales a la gravedad del quebranto, abarcando desde el llamamiento de atención formal hasta la posible desvinculación justificada por falta grave, cancelación de relaciones civiles y acciones correspondientes por afectaciones ocasionadas.
+                        </span>
+                    </p>
+
+                    <h2>7. Difusión, entrada en vigor y seguimiento</h2>
+                    <p>
+                        <b>Difusión:</b> El Código será socializado y entregado a todas las personas que hacen parte del equipo desde el momento de su ingreso, y permanecerá publicado en los medios internos y comunicacionales externos de la organización para el público general. Se integrarán capacitaciones periódicas para afianzar el conocimiento de sus directrices.
+                    </p>
+                    <p>
+                        <b>Seguimiento y evaluación:</b> El {{ form.ethicsRole || '[Responsable de Ética]' }} deberá revisar activamente la efectividad y pertinencia de este instrumento. Presentará un reporte periódico frente al {{ form.adminOrgan || '[Órgano de Administración]' }} proponiendo las actualizaciones o mejoras razonables nacidas de los cambios operativos de la entidad o situaciones que así lo requieran.
+                    </p>
+                    <p>
+                        El presente Código de Ética y Conducta entra en pleno vigor para toda la Entidad a partir del <b>{{ formatDisplayDate(form.eticsApprovalDate) || '[Día/Mes/Año]' }}</b>, obligando a todos quienes por un vínculo u otro pertenezcan a la organización y dejando derogado cualquier manual institucional ético de fechas anteriores.
+                    </p>
+
+                    <table style="width: 100%; margin-top: 80px; margin-bottom: 40px; text-align: center; font-size: 14px; font-weight: bold;" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                                Representante Legal
+                            </td>
+                            <td style="width: 20%;"></td>
+                            <td style="width: 40%; border-top: 1px solid black; padding-top: 10px;">
+                                Presidente/a {{ form.adminOrgan || 'del Órgano de Administración' }}
+                            </td>
+                        </tr>
+                    </table>
+                </div> <!-- Fin de bloque Código de Ética -->
 
                 <!-- Protocolos Específicos -->
                 <div v-show="showProtocolos && (protocols.political.applies || protocols.lobbying.applies || protocols.donations.applies || protocols.documents.applies || protocols.gifts.applies || protocols.expenses.applies)">
@@ -5013,7 +5485,8 @@
                 </div>
 
                 <!-- MONITOREO, DENUNCIA E INVESTIGACIÓN (contenedor independiente) -->
-                <div id="monitoreo-view" v-show="showMonitoreo" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded">
+                <div id="monitoreo-view" v-show="showMonitoreo" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded relative">
+                    <div class="nota-ilustrativa no-print">Esquema ilustrativo, cada entidad debe adaptarla a su naturaleza y capacidades</div>
 
                     <!-- Sub-pestañas Monitoreo -->
                     <div class="flex gap-2 mb-6 border-b border-gray-300 no-print flex-wrap">
@@ -7687,7 +8160,8 @@
                 </div> <!-- Cierra monitoreo-view -->
 
                 <!-- DIVULGACIÓN, COMUNICACIÓN, CAPACITACIÓN Y REPORTE (contenedor independiente) -->
-                <div id="divulgacion-view" v-show="showDivulgacion" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded">
+                <div id="divulgacion-view" v-show="showDivulgacion" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded relative">
+                    <div class="nota-ilustrativa no-print">Esquema ilustrativo, cada entidad debe adaptarla a su naturaleza y capacidades</div>
 
                     <!-- Sub-pestañas Divulgación -->
                     <div class="flex gap-2 mb-6 border-b border-gray-300 no-print flex-wrap">
@@ -8430,7 +8904,8 @@
                 </div> <!-- Cierra divulgacion-view -->
 
                 <!-- PANEL DE CONFLICTOS DE INTERESES -->
-                <div id="conflictos-view" v-show="showConflictos" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded">
+                <div id="conflictos-view" v-show="showConflictos" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded relative">
+                    <div class="nota-ilustrativa no-print">Esquema ilustrativo, cada entidad debe adaptarla a su naturaleza y capacidades</div>
                     
                     <!-- Sub-pestañas Conflictos -->
                     <div class="flex gap-2 mb-6 border-b border-gray-300 no-print flex-wrap">
@@ -8445,6 +8920,9 @@
                         </button>
                         <button @click="conflictosSubTab = 'clausulas'" :class="conflictosSubTab === 'clausulas' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
                             <span class="material-icons text-base">gavel</span> Cláusulas
+                        </button>
+                        <button @click="conflictosSubTab = 'casuisticas'" :class="conflictosSubTab === 'casuisticas' ? 'border-b-2 border-orange-700 text-orange-800 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-orange-700 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">cases</span> Casuísticas
                         </button>
                     </div>
 
@@ -8462,7 +8940,7 @@
                                 En consonancia con lo anterior, establecemos la siguiente definición fundamental de nuestro Programa de Transparencia y Ética Empresarial (PTEE):
                             </p>
                             <div class="p-3 bg-gray-100 border-l-4 border-blue-800 text-sm italic text-gray-700 mb-4">
-                                <strong>"Conflictos de intereses":</strong> Situación en la cual los intereses personales, directos o indirectos, de los empleados, directivos, o sus familiares, interfieren o parecen interferir con los intereses de la entidad, comprometiendo su objetividad al tomar decisiones y ejercer su rol y funciones.
+                                <strong>"Conflictos de intereses":</strong> {{ confDefinicion }}
                             </div>
                             <p class="text-sm text-gray-700 mb-2 mt-4 font-bold">Clasificación de los conflictos de intereses:</p>
                             <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2 mb-6">
@@ -8482,12 +8960,12 @@
 
                             <h3 class="text-md font-bold text-blue-800 mt-6 mb-3">Tipificaciones genéricas de conflictos (incluidos)</h3>
                             <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
-                                <li v-if="confTipos.familiares"><strong>Relaciones personales y familiares / parentesco:</strong> Cuando existan vínculos familiares directos (hasta el 4° grado de consanguinidad, 2° afinidad o 1° civil, núcleo familiar y compañeros/as sentimentales permanentes) con terceros de la Entidad (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, contratistas, cooperantes</span>), competidores directos o candidatos laborales, en donde el declarante tenga influencia sobre la decisión, contratación o supervisión.</li>
-                                <li v-if="confTipos.financieros"><strong>Intereses financieros en terceros:</strong> Cuando un colaborador, directivo, los mismos terceros o sus familiares cercanos posean una participación accionaria, de propiedad o derechos económicos significativos en otro tercero actual o potencial (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, aliados, donantes</span>) u organización aliada de la Entidad.</li>
-                                <li v-if="confTipos.regalos"><strong>Entregas y recepción de regalos / gastos:</strong> Las atenciones, obsequios, viajes, hospedajes y otro tipo de hospitalidades de impacto entregados u ofrecidos a terceros (especialmente sector público), o recibidos por parte de las contrapartes (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, prestadores de servicios</span>), que pueden parecer como una influencia en las decisiones objetivas, en conexidad con lo dispuesto en los Protocolos o Directrices para este fin.</li>
-                                <li v-if="confTipos.cargosExternos"><strong>Cargos externos y paralelos:</strong> Participación simultánea en otras Juntas Directivas, consejos de administración o el ejercicio de cargos en organizaciones de fines similares o en terceros vinculados (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>contratistas, donantes</span>), donde un mismo individuo podría tener deberes de lealtad cruzados o enfrentar posiciones antagónicas institucionales.</li>
-                                <li v-if="confTipos.politicos"><strong>Actividades políticas, cabildeo (lobby) y relacionamiento con el sector público:</strong> Situaciones en las cuales empleados, directivos o terceros actúen en nombre de campañas políticas, realicen contribuciones monetarias de carácter particular, o utilicen su posición y relacionamiento para superponer intereses personales o institucionales indebidos ante organismos, autoridades de control, funcionarios estatales o personas que cumplen funciones públicas gubernamentales o no gubernamentales.</li>
-                                <li v-if="confTipos.informacion"><strong>Uso de información privilegiada:</strong> Parte de la base de clasificar y diferenciar la información institucional en tres niveles: (i) <i>Pública o No Confidencial</i> (de libre circulación e interés general), (ii) <i>Confidencial</i> (restringida a ciertos roles autorizados para su manejo, como bases de datos, estrategias comerciales o listas de contrapartes) y (iii) <i>Privilegiada o de Reserva</i> (altamente sensible, de impacto crítico y no divulgada, como proyectos de innovación, presupuestos cerrados o pliegos de contratación previos a publicación). El conflicto de interés ocurre cuando un colaborador, directivo o tercero (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>contratistas, aliados</span>) utiliza de forma indebida información clasificada como Confidencial o Privilegiada para obtener un lucro comercial, ventaja competitiva o beneficio directo para sí mismo o para otros, interfiriendo injustamente antes de que dicha información llegue a ser de conocimiento público oficial.</li>
+                                <li v-if="confTipos.familiares"><strong>Relaciones personales y familiares / parentesco:</strong> Se presenta cuando existe un vínculo familiar o personal ({{ confAlcanceFamiliarTexto }}) entre el declarante y un tercero con quien la Entidad mantiene o evalúa una relación (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, contratistas, cooperantes</span>), competidores directos o candidatos laborales, y dicho vínculo puede incidir —real o aparentemente— tanto en el ejercicio de las funciones del declarante como en su participación en procesos de selección, supervisión, evaluación o toma de decisión respecto a ese tercero. La existencia del vínculo no determina en sí misma una actuación incorrecta; la situación debe identificarse, declararse y gestionarse para preservar la objetividad institucional.</li>
+                                <li v-if="confTipos.financieros"><strong>Intereses financieros en terceros:</strong> Se configura cuando el declarante, sus familiares cercanos o terceros vinculados a él poseen una participación accionaria, de propiedad o derechos económicos significativos en una organización con la que la Entidad tiene o evalúa una relación (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, aliados, donantes</span>) u organización aliada. Este interés puede incidir —real o aparentemente— en la imparcialidad del declarante tanto en el ejercicio de sus funciones ordinarias como en decisiones relacionadas con dicha organización. Su identificación y declaración permite a la Entidad determinar las medidas de gestión apropiadas.</li>
+                                <li v-if="confTipos.regalos"><strong>Entregas y recepción de regalos / gastos:</strong> Comprende la entrega, ofrecimiento o recepción de atenciones, obsequios, viajes, hospedajes u otras formas de hospitalidad entre el declarante y terceros con quienes la Entidad tiene o mantiene una relación contractual o de interés institucional —especialmente con el sector público— (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>proveedores, prestadores de servicios</span>). Este tipo de intercambio puede generar —real o aparentemente— condiciones que comprometan la independencia del criterio del declarante tanto en el desempeño cotidiano de sus funciones como en decisiones puntuales. La situación debe valorarse conforme a los Protocolos o Directrices vigentes de la Entidad para determinar si requiere gestión, restricción o declaración formal.</li>
+                                <li v-if="confTipos.cargosExternos"><strong>Cargos externos y paralelos:</strong> Se presenta cuando el declarante participa simultáneamente en otras Juntas Directivas, consejos de administración u otros cargos en organizaciones de fines similares a los de la Entidad, o vinculadas a terceros con quienes la Entidad mantiene relaciones (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>contratistas, donantes</span>). Esta participación puede generar situaciones en las que los intereses, deberes o responsabilidades del declarante frente a otra organización incidan —real o potencialmente— tanto en el ejercicio habitual de sus funciones dentro de la Entidad como en la objetividad de sus decisiones. Su declaración permite evaluar si se requieren medidas de separación funcional o salvaguardas específicas.</li>
+                                <li v-if="confTipos.politicos"><strong>Actividades políticas, cabildeo (lobby) y relacionamiento con el sector público:</strong> Se configura cuando el declarante, en el marco de su cargo o representación institucional, participa en actividades vinculadas a campañas políticas, realiza contribuciones monetarias de carácter particular, o mantiene un relacionamiento con organismos públicos, autoridades de control, funcionarios estatales o personas que cumplen funciones públicas —gubernamentales o no gubernamentales— en condiciones que podrían hacer coincidir o contraponer intereses personales, institucionales o de terceros, afectando tanto el ejercicio imparcial de sus funciones como la actuación institucional frente a dichos actores. La situación debe declararse y analizarse para establecer si se requieren salvaguardas o restricciones específicas.</li>
+                                <li v-if="confTipos.informacion"><strong>Uso de información privilegiada:</strong> Se presenta cuando el declarante, directivo o tercero (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>contratistas, aliados</span>) tiene o ha tenido acceso a información institucional clasificada como Confidencial o Privilegiada, y existe una situación en la que dicha información podría —real o potencialmente— beneficiar al propio declarante, a un familiar cercano o a una organización con la que mantiene vínculos, ya sea en el ejercicio de sus funciones o fuera de ellas, antes de que tal información sea de conocimiento público oficial. La clasificación en tres niveles orienta la valoración del alcance y la sensibilidad del posible conflicto: (i) <i>Pública o No Confidencial</i> (de libre circulación e interés general), (ii) <i>Confidencial</i> (restringida a ciertos roles autorizados para su manejo, como bases de datos, estrategias comerciales o listas de contrapartes) y (iii) <i>Privilegiada o de Reserva</i> (altamente sensible, de impacto crítico y no divulgada, como proyectos de innovación, presupuestos cerrados o pliegos de contratación previos a publicación). Su reconocimiento y declaración permite a la Entidad establecer las barreras de información y controles pertinentes para cada caso.</li>
                                 <li v-for="(item, idx) in customConfTipos" :key="idx"><strong>{{item.nombre}}:</strong> {{item.descripcion}}</li>
                             </ul>
                         </div>
@@ -8496,7 +8974,7 @@
                         <div v-show="conflictosSubTab === 'procedimiento'">
                             <h2 class="text-lg font-bold text-blue-800 border-b border-blue-200 pb-1 mb-4">2. Procedimiento de reporte y gestión de conflictos de intereses</h2>
                             <p class="text-sm text-gray-700 mb-4">
-                                Todo integrante de la organización, así como los terceros con los que la Entidad se relaciona (proveedores, contratistas, consultores, cooperantes, ejecutores, etc.), están en la obligación de declarar un conflicto de interés inmediatamente logren advertir que una situación los enfrenta con los principios institucionales de imparcialidad o lealtad, ya sea de forma real, aparente o potencial. Este reporte se rige por un esquema centralizado a través del canal oficial definido (<strong v-if="confCanalDeclaracion">{{ confCanalDeclaracion }}</strong>) y su tratamiento variará dependiendo del cargo, el tipo de relación con la Entidad o de la capacidad para materializar riesgos críticos (Corrupción y Soborno Transnacional).
+                                Todo integrante de la organización, así como los terceros con los que la Entidad se relaciona (proveedores, contratistas, consultores, cooperantes, ejecutores, etc.), en el ejercicio consciente de sus roles deben estar atentos y declarar un conflicto de interés cuando logren advertir que una situación atenta con la imparcialidad o lealtad con la Entidad, ya sea de forma real, aparente o potencial. Este reporte se canaliza en un esquema centralizado (Plataforma digital interactiva ptee.co) y su valoración y tratamiento variará dependiendo del cargo, el tipo de relación con la Entidad o de la capacidad para materializar riesgos críticos (Corrupción y Soborno Transnacional).
                             </p>
                             
                             <h3 class="text-md font-bold text-blue-800 mt-6 mb-3">Conexidad con riesgos de C/ST (corrupción y soborno)</h3>
@@ -8582,7 +9060,7 @@
                                     <span class="material-icons text-sm">print</span> Imprimir / PDF
                                 </button>
                             </div>
-                            <p class="text-[11px] text-gray-600 mb-3 italic text-center no-print">Este prototipo de formato servirá como modelo interactivo para digitalizar o imprimir las declaraciones. Periodicidad General Requerida: <strong>{{ confDeclaracionPeriodicidad }}</strong></p>
+                            <p class="text-[11px] text-gray-600 mb-3 italic text-center no-print">Este prototipo de formato es un ejemplo que servirá como modelo interactivo para adaptar a su entidad, digitalizar o imprimir las declaraciones. Periodicidad General Requerida: <strong>Al ingreso y Anualmente</strong></p>
                             
                             <div id="print-conflicto-intereses" class="border-2 border-gray-400 p-6 bg-white max-w-3xl mx-auto shadow-sm">
                                 <div class="text-center mb-6 border-b border-gray-300 pb-4">
@@ -8663,7 +9141,7 @@
                             <h2 class="text-lg font-bold text-blue-800 border-b border-blue-200 pb-1 mb-4">4. Banco de cláusulas modelo para terceros</h2>
                             
                             <p class="text-sm text-gray-700 mb-6">
-                                Las siguientes redacciones deben anexarse o introducirse como parte del clausulado de Prevención de Conflicto de Intereses en los formatos de adhesión y en el diseño contractual y estatutario integral que promueva el PTEE en diferentes tipos de relacionamiento (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>tipos de terceros</span>):
+                                Las siguientes redacciones podrán tomarse como referencia y adaptarse, para anexarse o introducirse como parte del clausulado de Prevención de Conflicto de Intereses en los formatos de adhesión y en el diseño contractual integral que promueva el PTEE en diferentes tipos de relacionamiento (Proveedores, Empleados, Beneficiarios):
                             </p>
 
                             <div class="bg-gray-50 border border-gray-200 p-4 rounded mb-5 relative group">
@@ -8695,6 +9173,526 @@
                             </div>
 
                         </div>
+
+                        <!-- SUB 5. CASUÍSTICAS ORIENTADORAS - CONFLICTOS DE INTERESES Y RIESGOS C/ST -->
+                        <div v-show="conflictosSubTab === 'casuisticas'">
+                            <h2 class="text-lg font-bold text-orange-800 border-b border-orange-200 pb-1 mb-2">5. Casuísticas orientadoras: Conflictos de intereses y su conexión con riesgos de Corrupción y Soborno Transnacional (C/ST)</h2>
+
+                            <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded mb-6 text-sm text-orange-900">
+                                <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:16px">info</span> Nota sobre este anexo</p>
+                                <p>Las casuísticas presentadas a continuación son <strong>escenarios orientadores e ilustrativos</strong>, construidos a partir de tipologías frecuentes en el sector de las Entidades Sin Ánimo de Lucro (ESAL) en Colombia y Latinoamérica. <strong>No son casos únicos ni exhaustivos</strong>; buscan dar visión práctica de situaciones que <em>podrían</em> presentarse, y proveer una orientación inicial de gestión y resolución. Cada situación debe analizarse según el contexto específico de la entidad, la naturaleza del vínculo y la normativa aplicable.</p>
+                            </div>
+
+                            <!-- Leyenda de badges -->
+                            <div class="flex flex-wrap gap-2 mb-6 p-3 bg-gray-50 border border-gray-200 rounded text-xs">
+                                <span class="font-bold text-gray-600 w-full mb-1">Referencias de clasificación:</span>
+                                <span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full font-semibold">● Real</span>
+                                <span class="bg-yellow-100 text-yellow-800 border border-yellow-300 px-2 py-0.5 rounded-full font-semibold">● Potencial</span>
+                                <span class="bg-purple-100 text-purple-800 border border-purple-300 px-2 py-0.5 rounded-full font-semibold">● Aparente</span>
+                                <span class="ml-2 bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full font-semibold">🏛 JD / Máx. Órgano</span>
+                                <span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full font-semibold">⚙ Alta Gerencia</span>
+                                <span class="bg-orange-100 text-orange-800 border border-orange-300 px-2 py-0.5 rounded-full font-semibold">👤 Operativo/Empleado</span>
+                                <span class="bg-gray-200 text-gray-700 border border-gray-300 px-2 py-0.5 rounded-full font-semibold">🤝 Tercero</span>
+                                <span class="ml-2 bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full font-semibold">⚠ Riesgo C/ST Alto</span>
+                                <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full font-semibold">⚠ Riesgo C/ST Medio</span>
+                            </div>
+
+                            <!-- CATEGORÍA I -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-blue-500">family_restroom</span> I. Relaciones personales, familiares o de parentesco</h3>
+
+                                <!-- Caso 1 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-blue-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-blue-700 rounded-full px-2 py-0.5">Caso 1</span>
+                                        <span class="font-semibold text-sm">El cónyuge del Coordinador de Adquisiciones es socio de empresa proveedora</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">La ESAL convoca un proceso de selección para adquirir materiales para sus actividades comunitarias. El Coordinador de Adquisiciones participa activamente en la evaluación de ofertas y la empresa de su cónyuge es uno de los proponentes. No ha hecho ninguna declaración al respecto.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Favorecimiento indebido en selección de proveedores. Si la ESAL ejecuta recursos públicos o de cooperación, puede configurarse peculado por apropiación indirecta y fraude a fondos cooperantes. Riesgo de fraccionamiento de contratos para evadir umbrales de aprobación.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-orange-100 text-orange-800 border border-orange-300 px-2 py-0.5 rounded-full">👤 Operativo/Empleado</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Familiares / Financiero</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El Coordinador debe declarar inmediatamente el conflicto y <strong>abstenerse de participar</strong> en todo el proceso de selección.</li>
+                                            <li>Se designa un evaluador sustituto independiente y se informa al Oficial de Cumplimiento.</li>
+                                            <li>Si el proceso ya avanzó, se activa revisión retroactiva y posible anulación; se deja constancia en el expediente.</li>
+                                            <li>Si hay recursos públicos involucrados, se valora notificación a la entidad supervisora del convenio.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 2 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-blue-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-blue-700 rounded-full px-2 py-0.5">Caso 2</span>
+                                        <span class="font-semibold text-sm">Miembro de Junta Directiva es familiar directo del principal cooperante internacional</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un miembro de la Junta Directiva tiene vínculo familiar de primer grado (hermano/a) con el Director Regional de la agencia de cooperación que financia el 70% de los programas de la ESAL. Este miembro participa en la aprobación de informes de ejecución y en decisiones sobre la renovación del convenio. No ha realizado declaración alguna.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Riesgo de aprobación de informes con información sesgada o incompleta para asegurar renovación de fondos. Posible co-optación de la Junta por agente externo financiador. Riesgo de soborno transnacional si la agencia es extranjera y el vínculo influye en condiciones del convenio.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-yellow-100 text-yellow-800 border border-yellow-300 px-2 py-0.5 rounded-full">● Potencial / Aparente</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Familiares / Cargos Externos</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El miembro de Junta debe declarar el vínculo ante el pleno de la Junta y abstenerse de votar en asuntos relacionados con ese cooperante.</li>
+                                            <li>Se analiza si la situación compromete la gobernanza; puede requerirse su reemplazo temporal en el cargo por el período del convenio.</li>
+                                            <li>Se notifica proactivamente a la agencia cooperante sobre el vínculo para preservar la transparencia y evitar apariencia de captura.</li>
+                                            <li>Se documenta el acta de abstención y se registra en el expediente de cumplimiento PTEE.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 3 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-blue-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-blue-700 rounded-full px-2 py-0.5">Caso 3</span>
+                                        <span class="font-semibold text-sm">Director de proyecto vincula a familiar como facilitador temporal sin declarar el parentesco</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">El Director de un proyecto financiado con recursos públicos contrata a su hermano como facilitador de talleres comunitarios bajo la modalidad de prestación de servicios por honorarios, con la justificación de que tiene "perfil adecuado". El proceso no pasó por recursos humanos y el pago se realizó sin verificación de entregables reales.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Posible apropiación indebida de recursos del proyecto (peculado por uso). Desvío de fondos de cooperación. Puede constituir nepotismo con impacto en la rendición de cuentas ante la entidad financiadora. Si los fondos son públicos, activa responsabilidad fiscal ante la Contraloría.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full">⚙ Alta Gerencia</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Familiares</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Se suspende el contrato mientras se investiga internamente; el Director queda apartado del proceso decisorio del proyecto.</li>
+                                            <li>Se auditan los entregables y pagos efectuados; si no hay evidencia de trabajo real, se inicia proceso de reintegro.</li>
+                                            <li>Si hay recursos públicos comprometidos, se activa reporte a la instancia de supervisión y se evalúa denuncia ante autoridades.</li>
+                                            <li>Se aplica medida disciplinaria al Director; puede llegar a desvinculación según reglamento interno.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CATEGORÍA II -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-emerald-600">account_balance_wallet</span> II. Intereses financieros en terceros</h3>
+
+                                <!-- Caso 4 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-emerald-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-emerald-700 rounded-full px-2 py-0.5">Caso 4</span>
+                                        <span class="font-semibold text-sm">Representante Legal posee participación en empresa que presta servicios a la ESAL</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">El Representante Legal de la ESAL tiene una participación del 30% en una firma de consultoría que es contratada recurrentemente para diseñar los proyectos presentados a la cooperación internacional. La firma es seleccionada directamente sin proceso competitivo, argumentando "conocimiento especializado del sector".</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Autocontratación encubierta. Desvío encubierto de recursos institucionales hacia beneficio personal. Si la ESAL recibe fondos públicos o internacionales, puede configurarse peculado o fraude a recursos cooperantes. La selección directa sin proceso puede violar normativas de contratación.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Financiero / Cargos Externos</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El Representante Legal debe declarar el interés financiero ante la Junta Directiva y abstenerse de toda decisión relacionada con esa firma.</li>
+                                            <li>La Junta evalúa si la situación es subsanable (ej. cesión de la participación o terminación del contrato con la firma) o si requiere desvinculación del cargo.</li>
+                                            <li>Se realiza auditoría de los contratos adjudicados, verificando precios de mercado y entregables reales.</li>
+                                            <li>Se implementa política de selección competitiva obligatoria para todas las consultorías, con aprobación de Junta.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 5 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-emerald-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-emerald-700 rounded-full px-2 py-0.5">Caso 5</span>
+                                        <span class="font-semibold text-sm">La Fundadora factura servicios a la ESAL a través de empresa de su hijo</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">La fundadora de la organización —quien ya no tiene cargo formal, pero mantiene influencia significativa sobre la Junta— dirige de facto los procesos de capacitación. Sus servicios son facturados a través de la empresa de comunicaciones de su hijo, que figura como prestador de "producción de contenidos". Los pagos no se auditan por deferencia a la fundadora.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Desvío de recursos a través de intermediario familiar. Facturación fraudulenta de servicios prestados por persona diferente al contratado. Fraude interno. Si los fondos son de cooperación, se configura uso indebido de recursos de donantes. Riesgo reputacional alto.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Financiero / Familiares</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>La Junta Directiva, liderada por miembros independientes, abre investigación interna sobre los contratos con la empresa del hijo.</li>
+                                            <li>Se solicita documentación completa de entregables y se verifica la efectiva ejecución de los servicios facturados.</li>
+                                            <li>Se formaliza una política de partes relacionadas que prohíba expresamente este tipo de triangulación y exija aprobación explícita de la Junta para contratos con personas vinculadas a fundadores.</li>
+                                            <li>Si hay hallazgos de cobros injustificados, se activa proceso de reintegro y se valora denuncia penal.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CATEGORÍA III -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-amber-600">card_giftcard</span> III. Regalos, hospitalidad y relacionamiento con el sector público</h3>
+
+                                <!-- Caso 6 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-amber-600 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-amber-700 rounded-full px-2 py-0.5">Caso 6</span>
+                                        <span class="font-semibold text-sm">Funcionario público ofrece agilización de trámite a cambio de "patrocinio" de evento oficial</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un funcionario de la Secretaría de Educación que tramita el aval de un proyecto educativo de la ESAL sugiere —de manera informal— que si la organización "apoya" su congreso municipal (cubriendo refrigerios y alquiler de equipos por $4 millones), el proceso "se agilizaría". El Director Ejecutivo de la ESAL considera hacerlo para no perder el proyecto.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Cohecho activo (soborno) a funcionario público. Aunque la ESAL no solicita ventaja indebida sino la que le corresponde legalmente, el pago bajo esa condición la expone a responsabilidad por soborno según la Ley 1474/2011. El vínculo entre el pago y la acción del funcionario es la esencia del soborno.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-yellow-100 text-yellow-800 border border-yellow-300 px-2 py-0.5 rounded-full">● Potencial / Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full">⚙ Alta Gerencia</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Regalos / Político-Público</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Crítico</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li><strong>No realizar el pago bajo ninguna circunstancia.</strong> Realizar el "patrocinio" condicionado al trámite es cohecho activo, independientemente del monto.</li>
+                                            <li>El Director Ejecutivo reporta inmediatamente al Oficial de Cumplimiento y se documenta la conversación con el funcionario (fecha, medio, descripción).</li>
+                                            <li>Se evalúa denuncia formal ante la Procuraduría o Fiscalía por extorsión/concusión del funcionario público.</li>
+                                            <li>Se busca canal alterno para el trámite y se pone en conocimiento del superior jerárquico del funcionario.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 7 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-amber-600 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-amber-700 rounded-full px-2 py-0.5">Caso 7</span>
+                                        <span class="font-semibold text-sm">Proveedor obsequia materiales "de cortesía" justo antes de proceso de renovación de contrato</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un proveedor de insumos para programas sociales entrega —sin factura ni registro— una donación de materiales escolares al proyecto de la ESAL, una semana antes de que se abra el proceso de renovación del contrato de suministros. La coordinadora del proyecto acepta la entrega "a nombre de los beneficiarios" sin informarlo a Cumplimiento.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">La entrega previa al proceso puede condicionar la imparcialidad en la evaluación. Aunque la donación beneficia a los programas, crea apariencia de conflicto y puede interpretarse como soborno indirecto. Riesgo de que la selección quede sesgada a favor de ese proveedor sin criterio objetivo.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-purple-100 text-purple-800 border border-purple-300 px-2 py-0.5 rounded-full">● Aparente / Potencial</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-orange-100 text-orange-800 border border-orange-300 px-2 py-0.5 rounded-full">👤 Operativo/Empleado</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Regalos / Hospitalidad</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">⚠ Medio</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>La coordinadora declara inmediatamente la recepción al Oficial de Cumplimiento, quien decide si se registra la donación formalmente o se devuelve.</li>
+                                            <li>El proveedor queda inhabilitado de participar en el proceso de renovación inmediato; se convoca nuevo proceso competitivo.</li>
+                                            <li>Se emite circular interna reforzando la política de no recepción de regalos en períodos precontractuales.</li>
+                                            <li>Si la donación es legítima y sin condición, se formaliza como donación institucional con acta y registro.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 8 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-amber-600 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-amber-700 rounded-full px-2 py-0.5">Caso 8</span>
+                                        <span class="font-semibold text-sm">Cooperante internacional exige que el Director sea ponente pagado durante proceso de evaluación del convenio</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Una agencia internacional financiadora —con sede en Europa— invita al Director Ejecutivo a participar como ponente remunerado (honorarios de €3,000 + viaje + alojamiento) en un foro internacional, justo mientras se está evaluando la renovación del convenio de cooperación. La invitación llega de manera informal del responsable del programa en la agencia.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Posible soborno transnacional indirecto: la agencia puede estar buscando crear una relación de compromiso personal con el director que asegure condiciones favorables en la ejecución. Si el convenio es de país extranjero, aplica el régimen de soborno transnacional (FCPA, UK Bribery Act, Convención OCDE). El director puede quedar en posición de deuda de gratitud.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-yellow-100 text-yellow-800 border border-yellow-300 px-2 py-0.5 rounded-full">● Potencial / Aparente</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Regalos / Soborno Transnacional</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El Director declara la invitación a la Junta Directiva antes de aceptar y se solicita autorización formal si se decide participar.</li>
+                                            <li>Si se acepta, se exige que los honorarios sean recibidos por la ESAL —no a título personal— y el viaje se documenta como actividad institucional.</li>
+                                            <li>Se formaliza la participación con carta oficial al cooperante señalando el carácter institucional de la ponencia.</li>
+                                            <li>Se aplaza o se abstiene de la invitación si no es posible separar el beneficio personal del proceso de evaluación en curso.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CATEGORÍA IV -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-indigo-600">work_history</span> IV. Cargos externos y paralelos</h3>
+
+                                <!-- Caso 9 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-indigo-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-indigo-700 rounded-full px-2 py-0.5">Caso 9</span>
+                                        <span class="font-semibold text-sm">Representante Legal es miembro de Junta de organización ejecutora subcontratada por la ESAL</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">La ESAL subcontrata a una organización aliada para ejecutar talleres en zona rural. El Representante Legal de la ESAL hace parte de la Junta Directiva de esa organización aliada desde hace dos años. No ha declarado este vínculo. Participa activamente en la negociación del valor del subcontrato y en la supervisión de la ejecución.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Doble posición como contratante y beneficiario del contrato. Riesgo de sobreprecios, entregables ficticios o desvío de recursos al aliado. Si hay fondos públicos o de cooperación, puede configurarse detrimento patrimonial. Pérdida de independencia en la supervisión.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Cargos Externos / Financiero</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El Representante Legal declara el conflicto a la Junta Directiva y se abstiene de toda decisión relativa a la subcontratación, supervisión y pagos a esa organización.</li>
+                                            <li>La Junta designa un supervisor externo o un director alterno para la relación con el aliado durante el convenio.</li>
+                                            <li>Se evalúa la continuidad de la membresía en la Junta del aliado; lo recomendable es resignar mientras dure el vínculo contractual.</li>
+                                            <li>Se realiza auditoría del contrato existente para verificar que los términos son de mercado.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 10 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-indigo-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-indigo-700 rounded-full px-2 py-0.5">Caso 10</span>
+                                        <span class="font-semibold text-sm">Director Financiero es también socio de la firma de revisoría fiscal de la ESAL</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">El Director Financiero de la ESAL figura como socio minoritario (15%) en la firma contable que actualmente realiza la revisoría fiscal de la organización. Esta relación data de antes de su vinculación a la ESAL y no fue declarada en el proceso de contratación. La firma emite dictámenes favorables anuales sin objeciones.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">La revisoría fiscal pierde independencia real y aparente. Las irregularidades contables pueden quedar sin detectar. Riesgo de auditoría ficticia, facilitando manejo irregular de fondos. Si hay recursos públicos, puede haber complicidad en encubrimiento de detrimento patrimonial.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full">⚙ Alta Gerencia</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Cargos Externos / Financiero</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Se activa investigación interna por omisión de declaración al momento del ingreso.</li>
+                                            <li>Se inicia proceso de cambio de revisor fiscal de manera inmediata por una firma sin vínculos con ningún directivo.</li>
+                                            <li>Se auditan los dictámenes emitidos con firma relacionada, idealmente por un revisor independiente.</li>
+                                            <li>Se aplica medida disciplinaria al Director Financiero; en casos graves puede llegar a desvinculación.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CATEGORÍA V -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-red-600">how_to_vote</span> V. Actividades políticas y relacionamiento con el sector público</h3>
+
+                                <!-- Caso 11 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-red-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-red-700 rounded-full px-2 py-0.5">Caso 11</span>
+                                        <span class="font-semibold text-sm">Político local realiza donación significativa y exige que la ESAL ejecute proyectos en zonas de interés electoral</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un político en campaña dona $50 millones a la ESAL para "apoyar la misión social", pero en la reunión de presentación del cheque expresa —informalmente— que espera que los proyectos de la organización se concentren en ciertos barrios de su circunscripción electoral durante los próximos seis meses. La Junta acepta la donación y no documenta ninguna condición.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Captación indebida de recursos con destinación condicionada. La ESAL puede estar siendo instrumentalizada para fines electorales. Violación del principio de independencia de las ESAL frente al sector político. Si los recursos son de origen público o de la campaña, puede configurarse financiación ilegal. Riesgo de pérdida de personería jurídica por desvío del objeto social.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-indigo-100 text-indigo-800 border border-indigo-300 px-2 py-0.5 rounded-full">🏛 JD / Máx. Órgano</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Político / Financiero</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Crítico</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>No aceptar donaciones condicionadas bajo ninguna forma, verbal o escrita. Si ya se recibió, se devuelve o se acepta formalmente sin las condiciones implícitas y documentando la decisión institucional.</li>
+                                            <li>La Junta formaliza en acta que los proyectos se ejecutan conforme a criterios técnicos y de impacto social, no geográfico-electorales.</li>
+                                            <li>Se implementa política de donantes que prohíba explícitamente donaciones que impliquen condicionamiento de la actividad misional.</li>
+                                            <li>Se verifica el origen de los recursos conforme al protocolo de debida diligencia de donantes; si hay indicios de financiación ilegal, se activa denuncia ante la Fiscalía.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 12 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-red-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-red-700 rounded-full px-2 py-0.5">Caso 12</span>
+                                        <span class="font-semibold text-sm">Director Ejecutivo que fue servidor público tramita convenios con la entidad donde laboró el año anterior</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">El nuevo Director Ejecutivo de la ESAL fue Jefe de División en una entidad pública hasta hace 8 meses. Desde su cargo directivo en la ESAL está gestionando activamente un convenio de cooperación con esa misma entidad pública, aprovechando sus contactos y el conocimiento privilegiado de los procesos internos de la entidad, incluyendo el acceso a términos de referencia antes de su publicación oficial.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Uso de información privilegiada obtenida en el sector público. Posible violación de las inhabilidades para ex-servidores públicos contempladas en la Ley 1474/2011 (Art. 4): prohibición de gestionar intereses privados ante la entidad donde se laboró dentro del año siguiente al retiro. Riesgo de ventaja indebida en proceso de contratación.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full">⚙ Alta Gerencia</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Político / Información Privilegiada / PEP</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Crítico</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>El Director se aparta de toda gestión relacionada con la entidad pública donde laboró, durante el año siguiente a su retiro, conforme a la Ley 1474/2011.</li>
+                                            <li>Se designa otro directivo o asesor para gestionar ese convenio sin participación del Director.</li>
+                                            <li>Se consulta con asesor jurídico si la inhabilidad aplica al caso específico y se documenta el concepto.</li>
+                                            <li>Se implementa en el proceso de vinculación de directivos la declaración obligatoria de cargos públicos ejercidos en los últimos 2 años.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CATEGORÍA VI -->
+                            <div class="mb-8">
+                                <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 border-b border-gray-200 pb-1 mb-4 flex items-center gap-2"><span class="material-icons text-base text-gray-600">lock</span> VI. Uso de información privilegiada o confidencial</h3>
+
+                                <!-- Caso 13 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-gray-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-gray-700 rounded-full px-2 py-0.5">Caso 13</span>
+                                        <span class="font-semibold text-sm">Empleado comparte términos de licitación con empresa familiar antes de publicación oficial</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un empleado del área logística de la ESAL tiene acceso anticipado a los términos de referencia de una licitación pública en la que la ESAL actúa como ejecutora y debe seleccionar proveedores. Una semana antes de la publicación oficial, envía el borrador de los términos a la empresa de logística de su cuñado, dándole ventaja para preparar una oferta más competitiva.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Filtración de información privilegiada. Fraude en proceso de selección. Si la ESAL ejecuta recursos públicos, puede configurarse cohecho impropio y violación del deber de selección objetiva. Riesgo disciplinario y penal para el empleado y responsabilidad institucional de la ESAL ante la entidad supervisora.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-orange-100 text-orange-800 border border-orange-300 px-2 py-0.5 rounded-full">👤 Operativo/Empleado</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Información Privilegiada / Familiares</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded-full">⚠ Crítico</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Se suspende el proceso de selección y se invalida la participación de la empresa beneficiada con la información.</li>
+                                            <li>Se inicia investigación disciplinaria al empleado; la situación puede llegar a denuncia penal por fraude procesal.</li>
+                                            <li>Se notifica a la entidad supervisora del proceso licitatorio, si aplica, sobre la irregularidad detectada.</li>
+                                            <li>Se refuerzan los controles de acceso a documentos precontractuales (clasificación de información, perfiles con acceso restringido, auditoría de correos).</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Caso 14 -->
+                                <div class="border border-gray-200 rounded-lg mb-5 overflow-hidden shadow-sm">
+                                    <div class="bg-gray-700 text-white px-4 py-2 flex items-center gap-2">
+                                        <span class="text-xs font-bold bg-white text-gray-700 rounded-full px-2 py-0.5">Caso 14</span>
+                                        <span class="font-semibold text-sm">Directivo usa base de datos confidencial de beneficiarios para captar clientes para negocio personal</span>
+                                    </div>
+                                    <div class="p-4 grid md:grid-cols-3 gap-4 text-sm">
+                                        <div class="md:col-span-2">
+                                            <p class="font-semibold text-gray-700 mb-1">Situación:</p>
+                                            <p class="text-gray-600 text-xs mb-3">Un directivo del área de gestión social —con acceso a la base de datos de beneficiarios del programa de generación de ingresos— utiliza la información de contacto y perfil socioeconómico de los beneficiarios para ofrecerles, de manera personal y extracurricular, un curso de capacitación que cobra él directamente a través de su empresa de formación. Lo hace fuera del horario laboral pero con la información institucional.</p>
+                                            <p class="font-semibold text-gray-700 mb-1">Conexión con riesgos C/ST:</p>
+                                            <p class="text-gray-600 text-xs">Uso indebido de información confidencial para beneficio personal. Posible violación de la Ley 1581/2012 (Habeas Data) y del deber de confidencialidad. Si los datos son de beneficiarios de programas públicos, se puede configurar un uso indebido de datos personales que compromete a la entidad supervisora del convenio.</p>
+                                        </div>
+                                        <div class="space-y-2 text-xs">
+                                            <div><span class="font-semibold text-gray-600">Tipo de conflicto:</span><br><span class="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full">● Real</span></div>
+                                            <div><span class="font-semibold text-gray-600">Nivel:</span><br><span class="bg-teal-100 text-teal-800 border border-teal-300 px-2 py-0.5 rounded-full">⚙ Alta Gerencia</span></div>
+                                            <div><span class="font-semibold text-gray-600">Tipología:</span><br><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded">Información Privilegiada / Financiero</span></div>
+                                            <div><span class="font-semibold text-gray-600">Exposición C/ST:</span><br><span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">⚠ Medio-Alto</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-green-50 border-t border-green-200 px-4 py-3 text-xs text-green-900">
+                                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">lightbulb</span> Orientación de gestión:</p>
+                                        <ul class="list-disc pl-4 space-y-1">
+                                            <li>Se inicia proceso disciplinario por violación del deber de confidencialidad y uso indebido de información institucional.</li>
+                                            <li>Se revoca de inmediato el acceso del directivo a la base de datos y se audita el historial de acceso y exportaciones de información.</li>
+                                            <li>Se notifica a los beneficiarios afectados sobre el uso de sus datos y se evalúa denuncia ante la Superintendencia de Industria y Comercio (SIC).</li>
+                                            <li>Se refuerza la política de protección de datos personales y se implementan controles técnicos de monitoreo de acceso a bases de datos sensibles.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NOTA FINAL -->
+                            <div class="bg-gray-800 text-white rounded-lg p-5 text-xs mt-4">
+                                <p class="font-bold text-sm mb-2 flex items-center gap-2"><span class="material-icons text-base text-yellow-300">tips_and_updates</span> Principios transversales de gestión en todas las casuísticas</p>
+                                <div class="grid md:grid-cols-2 gap-3 mt-3">
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">1. Declarar siempre, sin importar la magnitud</p>
+                                        <p class="text-gray-300">El conflicto no declarado es siempre más grave que el conflicto declarado. La omisión es en sí misma una falta de cumplimiento.</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">2. Abstenerse antes de resolver</p>
+                                        <p class="text-gray-300">Quien declara un conflicto debe abstenerse de toda participación en la decisión o proceso involucrado, hasta que se resuelva el tratamiento.</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">3. El canal es la primera garantía</p>
+                                        <p class="text-gray-300">Reportar por el canal habilitado (PTEE) protege al declarante e inicia la trazabilidad institucional del conflicto y su gestión.</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">4. El nivel de exposición C/ST determina la urgencia</p>
+                                        <p class="text-gray-300">Situaciones con conexión a recursos públicos, cooperación internacional o sector político activan protocolos de mayor celeridad y escrutinio.</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">5. Documentar y registrar</p>
+                                        <p class="text-gray-300">Toda declaración, análisis, decisión y medida adoptada debe quedar consignada en el Registro Central de Conflictos de Intereses de la entidad.</p>
+                                    </div>
+                                    <div class="bg-gray-700 rounded p-3">
+                                        <p class="font-semibold text-yellow-200 mb-1">6. La indemnidad protege al declarante de buena fe</p>
+                                        <p class="text-gray-300">Quien declara oportunamente y de buena fe está protegido contra represalias; quien omite o actúa de mala fe asume la responsabilidad plena.</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-center mt-4 italic text-[10px]">Casuísticas orientadoras adaptadas al sector ESAL (Colombia). No son casos reales ni asesoría jurídica. Para situaciones específicas, consultar con el Oficial de Cumplimiento o asesor legal de la entidad.</p>
+                            </div>
+                        </div>
                     </div>
                 </div> <!-- Cierra conflictos-view -->
 
@@ -8720,6 +9718,7 @@
                     lastAutosaveTime: null,
                     showWordMenu: false,
                     showPolitica: true,
+                    politicaSubTab: 'politica',
                     showProtocolos: false,
                     showDiagnostico: false,
                     showRiesgos: false,
@@ -8733,8 +9732,10 @@
                     divulgacionSubTab: 'flujograma',
                     conflictosSubTab: 'politica',
                     // ---- CONFLICTOS DE INTERESES ----
+                    confDefinicion: 'Situación en la cual los intereses personales, directos o indirectos, de los empleados, directivos, o sus familiares, interfieren o parecen interferir con los intereses de la entidad, comprometiendo su objetividad al tomar decisiones y ejercer su rol y funciones.',
                     confIntegrarCodigoEtica: false,
                     confNombreDocumentoEtica: 'Código de Ética y Conducta',
+                    confAlcanceFamilia: { consanguinidad: 4, afinidad: 2, civil: 1 },
                     confTipos: { familiares: true, financieros: true, regalos: true, cargosExternos: true, politicos: true, informacion: true },
                     customConfTipos: [],
                     newConfTipoNombre: '',
@@ -9135,6 +10136,15 @@
                         fundingSources: [],
                         customFundingSource: '',
                         approvalDate: '',
+                        // --- Código de Ética y Conducta ---
+                        eticsApprovalDate: '',
+                        reportingChannel: '',
+                        ethicsRole: 'Comité de Ética',
+                        selectedValues: ['Transparencia', 'Integridad', 'Respeto'],
+                        includeZeroTolerance: true,
+                        includeConflictInterest: true,
+                        hasRIT: true,
+                        alternativeSanction: 'las disposiciones disciplinarias en el Código Sustantivo del Trabajo y Estatutos',
                         normativas: ['ley_1474_2011', 'ley_1778_2016', 'ley_2195_2022', 'guia_propositiva_2024'],
                         channelManagement: 'interno',
                         enabledChannels: ['correo', 'formulario', 'telefono', 'buzon'],
@@ -9150,6 +10160,18 @@
                             { responsable: '', periodicidad: '' }
                         ]
                     },
+                    // --- Código de Ética: valores ---
+                    predefinedValues: [
+                        { nombre: "Transparencia", descripcion: "Garantizamos claridad y verdad en nuestro actuar, asegurando el acceso a la información y gestionando los recursos de forma visible." },
+                        { nombre: "Integridad", descripcion: "Actuamos con rectitud, honradez y coherencia entre lo que pensamos, decimos y ejecutamos, tanto en asuntos profesionales como personales vinculados." },
+                        { nombre: "Respeto", descripcion: "Reconocemos y valoramos el buen trato, escuchando la diversidad del otro, aceptando la pluralidad y dignificando a todo individuo." },
+                        { nombre: "Solidaridad", descripcion: "Nos moviliza la empatía activa por el bienestar colectivo y especialmente por las poblaciones más vulnerables o necesidades sociales." },
+                        { nombre: "Compromiso", descripcion: "Cumplimos de manera responsable y proactiva nuestras obligaciones, apropiándonos de la misión y buscando el mayor impacto social posible." },
+                        { nombre: "Equidad e Inclusión", descripcion: "Rechazamos toda forma de exclusión, otorgando a cada individuo y grupo sus derechos con justicia e igualdad de oportunidades." },
+                        { nombre: "Responsabilidad", descripcion: "Asumimos las consecuencias de nuestras decisiones y velamos por el cumplimiento de nuestros deberes con excelencia." }
+                    ],
+                    newValorName: '',
+                    newValorDesc: '',
                     fuentesFinanciacionDisponibles: [
                         'Donaciones privadas',
                         'Subvenciones gubernamentales',
@@ -9190,6 +10212,9 @@
                 }
             },
             computed: {
+                confAlcanceFamiliarTexto() {
+                    return `hasta el ${this.confAlcanceFamilia.consanguinidad}° grado de consanguinidad, ${this.confAlcanceFamilia.afinidad}° de afinidad o ${this.confAlcanceFamilia.civil}° civil, núcleo familiar y compañeros/as sentimentales permanentes`;
+                },
                 dynamicRiskDescriptor() {
                     let text = `El perfil de riesgo C/ST de <b>${this.form.entityName || 'la entidad'}</b> se potencia principalmente por `;
                     
@@ -9377,82 +10402,183 @@
                     });
                 },
                 diagnostico() {
-                    // 1. Gobernanza y Estructura (25 pts)
-                    // Evaluamos la robustez del órgano de supervisión
+                    // 1. Gobernanza y Ética (max 100)
                     let gobScore = 0;
                     let gobDetails = [];
-                    if (this.form.hasAdminOrgan) { gobScore += 25; gobDetails.push('? Órgano de Administración (+25%)'); }
-                    if (this.form.hasEthicsCommittee) { gobScore += 25; gobDetails.push('? Comité de Ética (+25%)'); }
-                    if (this.form.hasRiskManagement) { gobScore += 25; gobDetails.push('? Gestión de Riesgos (+25%)'); }
-                    if (this.form.hasAuditoria) { gobScore += 15; gobDetails.push('? Auditoría Interna (+15%)'); }
-                    if (this.form.hasRevisoria) { gobScore += 10; gobDetails.push('? Revisoría Fiscal (+10%)'); }
-                    if (gobDetails.length === 0) gobDetails.push('? Sin órganos de gobierno/supervisión asignados.');
+                    if (this.form.hasAdminOrgan) { gobScore += 20; gobDetails.push('✓ Órgano de Administración (+20%)'); }
+                    if (this.form.hasEthicsCommittee) { gobScore += 20; gobDetails.push('✓ Comité de Ética (+20%)'); }
+                    if (this.form.complianceRoleType) { gobScore += 20; gobDetails.push('✓ Oficial de Cumplimiento designado (+20%)'); }
+                    if (this.form.hasEthicsCode) { gobScore += 15; gobDetails.push('✓ Código de Ética y Conducta (+15%)'); }
+                    if (this.form.hasGovCode) { gobScore += 15; gobDetails.push('✓ Código de Gobierno Corporativo (+15%)'); }
+                    if (this.form.hasAuditoria || this.form.hasRevisoria) { gobScore += 10; gobDetails.push('✓ Revisoría Fiscal / Auditoría Interna (+10%)'); }
+                    if (gobDetails.length === 0) gobDetails.push('✗ Sin órganos de gobierno/supervisión ni marcos éticos asignados.');
+                    gobScore = Math.min(gobScore, 100);
 
-                    // 2. Normatividad y Políticas (25 pts)
+                    // 2. Normatividad, Política PTEE y Protocolos (max 100)
                     let normScore = 0;
                     let normDetails = [];
-                    if (this.form.hasGovCode) { normScore += 25; normDetails.push('? Código de Gobierno Corporativo (+25%)'); }
-                    if (this.form.hasEthicsCode) { normScore += 25; normDetails.push('? Código de Ética y Conducta (+25%)'); }
-                    // Se otorga el puntaje total (50) si se genera al menos una referencia normativa
-                    let normExtScore = this.form.normativas.length > 0 ? 50 : 0;
-                    normScore += normExtScore;
-                    if (normExtScore > 0) normDetails.push('? Normatividad de prevención externa aplicada (+50%)');
-                    if (normDetails.length === 0) normDetails.push('? Sin marcos normativos o de ética base.');
-
-                    // 3. Conciencia de Riesgos y Control (25 pts)
-                    // Un oficial alineado al riesgo, control de DDI, etc.
-                    let riskScore = 20; // Base
-                    let riskDetails = [];
-                    riskDetails.push(`? Base por perfil de riesgo ${this.form.riskLevel}`);
-                    if (this.form.riskLevel === 'alto') {
-                        // Exige más control
-                        riskScore = 50;
-                        if (this.form.isOutsourced === 'tercerizado' || this.form.isOutsourced === 'interno') { riskScore += 25; riskDetails.push('? Oficial de Cumplimiento validado (+25%)'); }
-                        if (this.form.highRiskSectors.length > 0) { riskScore += 25; riskDetails.push('? Reconocimiento de sectores de alto riesgo (+25%)'); }
+                    const normCount = this.form.normativas ? this.form.normativas.length : 0;
+                    if (normCount > 0) {
+                        const normPts = Math.min(normCount * 8, 40);
+                        normScore += normPts;
+                        normDetails.push(`✓ ${normCount} normativa(s) de prevención referenciadas (+${normPts}%)`);
                     } else {
-                        riskScore = 80; // Si es riesgo bajo/medio parte de una percepción más controlada, pero se puede mejorar
-                        if (this.form.complianceRoleType) { riskScore += 20; riskDetails.push('? Responsable de Cumplimiento asignado (+20%)'); }
+                        normDetails.push('✗ Sin normativas de prevención seleccionadas');
+                    }
+                    if (this.form.entityName && this.form.socialPurpose && this.form.reportingChannel) {
+                        normScore += 30;
+                        normDetails.push('✓ Política de Cumplimiento PTEE configurada (+30%)');
+                    } else if (this.form.entityName) {
+                        normScore += 10;
+                        normDetails.push('~ Política PTEE parcialmente configurada (+10%)');
+                    }
+                    const protCount = Object.values(this.protocols).filter(p => p.applies).length;
+                    const protPts = Math.min(Math.round(protCount / 6 * 30), 30);
+                    if (protCount > 0) {
+                        normScore += protPts;
+                        normDetails.push(`✓ ${protCount}/6 protocolos específicos activos (+${protPts}%)`);
+                    } else {
+                        normDetails.push('✗ Ningún protocolo específico habilitado');
+                    }
+                    normScore = Math.min(normScore, 100);
+
+                    // 3. Gestión de Riesgos C/ST (max 100)
+                    let riskScore = 0;
+                    let riskDetails = [];
+                    const totalRisks = this.risks ? this.risks.length : 0;
+                    const risksWithControls = this.risks ? this.risks.filter(r => r.controls && r.controls.length > 0).length : 0;
+                    const vcChain = this.valueChain || {};
+                    const vcCount = (vcChain.strategic ? vcChain.strategic.filter(p => p.active).length : 0)
+                                  + (vcChain.primary ? vcChain.primary.filter(p => p.active).length : 0)
+                                  + (vcChain.support ? vcChain.support.filter(p => p.active).length : 0);
+                    if (totalRisks > 0) {
+                        const riskPts = Math.min(totalRisks * 4, 40);
+                        riskScore += riskPts;
+                        riskDetails.push(`✓ ${totalRisks} riesgo(s) identificados en la matriz (+${riskPts}%)`);
+                        if (risksWithControls > 0) {
+                            const coverage = Math.round(risksWithControls / totalRisks * 100);
+                            const ctrlPts = Math.min(Math.round(coverage * 0.3), 30);
+                            riskScore += ctrlPts;
+                            riskDetails.push(`✓ ${coverage}% de riesgos con controles asociados (+${ctrlPts}%)`);
+                        } else {
+                            riskDetails.push('✗ Ningún riesgo con controles definidos aún');
+                        }
+                    } else {
+                        riskDetails.push('✗ Matriz de riesgos C/ST sin diligenciar');
+                    }
+                    if (vcCount > 0) {
+                        riskScore += 15;
+                        riskDetails.push(`✓ Cadena de valor con ${vcCount} proceso(s) activo(s) (+15%)`);
+                    } else {
+                        riskDetails.push('✗ Cadena de valor no configurada');
+                    }
+                    if (this.form.highRiskSectors && this.form.highRiskSectors.length > 0) {
+                        riskScore += 15;
+                        riskDetails.push(`✓ ${this.form.highRiskSectors.length} sector(es) de alto riesgo identificados (+15%)`);
                     }
                     riskScore = Math.min(riskScore, 100);
 
-                    // 4. Protocolos Definidos (25 pts)
-                    let protocolScore = 0;
-                    let countProtocols = 0;
-                    let protocolDetails = [];
-                    Object.values(this.protocols).forEach(p => {
-                        if (p.applies) countProtocols++;
-                    });
-                    protocolScore = Math.round((countProtocols / 6) * 100);
-                    if (countProtocols > 0) {
-                        protocolDetails.push(`Protocolos incorporados: ${countProtocols}/6 (${protocolScore}%)`);
+                    // 4. Debida Diligencia (max 100)
+                    let ddScore = 0;
+                    let ddDetails = [];
+                    const fvFilled = !!(this.fv && (this.fv.tipoVinculacion || this.fv.pn_nombres || this.fv.pj_razonSocial));
+                    const iddFilled = !!(this.idd && (this.idd.id_razonSocial || this.idd.resumenEjecutivo || this.idd.decision));
+                    const iddEvCount = this.idd ? Object.keys(this.idd).filter(k => k.startsWith('ev_') && !k.includes('_fecha') && !k.includes('_obs') && this.idd[k] === true).length : 0;
+                    if (vcCount > 0) { ddScore += 20; ddDetails.push(`✓ Cadena de valor configurada (${vcCount} procesos) (+20%)`); }
+                    else { ddDetails.push('✗ Cadena de valor sin configurar'); }
+                    if (fvFilled) { ddScore += 30; ddDetails.push('✓ Formulario de Vinculación diligenciado (+30%)'); }
+                    else { ddDetails.push('✗ Formulario de Vinculación sin diligenciar'); }
+                    if (iddFilled) {
+                        ddScore += 30;
+                        ddDetails.push(`✓ Informe de Debida Diligencia generado${iddEvCount > 0 ? ' (' + iddEvCount + ' evidencias verificadas)' : ''} (+30%)`);
                     } else {
-                        protocolDetails.push('Ningún protocolo de prevención habilitado.');
+                        ddDetails.push('✗ Informe de Debida Diligencia sin generar');
                     }
+                    if (this.form.thirdParties && this.form.thirdParties.length > 0) {
+                        ddScore += 20;
+                        ddDetails.push(`✓ ${this.form.thirdParties.length} grupo(s) de interés / terceros identificados (+20%)`);
+                    } else {
+                        ddDetails.push('✗ Sin terceros / grupos de interés identificados');
+                    }
+                    ddScore = Math.min(ddScore, 100);
 
-                    const finalScore = Math.round((gobScore + normScore + riskScore + protocolScore) / 4);
+                    // 5. Monitoreo y Canal de Denuncias (max 100)
+                    let monScore = 0;
+                    let monDetails = [];
+                    if (this.form.reportingChannel) { monScore += 30; monDetails.push('✓ Canal de denuncias establecido (+30%)'); }
+                    else { monDetails.push('✗ Sin canal de denuncias definido'); }
+                    const ieEnabled = this.informesEjecutivos ? this.informesEjecutivos.filter(i => i.enabled).length : 0;
+                    if (ieEnabled > 0) {
+                        const iePts = Math.min(ieEnabled * 6, 30);
+                        monScore += iePts;
+                        monDetails.push(`✓ ${ieEnabled} tipo(s) de informe ejecutivo habilitados (+${iePts}%)`);
+                    } else {
+                        monDetails.push('✗ Sin informes ejecutivos de monitoreo habilitados');
+                    }
+                    const rfFilled = !!(this.rf && (this.rf.fechaRecepcion || this.rf.relatoHechos || this.rf.tipoReporte));
+                    if (rfFilled) { monScore += 20; monDetails.push('✓ Formulario de Denuncia/Reporte diligenciado (+20%)'); }
+                    else { monDetails.push('~ Formulario de denuncia listo para uso (sin datos registrados aún)'); }
+                    if (this.form.hasRiskManagement) { monScore += 20; monDetails.push('✓ Sistema de gestión de riesgos activo (+20%)'); }
+                    else { monDetails.push('~ Sin sistema de gestión de riesgos declarado'); }
+                    monScore = Math.min(monScore, 100);
+
+                    // 6. Divulgación y Capacitación (max 100)
+                    let divScore = 0;
+                    let divDetails = [];
+                    const divComEnabled = this.divPlanCom && this.divPlanCom.items ? this.divPlanCom.items.filter(i => i.enabled).length : 0;
+                    const divComTotal = this.divPlanCom && this.divPlanCom.items ? this.divPlanCom.items.length : 10;
+                    const divCapEnabled = this.divPlanCap && this.divPlanCap.items ? this.divPlanCap.items.filter(i => i.enabled).length : 0;
+                    const divCapTotal = this.divPlanCap && this.divPlanCap.items ? this.divPlanCap.items.length : 10;
+                    if (divComEnabled > 0) {
+                        const comPts = Math.min(Math.round(divComEnabled / divComTotal * 50), 50);
+                        divScore += comPts;
+                        divDetails.push(`✓ ${divComEnabled}/${divComTotal} actividades de comunicación habilitadas (+${comPts}%)`);
+                    } else {
+                        divDetails.push('✗ Sin actividades de comunicación habilitadas');
+                    }
+                    if (divCapEnabled > 0) {
+                        const capPts = Math.min(Math.round(divCapEnabled / divCapTotal * 50), 50);
+                        divScore += capPts;
+                        divDetails.push(`✓ ${divCapEnabled}/${divCapTotal} actividades de capacitación habilitadas (+${capPts}%)`);
+                    } else {
+                        divDetails.push('✗ Sin actividades de capacitación habilitadas');
+                    }
+                    divScore = Math.min(divScore, 100);
+
+                    const finalScore = Math.round((gobScore + normScore + riskScore + ddScore + monScore + divScore) / 6);
 
                     return {
                         puntajeGlobal: finalScore,
                         dimensiones: {
                             gobernanza: {
-                                puntaje: Math.round(gobScore),
-                                observacion: gobScore < 50 ? 'Requiere fortalecer los órganos colegiados y de supervisión.' : 'Estructura de supervisión y control sólidamente definida.',
+                                puntaje: Math.min(Math.round(gobScore), 100),
+                                observacion: gobScore < 50 ? 'Requiere fortalecer los órganos colegiados, figuras de cumplimiento y marcos éticos.' : 'Estructura de supervisión, control y ética sólidamente definida.',
                                 detalle: gobDetails.join('\n')
                             },
                             normatividad: {
-                                puntaje: Math.round(normScore),
-                                observacion: normScore < 60 ? 'Falta apropiación de herramientas éticas y de gobierno interno.' : 'Marco normativo y ético incorporado.',
+                                puntaje: Math.min(Math.round(normScore), 100),
+                                observacion: normScore < 60 ? 'Falta apropiación normativa, política PTEE e incorporación de protocolos específicos.' : 'Marco normativo, política PTEE y protocolos operativos incorporados.',
                                 detalle: normDetails.join('\n')
                             },
-                            riesgo: {
-                                puntaje: Math.round(riskScore),
-                                observacion: riskScore < 60 ? 'Mecanismos de mitigación de riesgo y debida diligencia por mejorar.' : 'Percepción de riesgo coherente con la designación de roles.',
+                            riesgos: {
+                                puntaje: Math.min(Math.round(riskScore), 100),
+                                observacion: riskScore < 50 ? 'Matriz de riesgos C/ST por construir o sin controles. Incluir cadena de valor.' : 'Gestión de riesgos C/ST en buen estado de avance con cadena de valor y controles.',
                                 detalle: riskDetails.join('\n')
                             },
-                            protocolos: {
-                                puntaje: Math.round(protocolScore),
-                                observacion: protocolScore < 50 ? 'Pocos protocolos complementarios activos ante escenarios de alto riesgo.' : 'Amplia cobertura de protocolos sobre actividades sensibles.',
-                                detalle: protocolDetails.join('\n')
+                            debidaDiligencia: {
+                                puntaje: Math.min(Math.round(ddScore), 100),
+                                observacion: ddScore < 50 ? 'Procesos de conocimiento de contrapartes sin formalizar. Pendiente formulario e informe de DD.' : 'Mecanismos de debida diligencia operativos y documentados.',
+                                detalle: ddDetails.join('\n')
+                            },
+                            monitoreo: {
+                                puntaje: Math.min(Math.round(monScore), 100),
+                                observacion: monScore < 50 ? 'Canal de denuncias y plan de monitoreo por fortalecer. Informes ejecutivos pendientes.' : 'Monitoreo, canal de denuncia e informes ejecutivos en operación.',
+                                detalle: monDetails.join('\n')
+                            },
+                            divulgacion: {
+                                puntaje: Math.min(Math.round(divScore), 100),
+                                observacion: divScore < 50 ? 'Plan de divulgación y capacitación en formación. Habilitar más actividades de comunicación y capacitación.' : 'Estrategia de divulgación y capacitación del PTEE sólidamente estructurada.',
+                                detalle: divDetails.join('\n')
                             }
                         }
                     };
@@ -9484,8 +10610,10 @@
                             myRadarChart.data.datasets[0].data = [
                                 newVal.dimensiones.gobernanza.puntaje,
                                 newVal.dimensiones.normatividad.puntaje,
-                                newVal.dimensiones.protocolos.puntaje,
-                                newVal.dimensiones.riesgo.puntaje
+                                newVal.dimensiones.riesgos.puntaje,
+                                newVal.dimensiones.debidaDiligencia.puntaje,
+                                newVal.dimensiones.monitoreo.puntaje,
+                                newVal.dimensiones.divulgacion.puntaje
                             ];
                             myRadarChart.update();
                         }
@@ -9580,19 +10708,43 @@
                     deep: true
                 },
                 confIntegrarCodigoEtica: { handler() { this.saveDraft(); } },
+                confDefinicion: { handler() { this.saveDraft(); } },
                 confNombreDocumentoEtica: { handler() { this.saveDraft(); } },
-                confConexionRiesgos: { handler() { this.saveDraft(); } },
-                confDeclaracionPeriodicidad: { handler() { this.saveDraft(); } },
-                confTipos: {
+                confAlcanceFamilia: {
                     handler() {
                         this.saveDraft();
                     },
                     deep: true
                 },
+                confConexionRiesgos: { handler() { this.saveDraft(); } },
+                confDeclaracionPeriodicidad: { handler() { this.saveDraft(); } },
+                confTipos: {
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
                 confNiveles: {
-                    handler() {
-                        this.saveDraft();
-                    },
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
+                customConfTipos: {
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
+                customConfNiveles: {
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
+                customConfResolutores: {
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
+                customConfPeriodicidades: {
+                    handler() { this.saveDraft(); },
+                    deep: true
+                },
+                confCanalDeclaracion: { handler() { this.saveDraft(); } },
+                customConfCanales: {
+                    handler() { this.saveDraft(); },
                     deep: true
                 }
             },
@@ -9750,7 +10902,11 @@
                     // v1.0: solo form, protocols
                     // v2.0: + valueChain, fv, idd, rf, risks (puede incluir o no informesEjecutivos)
                     // v3.0: + informesEjecutivos, divCanales, divPeriodicidad, divPlanCom, divPlanCap, indComItems, indCapItems
+                    // v4.0: + confTipos, confNiveles, confAlcanceFamilia, confCanalDeclaracion, customConf*, fci
+                    // v4.1: + customConfTipos, customConfNiveles, customConfResolutores, customConfPeriodicidades,
+                    //         confCanalDeclaracion, customConfCanales y fci incluidos en autoguardado
                     const version = parsed.version || '1.0';
+                    const vNum = parseFloat(version);
                     const seccionesNuevas = [];
 
                     // Utilidad de merge profundo para objetos anidados (no arrays)
@@ -9852,26 +11008,48 @@
                         seccionesNuevas.push('Indicadores de Capacitación');
                     }
 
-                    // --- Secciones de Conflictos de Intereses (v4.0) ---
+                    // --- Secciones de Conflictos de Intereses (v4.0+) ---
+                    // Detectar si el capítulo de Conflictos existía en el borrador
+                    const tieneConflictos = !!(parsed.confTipos || parsed.confNiveles || parsed.confAlcanceFamilia);
+                    if (!tieneConflictos && vNum < 4.0) {
+                        seccionesNuevas.push('Conflictos de Intereses');
+                    }
+
                     if (parsed.confTipos) {
                         this.confTipos = deepMerge(this.confTipos, parsed.confTipos);
                     }
-                    if (parsed.customConfTipos) this.customConfTipos = parsed.customConfTipos;
-                    if (parsed.customConfNiveles) this.customConfNiveles = parsed.customConfNiveles;
-                    if (parsed.customConfResolutores) this.customConfResolutores = parsed.customConfResolutores;
-                    if (parsed.customConfPeriodicidades) this.customConfPeriodicidades = parsed.customConfPeriodicidades; else {
-                        seccionesNuevas.push('Conflictos de Intereses');
+                    if (parsed.customConfTipos && Array.isArray(parsed.customConfTipos)) {
+                        this.customConfTipos = parsed.customConfTipos;
                     }
-                    if (parsed.confCanalDeclaracion) this.confCanalDeclaracion = parsed.confCanalDeclaracion;
-                    if (parsed.customConfCanales) this.customConfCanales = parsed.customConfCanales;
                     if (parsed.confNiveles) {
                         this.confNiveles = deepMerge(this.confNiveles, parsed.confNiveles);
+                    }
+                    if (parsed.customConfNiveles && Array.isArray(parsed.customConfNiveles)) {
+                        this.customConfNiveles = parsed.customConfNiveles;
+                    }
+                    if (parsed.customConfResolutores && Array.isArray(parsed.customConfResolutores)) {
+                        this.customConfResolutores = parsed.customConfResolutores;
+                    }
+                    if (parsed.customConfPeriodicidades && Array.isArray(parsed.customConfPeriodicidades)) {
+                        this.customConfPeriodicidades = parsed.customConfPeriodicidades;
+                    }
+                    if (parsed.confCanalDeclaracion) {
+                        this.confCanalDeclaracion = parsed.confCanalDeclaracion;
+                    }
+                    if (parsed.customConfCanales && Array.isArray(parsed.customConfCanales)) {
+                        this.customConfCanales = parsed.customConfCanales;
                     }
                     if (parsed.hasOwnProperty('confIntegrarCodigoEtica')) {
                         this.confIntegrarCodigoEtica = parsed.confIntegrarCodigoEtica;
                     }
+                    if (parsed.confDefinicion) {
+                        this.confDefinicion = parsed.confDefinicion;
+                    }
                     if (parsed.confNombreDocumentoEtica) {
                         this.confNombreDocumentoEtica = parsed.confNombreDocumentoEtica;
+                    }
+                    if (parsed.confAlcanceFamilia) {
+                        this.confAlcanceFamilia = deepMerge(this.confAlcanceFamilia, parsed.confAlcanceFamilia);
                     }
                     if (parsed.hasOwnProperty('confConexionRiesgos')) {
                         this.confConexionRiesgos = parsed.confConexionRiesgos;
@@ -9879,8 +11057,12 @@
                     if (parsed.confDeclaracionPeriodicidad) {
                         this.confDeclaracionPeriodicidad = parsed.confDeclaracionPeriodicidad;
                     }
+                    // Formulario de declaración de conflictos de interés
                     if (parsed.fci) {
                         this.fci = deepMerge(this.fci, parsed.fci);
+                    } else if (tieneConflictos) {
+                        // El capítulo Conflictos existía pero fci no fue guardado (borradores v4.0 previo a fix)
+                        seccionesNuevas.push('Formulario de Declaración de Conflictos de Interés');
                     }
 
                     // --- Normalizar controles de riesgos ---
@@ -10562,14 +11744,16 @@
                     myRadarChart = new Chart(ctx, {
                         type: 'radar',
                         data: {
-                            labels: ['Gobernanza', 'Normatividad', 'Protocolos', 'Riesgos'],
+                            labels: ['Gobernanza', 'Normatividad', 'Riesgos', 'Debida Diligencia', 'Monitoreo', 'Divulgación'],
                             datasets: [{
                                 label: 'Nivel de Madurez Actual',
                                 data: [
                                     this.diagnostico.dimensiones.gobernanza.puntaje,
                                     this.diagnostico.dimensiones.normatividad.puntaje,
-                                    this.diagnostico.dimensiones.protocolos.puntaje,
-                                    this.diagnostico.dimensiones.riesgo.puntaje
+                                    this.diagnostico.dimensiones.riesgos.puntaje,
+                                    this.diagnostico.dimensiones.debidaDiligencia.puntaje,
+                                    this.diagnostico.dimensiones.monitoreo.puntaje,
+                                    this.diagnostico.dimensiones.divulgacion.puntaje
                                 ],
                                 backgroundColor: 'rgba(30, 58, 138, 0.2)',
                                 borderColor: 'rgba(30, 58, 138, 1)',
@@ -10618,10 +11802,12 @@
                 },
                 selectDimTitle(key) {
                     const titles = {
-                        gobernanza: '1. Gobernanza y Estructura',
-                        normatividad: '2. Normatividad y Políticas',
-                        riesgo: '3. Conciencia de Riesgos',
-                        protocolos: '4. Protocolos Definidos'
+                        gobernanza: '1. Gobernanza y Ética',
+                        normatividad: '2. Normatividad, Política PTEE y Protocolos',
+                        riesgos: '3. Gestión de Riesgos C/ST',
+                        debidaDiligencia: '4. Debida Diligencia',
+                        monitoreo: '5. Monitoreo y Canal de Denuncias',
+                        divulgacion: '6. Divulgación y Capacitación'
                     };
                     return titles[key] || key;
                 },
@@ -10676,6 +11862,7 @@
                         fv: this.fv,
                         idd: this.idd,
                         rf: this.rf,
+                        fci: this.fci,
                         risks: this.risks,
                         controlBank: this.controlBank,
                         informesEjecutivos: this.informesEjecutivos,
@@ -10686,12 +11873,20 @@
                         indComItems: this.indComItems,
                         indCapItems: this.indCapItems,
                         confIntegrarCodigoEtica: this.confIntegrarCodigoEtica,
+                        confDefinicion: this.confDefinicion,
                         confNombreDocumentoEtica: this.confNombreDocumentoEtica,
+                        confAlcanceFamilia: this.confAlcanceFamilia,
                         confTipos: this.confTipos,
+                        customConfTipos: this.customConfTipos,
                         confNiveles: this.confNiveles,
+                        customConfNiveles: this.customConfNiveles,
+                        customConfResolutores: this.customConfResolutores,
+                        customConfPeriodicidades: this.customConfPeriodicidades,
+                        confCanalDeclaracion: this.confCanalDeclaracion,
+                        customConfCanales: this.customConfCanales,
                         confConexionRiesgos: this.confConexionRiesgos,
                         confDeclaracionPeriodicidad: this.confDeclaracionPeriodicidad,
-                        version: '4.0',
+                        version: '4.1',
                         timestamp: new Date().toISOString()
                     };
                     localStorage.setItem('ptee_esal_draft', JSON.stringify(draft));
@@ -10731,6 +11926,7 @@
                         fv: this.fv,
                         idd: this.idd,
                         rf: this.rf,
+                        fci: this.fci,
                         risks: this.risks,
                         controlBank: this.controlBank,
                         informesEjecutivos: this.informesEjecutivos,
@@ -10741,19 +11937,20 @@
                         indComItems: this.indComItems,
                         indCapItems: this.indCapItems,
                         confIntegrarCodigoEtica: this.confIntegrarCodigoEtica,
+                        confDefinicion: this.confDefinicion,
                         confNombreDocumentoEtica: this.confNombreDocumentoEtica,
+                        confAlcanceFamilia: this.confAlcanceFamilia,
                         confTipos: this.confTipos,
-                        confNiveles: this.confNiveles,
-                        confConexionRiesgos: this.confConexionRiesgos,
-                        confDeclaracionPeriodicidad: this.confDeclaracionPeriodicidad,
                         customConfTipos: this.customConfTipos,
+                        confNiveles: this.confNiveles,
                         customConfNiveles: this.customConfNiveles,
                         customConfResolutores: this.customConfResolutores,
                         customConfPeriodicidades: this.customConfPeriodicidades,
                         confCanalDeclaracion: this.confCanalDeclaracion,
                         customConfCanales: this.customConfCanales,
-                        fci: this.fci,
-                        version: '4.0'
+                        confConexionRiesgos: this.confConexionRiesgos,
+                        confDeclaracionPeriodicidad: this.confDeclaracionPeriodicidad,
+                        version: '4.1'
                     };
                     const jsonStr = JSON.stringify(draft, null, 2);
                     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -11532,9 +12729,11 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                     });
                 },
                 _getActiveTabName() {
+                    if (this.showPolitica && this.politicaSubTab === 'etica') return 'Codigo_Etica';
                     if (this.showPolitica) return 'Politica';
                     if (this.showProtocolos) return 'Protocolos';
                     if (this.showDiagnostico) return 'Diagnostico';
+                    if (this.showRiesgos && this.riesgosTab === 'controles') return 'Riesgos_Controles';
                     if (this.showRiesgos) return 'Riesgos';
                     if (this.showDebida) return 'Debida_Diligencia';
                     if (this.showMonitoreo) return 'Monitoreo';
@@ -11562,18 +12761,100 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                     this._cleanCloneForWord(clone, false);
                     this._downloadWordFile(clone.innerHTML, this._getActiveTabName() + '_Hoja');
                 },
+                // --- Código de Ética: Métodos de soporte y exportación ---
+                addCustomValue() {
+                    if (this.newValorName.trim() && this.newValorDesc.trim()) {
+                        const nuevo = { nombre: this.newValorName.trim(), descripcion: this.newValorDesc.trim() };
+                        this.predefinedValues.push(nuevo);
+                        this.form.selectedValues.push(nuevo.nombre);
+                        this.newValorName = '';
+                        this.newValorDesc = '';
+                    } else {
+                        alert('Por favor ingrese el nombre del valor y su descripción para agregarlo.');
+                    }
+                },
+                getValorDescripcion(nombre) {
+                    const valor = this.predefinedValues.find(v => v.nombre === nombre);
+                    return valor ? valor.descripcion : '';
+                },
+                exportWordEtica() {
+                    const sourceEl = document.getElementById('exportable-document');
+                    if (!sourceEl) { alert('No hay documento visible para exportar.'); return; }
+                    const clone = sourceEl.cloneNode(true);
+                    this._cleanCloneForWord(clone, false);
+                    const css = `<style>@page{margin:2.54cm}body{font-family:Arial,sans-serif;font-size:11pt;color:#000;text-align:justify}h1{font-size:14pt;text-align:center;font-weight:bold;text-transform:uppercase;margin-bottom:20pt;border-bottom:1px solid black;padding-bottom:5px}h2{font-size:12pt;font-weight:bold;margin-top:18pt;margin-bottom:6pt;color:#000}h3{font-size:11pt;font-weight:bold;margin-top:15pt;margin-bottom:8pt;color:#000}p{margin-bottom:12pt}ul{margin-left:20pt;margin-bottom:12pt;list-style-type:disc}li{margin-bottom:6pt;text-align:justify}table{border-collapse:collapse;width:100%}</style>`;
+                    const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Código Ética y Conducta</title>" + css + "</head><body>";
+                    const footer = "</body></html>";
+                    const blob = new Blob(['\ufeff', header + clone.innerHTML + footer], { type: 'application/msword' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = `${(this.form.entityName || 'ESAL').replace(/\s+/g,'_')}_Codigo_Etica_y_Conducta.doc`;
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                },
+                exportCSVEtica() {
+                    const valoresSeleccionados = Array.isArray(this.form.selectedValues) ? this.form.selectedValues.join(' | ') : '';
+                    const data = [
+                        ["Categoría", "Criterio", "Valor Seleccionado"],
+                        ["Identidad", "Razón Social", this.form.entityName],
+                        ["Identidad", "Naturaleza Jurídica", this.form.entityType],
+                        ["Identidad", "Propósito Social", this.form.socialPurpose],
+                        ["Gobernanza", "Órgano de Administración", this.form.adminOrgan],
+                        ["Gobernanza", "Canal de Denuncias", this.form.reportingChannel],
+                        ["Gobernanza", "Responsable Ético", this.form.ethicsRole],
+                        ["Principios", "Valores Seleccionados", valoresSeleccionados],
+                        ["Políticas", "Política de Cumplimiento PTEE", this.form.includeZeroTolerance ? 'Sí' : 'No'],
+                        ["Políticas", "Conflicto de Interés", this.form.includeConflictInterest ? 'Sí' : 'No'],
+                        ["Sanciones", "Tiene R.I.T.", this.form.hasRIT ? 'Sí' : 'No'],
+                        ["Sanciones", "Soporte Alternativo", this.form.hasRIT ? 'N/A' : this.form.alternativeSanction],
+                        ["Documento", "Fecha de Aprobación", this.form.eticsApprovalDate]
+                    ];
+                    let csvContent = "\uFEFF";
+                    data.forEach(row => {
+                        csvContent += row.map(cell => `"${String(cell ?? '').replace(/"/g,'""')}"`).join(";") + "\r\n";
+                    });
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = `${(this.form.entityName || 'ESAL').replace(/\s+/g,'_')}_Parametros_Etica.csv`;
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                },
                 exportWordChapter() {
                     let sourceEl = null;
                     let suffix = this._getActiveTabName();
 
                     if (this.showPolitica) {
-                        // Política: no tiene sub-pestañas, exportar su sección del exportable-document
-                        sourceEl = document.getElementById('exportable-document');
-                        if (!sourceEl) return;
-                        const clone = sourceEl.cloneNode(true);
-                        // Remover las secciones de las otras pestañas (Protocolos y Debida)
-                        this._cleanCloneForWord(clone, false);
-                        this._downloadWordFile(clone.innerHTML, suffix);
+                        // Política tiene 2 sub-pestañas (politica y etica) con v-show.
+                        // Iteramos sobre cada una para capturar ambas en el capítulo completo.
+                        const originalPoliticaSubTab = this.politicaSubTab;
+                        const politicaSubTabs = ['politica', 'etica'];
+                        const pageBreak = '<div class="page-break"></div>';
+                        let chapterContent = '';
+
+                        const collectPoliticaTabs = async () => {
+                            for (let i = 0; i < politicaSubTabs.length; i++) {
+                                this.politicaSubTab = politicaSubTabs[i];
+                                await this.$nextTick();
+                                const freshEl = document.getElementById('exportable-document');
+                                if (freshEl) {
+                                    const tabClone = freshEl.cloneNode(true);
+                                    // forceAllVisible=false: elimina secciones ocultas de Protocolos y Debida
+                                    this._cleanCloneForWord(tabClone, false);
+                                    if (i > 0) chapterContent += pageBreak;
+                                    chapterContent += tabClone.innerHTML;
+                                }
+                            }
+                            this.politicaSubTab = originalPoliticaSubTab;
+                            this._downloadWordFile(chapterContent, 'Politica_Completo');
+                        };
+                        collectPoliticaTabs();
                         return;
                     }
                     if (this.showProtocolos) {
@@ -12405,8 +13686,12 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         "Prot: Gestión Documental", "Prot Doc: Años Retención", "Prot Doc: Respaldo Digital",
                         "Prot: Regalos y Obsequios", "Prot Regalos: Política", "Prot Regalos: Valor Máximo", "Prot Regalos: Roles Aprobación", "Prot Regalos: Restricción en Negociaciones", "Prot Regalos: Sanciones",
                         "Prot: Gastos Representación", "Prot Gastos: Días Legalización", "Prot Gastos: Pre-aprobación requerida", "Prot Gastos: Rol Aprobador", "Prot Gastos: Sanciones",
-                        "PUNTAJE GLOBAL", "NIVEL MADUREZ PTEE", 
-                        "DIM: Gobernanza (%)", "DIM: Normatividad (%)", "DIM: Riesgos (%)", "DIM: Protocolos (%)",
+                        "PUNTAJE GLOBAL", "NIVEL MADUREZ PTEE",
+                        "DIM: Gobernanza y Ética (%)", "DIM: Normatividad y Política (%)", "DIM: Gestión de Riesgos (%)", "DIM: Debida Diligencia (%)", "DIM: Monitoreo y Denuncia (%)", "DIM: Divulgación y Conflictos (%)",
+                        "RIESGOS: Total en Matriz", "RIESGOS: Con Controles", "RIESGOS: Cobertura Controles (%)",
+                        "DD: Formulario Vinculación", "DD: Informe DD", "DD: Procesos Cadena Valor",
+                        "MON: Canal Denuncias", "MON: Gestión Canal", "MON: Informes Habilitados",
+                        "DIV: Actividades Com. Habilitadas", "DIV: Actividades Cap. Habilitadas", "DIV: Tipos Conflicto Configurados",
                         "Fecha de Evaluación"
                     ];
                     headers.push(...tailHeaders);
@@ -12449,8 +13734,27 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         this.nivelMadurezInfo.nivel,
                         this.diagnostico.dimensiones.gobernanza.puntaje,
                         this.diagnostico.dimensiones.normatividad.puntaje,
-                        this.diagnostico.dimensiones.riesgo.puntaje,
-                        this.diagnostico.dimensiones.protocolos.puntaje,
+                        this.diagnostico.dimensiones.riesgos.puntaje,
+                        this.diagnostico.dimensiones.debidaDiligencia.puntaje,
+                        this.diagnostico.dimensiones.monitoreo.puntaje,
+                        this.diagnostico.dimensiones.divulgacion.puntaje,
+
+                        this.risks ? this.risks.length : 0,
+                        this.risks ? this.risks.filter(r => r.controls && r.controls.length > 0).length : 0,
+                        this.risks && this.risks.length > 0 ? Math.round(this.risks.filter(r => r.controls && r.controls.length > 0).length / this.risks.length * 100) + '%' : '0%',
+
+                        this.fv && (this.fv.tipoVinculacion || this.fv.pn_nombres || this.fv.pj_razonSocial) ? 'SI' : 'NO',
+                        this.idd && (this.idd.id_razonSocial || this.idd.resumenEjecutivo || this.idd.decision) ? 'SI' : 'NO',
+                        ((this.valueChain && this.valueChain.strategic ? this.valueChain.strategic.filter(p=>p.active).length : 0) + (this.valueChain && this.valueChain.primary ? this.valueChain.primary.filter(p=>p.active).length : 0) + (this.valueChain && this.valueChain.support ? this.valueChain.support.filter(p=>p.active).length : 0)),
+
+                        this.form.reportingChannel || 'No definido',
+                        this.form.channelManagement || 'interno',
+                        this.informesEjecutivos ? this.informesEjecutivos.filter(i => i.enabled).length : 0,
+
+                        this.divPlanCom && this.divPlanCom.items ? this.divPlanCom.items.filter(i => i.enabled).length : 0,
+                        this.divPlanCap && this.divPlanCap.items ? this.divPlanCap.items.filter(i => i.enabled).length : 0,
+                        (this.confTipos ? Object.values(this.confTipos).filter(v => v).length : 0) + (this.customConfTipos ? this.customConfTipos.length : 0),
+
                         this.formatDisplayDate(new Date().toISOString().split('T')[0])
                     ];
                     row.push(...tailRow);
