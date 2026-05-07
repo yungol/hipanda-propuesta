@@ -54,6 +54,12 @@
             .word-doc { box-shadow: none !important; padding: 0 !important; width: 100% !important; margin: 0 !important; min-height: auto !important; }
             h1, h2, h3 { page-break-after: avoid; }
             ul, p, li { page-break-inside: avoid; widows: 3; orphans: 3; }
+            /* Cap. 9 — evitar cortes de página dentro de tarjetas de etapa del flujograma */
+            .rounded-xl { page-break-inside: avoid; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            /* Mantener grid de 3 columnas al imprimir */
+            .grid { display: grid !important; }
+            [class*="grid-cols-3"], [class*="grid-cols-2"] { display: grid !important; }
         }
         [v-cloak] { display: none !important; }
         .nota-ilustrativa {
@@ -104,29 +110,32 @@
                     
                     <!-- Tabs -->
                     <div class="grid grid-cols-4 gap-1 mt-3">
-                        <div @click="showPolitica = true; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showPolitica = true; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             1. Política
                         </div>
-                        <div @click="showProtocolos = true; showPolitica = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showProtocolos = true; showPolitica = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             2. Protocolos
                         </div>
-                        <div @click="showDiagnostico = true; showPolitica = false; showProtocolos = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDiagnostico = true; showPolitica = false; showProtocolos = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             3. Diagnóstico
                         </div>
-                        <div @click="showRiesgos = true; riesgosTab = 'matriz'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showRiesgos && riesgosTab !== 'controles' ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showRiesgos = true; riesgosTab = 'matriz'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showRiesgos && riesgosTab !== 'controles' ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             4. Riesgos
                         </div>
-                        <div @click="showDebida = true; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showDebida ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDebida = true; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showDebida ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             5. Deb. Diligencia
                         </div>
-                        <div @click="showMonitoreo = true; monitoreoSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showDivulgacion = false; showConflictos = false;" :class="[showMonitoreo ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showMonitoreo = true; monitoreoSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showMonitoreo ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             6. Monitoreo
                         </div>
-                        <div @click="showDivulgacion = true; divulgacionSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showConflictos = false;" :class="[showDivulgacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDivulgacion = true; divulgacionSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showConflictos = false; showContratacion = false;" :class="[showDivulgacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             7. Divulgación
                         </div>
-                        <div @click="showConflictos = true; conflictosSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false;" :class="[showConflictos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showConflictos = true; conflictosSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showContratacion = false;" :class="[showConflictos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             8. Conflictos
+                        </div>
+                        <div @click="showContratacion = true; contratacionSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showContratacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none col-span-4']">
+                            9. Contratación con el Estado
                         </div>
                     </div>
                     
@@ -1603,6 +1612,18 @@
                             <input type="checkbox" v-model="confConexionRiesgos" class="w-4 h-4 accent-blue-600"> Destacar Ley 1474 (Art. 4) y PEPs
                         </label>
                         <p class="text-[10px] text-gray-500 mb-2">Recomendación DAPRE para contratación, PEPs y exfuncionarios.</p>
+
+                        <!-- Alerta contextual: entidad contrata con el Estado -->
+                        <div v-if="contratacion.tieneContratacionEstado || form.publicResources" class="mt-3 p-2 bg-amber-50 border border-amber-300 rounded text-[10px] text-amber-800">
+                            <p class="font-bold mb-1 flex items-center gap-1"><span class="material-icons text-xs text-amber-600">link</span> Conexión con Cap. 9 — Contratación con el Estado</p>
+                            <p class="mb-1">Su entidad tiene activada la contratación con el Estado. Para que el Cap. 9 genere contenido cruzado completo, se recomienda:</p>
+                            <ul class="list-disc pl-3 space-y-0.5">
+                                <li v-if="!confTipos.politicos">Activar <strong>"Actividades políticas, Lobby y Sector Público"</strong> en los tipos de conflicto (relevante para relacionamiento con funcionarios contratantes).</li>
+                                <li v-if="!confConexionRiesgos">Activar <strong>"Destacar Ley 1474 (Art. 4) y PEPs"</strong> (arriba) para incluir la restricción de exfuncionarios en el Cap. 9.</li>
+                                <li v-if="!confTipos.familiares">Activar <strong>"Relaciones personales y familiares"</strong> para incluir en Cap. 9 el alcance de vínculos familiares con evaluadores o supervisores del contrato.</li>
+                            </ul>
+                            <button @click.prevent="navigateToTab('contratacion')" class="mt-1 text-amber-700 underline font-bold text-[10px]">→ Ir a Cap. 9 Contratación</button>
+                        </div>
                     </div>
 
                     <!-- Canal de Declaración Config -->
@@ -1652,6 +1673,274 @@
                         </div>
                     </div>
 
+                </section>
+            </div>
+
+            <!-- TAB 9: CONTRATACIÓN CON EL ESTADO -->
+            <div class="p-6 flex flex-col gap-6" v-show="showContratacion">
+                <section>
+                    <h3 class="font-bold text-blue-800 border-b border-blue-200 pb-2 mb-3">9. Contratación con el Estado</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Configure la política, flujograma y lista de chequeo de trazabilidad para operaciones, transacciones y contratos con entidades estatales o donde se manejen recursos públicos.
+                    </p>
+
+                    <!-- Indicador de campos pre-mapeados -->
+                    <div class="mb-4 bg-teal-50 border border-teal-200 rounded p-3 text-xs text-teal-800">
+                        <p class="font-bold mb-1 flex items-center gap-1"><span class="material-icons align-middle" style="font-size:13px">sync</span> Campos pre-mapeados de etapas previas</p>
+                        <p class="text-[10px] text-teal-700">Los campos con <span class="material-icons align-middle" style="font-size:10px">lock</span> se configuran en el capítulo de origen indicado. Toque el enlace para navegar allí y modificarlos.</p>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="text-[10px] font-bold">Nivel de riesgo (Cap. 1):</span>
+                            <span :class="{'bg-red-100 text-red-800 border-red-300': form.riskLevel === 'alto', 'bg-yellow-100 text-yellow-800 border-yellow-300': form.riskLevel === 'medio', 'bg-green-100 text-green-800 border-green-300': form.riskLevel !== 'alto' && form.riskLevel !== 'medio'}" class="text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase">{{ form.riskLevel || 'no definido' }}</span>
+                            <button @click="navigateToTab('politica')" class="text-[10px] text-teal-600 underline hover:text-teal-900">Ir a Cap. 1</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800">
+                        <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">info</span> Criterio de Riesgo Alto</p>
+                        <p>La contratación con entidades estatales es uno de los cinco criterios determinantes del nivel de riesgo del PTEE. Las entidades clasificadas como <strong>Riesgo Alto</strong> que contraten con el Estado deben contar con una política explícita en esta materia.</p>
+                    </div>
+
+                    <!-- ¿Contrata con el Estado? — pre-mapeado de form.publicResources (Cap. 1) -->
+                    <div class="mb-4">
+                        <label class="flex items-start gap-2 text-sm font-bold text-gray-700 mb-1" :class="form.publicResources ? 'opacity-80' : ''">
+                            <input type="checkbox" v-model="contratacion.tieneContratacionEstado" :disabled="form.publicResources" class="w-4 h-4 accent-blue-600 mt-0.5 shrink-0">
+                            <span>¿La ESAL realiza operaciones, transacciones o contratos con entidades del Estado o maneja recursos públicos?</span>
+                        </label>
+                        <div v-if="form.publicResources" class="text-[10px] bg-blue-50 border border-blue-200 rounded px-2 py-1 mt-1 flex items-center gap-1 text-blue-700">
+                            <span class="material-icons shrink-0" style="font-size:11px">lock</span>
+                            Confirmado en <strong class="mx-1">Cap. 1 — Tipos de Recursos</strong>.
+                            <button @click="navigateToTab('politica')" class="underline hover:text-blue-900 ml-1 shrink-0">Modificar en Cap. 1</button>
+                        </div>
+                        <div v-if="!contratacion.tieneContratacionEstado && !form.publicResources" class="text-xs text-gray-500 italic pl-6 mt-1">Si no aplica, el capítulo quedará como referencia documental con nota de no aplicabilidad.</div>
+                    </div>
+
+                    <!-- Tipos de relacionamiento -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Tipo(s) de relacionamiento con el Estado</label>
+                        <div class="space-y-1 text-xs">
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.art355" class="w-3 h-3"> Contratos Art. 355 C.P. / Decreto 092 de 2017 (con entidades gubernamentales para impulsar programas de interés público)</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.convenios" class="w-3 h-3"> Convenios interadministrativos o de asociación</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.subvenciones" class="w-3 h-3"> Subvenciones, transferencias o aportes del Estado</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.operador" class="w-3 h-3"> Operador de recursos públicos (administración de fondos o recursos públicos)</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.vigenciasFuturas" class="w-3 h-3"> Contratos con vigencias futuras</label>
+                            <label class="flex items-center gap-2"><input type="checkbox" v-model="contratacion.tiposRelacion.esquemaAsociativo" class="w-3 h-3"> Esquemas asociativos con entidades públicas</label>
+                            <!-- Distrital — pre-mapeado si "Bogotá" aparece en el alcance de Cap. 1 -->
+                            <label class="flex items-center gap-2" :class="isDistritoDetected ? 'opacity-80' : ''">
+                                <input type="checkbox" v-model="contratacion.tiposRelacion.distrital" :disabled="isDistritoDetected" class="w-3 h-3">
+                                Contratación Distrital (Bogotá – Directiva 003/2017 y 014/2018)
+                                <span v-if="isDistritoDetected" class="text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 ml-1 shrink-0">Cap. 1</span>
+                            </label>
+                            <div v-if="isDistritoDetected" class="text-[10px] text-blue-600 pl-4 -mt-0.5">
+                                Detectado «Bogotá» en Alcance (Cap. 1).
+                                <button @click="navigateToTab('politica')" class="underline hover:text-blue-900">Verificar en Cap. 1</button>
+                            </div>
+                        </div>
+                        <!-- Multi-item: otros tipos de relacionamiento -->
+                        <div class="mt-3 border border-gray-200 rounded bg-gray-50 p-2">
+                            <p class="text-[10px] text-gray-500 font-semibold mb-1">Otros tipos de relacionamiento</p>
+                            <div v-if="contratacion.tiposRelacionOtro.length" class="space-y-1 mb-2">
+                                <div v-for="(item, idx) in contratacion.tiposRelacionOtro" :key="idx" class="flex items-center gap-1 bg-white border border-gray-200 rounded px-2 py-1 text-xs">
+                                    <span class="flex-1">{{ item }}</span>
+                                    <button @click="removeRelacionOtro(idx)" class="text-red-400 hover:text-red-600 shrink-0" title="Eliminar">
+                                        <span class="material-icons" style="font-size:13px">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <input type="text" v-model="newRelacionOtro" @keyup.enter="addRelacionOtro" class="flex-1 border border-gray-300 rounded px-2 py-1 text-xs" placeholder="Ej. Comodato con entidad pública...">
+                                <button @click="addRelacionOtro" :disabled="!newRelacionOtro.trim()" class="text-[10px] bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded px-2 py-1 font-bold shrink-0 transition">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entidades estatales — campo libre -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Entidades estatales con las que contrata (principales)</label>
+                        <textarea v-model="contratacion.entidadesEstatales" rows="2" class="w-full border p-2 rounded text-xs" placeholder="Ej. Alcaldía de Bogotá, SENA, Ministerio de Educación..."></textarea>
+                    </div>
+
+                    <!-- Ley 1712 — pre-mapeado de form.publicResources (Cap. 1) -->
+                    <div class="mb-4">
+                        <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1" :class="form.publicResources ? 'opacity-80' : ''">
+                            <input type="checkbox" v-model="contratacion.aplicaLey1712" :disabled="form.publicResources" class="w-4 h-4 accent-blue-600">
+                            ¿Aplica Ley 1712 de 2014 (Transparencia y Derecho de Acceso a la Información Pública)?
+                        </label>
+                        <p class="text-xs text-gray-500 pl-6">Aplica para ESAL que reciban, administren o ejecuten recursos públicos o actúen como sujetos obligados.</p>
+                        <div v-if="form.publicResources" class="text-[10px] bg-blue-50 border border-blue-200 rounded px-2 py-1 mt-1 flex items-center gap-1 text-blue-700">
+                            <span class="material-icons shrink-0" style="font-size:11px">lock</span>
+                            Determinado por manejo de recursos públicos en <strong class="mx-1">Cap. 1</strong>.
+                            <button @click="navigateToTab('politica')" class="underline hover:text-blue-900 ml-1 shrink-0">Modificar en Cap. 1</button>
+                        </div>
+                    </div>
+
+                    <!-- Responsable — campo libre con sugerencia desde Cap. 1 -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Responsable interno de contratación estatal</label>
+                        <input type="text" v-model="contratacion.responsableContratacion" class="w-full border p-2 rounded text-xs" placeholder="Ej. Dirección Jurídica / Oficial de Cumplimiento">
+                        <p class="text-[10px] text-gray-500 mt-1 pl-1 flex items-center gap-1">
+                            <span class="material-icons" style="font-size:10px">tips_and_updates</span>
+                            Sugerido por nivel de riesgo (Cap. 1):
+                            <strong class="ml-1">{{ form.riskLevel === 'alto' ? 'Oficial de Cumplimiento' : 'Responsable de Cumplimiento designado' }}</strong>
+                        </p>
+                    </div>
+
+                    <!-- Principios Rectores §9.1.3 — configurables -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
+                            Prácticas rectoras (sección 9.1.3)
+                            <span class="ml-auto text-[9px] font-normal bg-teal-100 text-teal-800 border border-teal-200 rounded px-1.5 py-0.5">{{ contratacion.principios.filter(p => p.activo).length }} activos</span>
+                        </label>
+                        <p class="text-[10px] text-gray-500 mb-3">Active, desactive, edite o agregue principios según la cultura y necesidades de la entidad. La fuente es orientadora y solo visible en este panel.</p>
+
+                        <div class="space-y-2">
+                            <div v-for="(p, idx) in contratacion.principios" :key="idx" class="border rounded overflow-hidden" :class="p.activo ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-60'">
+                                <!-- Fila principal -->
+                                <div class="flex items-start gap-2 px-2 py-1.5">
+                                    <input type="checkbox" v-model="p.activo" class="w-3.5 h-3.5 accent-teal-600 mt-0.5 shrink-0">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-gray-800 leading-tight">{{ p.nombre }}</p>
+                                        <p class="text-[10px] text-teal-700 bg-teal-50 border border-teal-100 rounded px-1 mt-0.5 inline-block leading-snug"><span class="material-icons align-middle" style="font-size:9px">menu_book</span> {{ p.fuente }}</p>
+                                    </div>
+                                    <div class="flex gap-1 shrink-0 mt-0.5">
+                                        <button @click.prevent="toggleExpandPrincipio(idx)" :title="expandedPrincipio === idx ? 'Cerrar edición' : 'Editar definición'" class="text-blue-500 hover:text-blue-700 transition">
+                                            <span class="material-icons" style="font-size:14px">{{ expandedPrincipio === idx ? 'edit_off' : 'edit' }}</span>
+                                        </button>
+                                        <button @click.prevent="removePrincipio(idx)" title="Eliminar principio" class="text-red-400 hover:text-red-600 transition">
+                                            <span class="material-icons" style="font-size:14px">delete_outline</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Panel de edición expandible -->
+                                <div v-show="expandedPrincipio === idx" class="border-t border-blue-100 bg-blue-50 px-2 py-2">
+                                    <label class="block text-[10px] font-bold text-blue-800 mb-1">Nombre del principio</label>
+                                    <input type="text" v-model="p.nombre" class="w-full border border-blue-200 rounded px-2 py-1 text-[10px] mb-2 bg-white" placeholder="Ej. Transparencia">
+                                    <label class="block text-[10px] font-bold text-blue-800 mb-1">Definición</label>
+                                    <textarea v-model="p.definicion" rows="3" class="w-full border border-blue-200 rounded px-2 py-1 text-[10px] mb-2 bg-white resize-none" placeholder="Defina el alcance de este principio para su entidad..."></textarea>
+                                    <label class="block text-[10px] font-bold text-blue-800 mb-1">Fuente de referencia (orientadora)</label>
+                                    <input type="text" v-model="p.fuente" class="w-full border border-blue-200 rounded px-2 py-1 text-[10px] mb-2 bg-white" placeholder="Ej. Ley 80/1993 Art. 24">
+                                    <button @click.prevent="toggleExpandPrincipio(idx)" class="text-[10px] bg-blue-600 hover:bg-blue-700 text-white rounded px-2 py-1 transition">✓ Listo</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agregar principio nuevo -->
+                        <div class="mt-3 border border-dashed border-gray-300 rounded p-2 bg-gray-50">
+                            <p class="text-[10px] font-bold text-gray-600 mb-1">+ Añadir principio personalizado</p>
+                            <input type="text" v-model="newPrincipioNombre" class="w-full border border-gray-300 rounded px-2 py-1 text-[10px] mb-1 bg-white" placeholder="Nombre del principio *">
+                            <textarea v-model="newPrincipioDefinicion" rows="2" class="w-full border border-gray-300 rounded px-2 py-1 text-[10px] mb-1 bg-white resize-none" placeholder="Definición del principio *"></textarea>
+                            <input type="text" v-model="newPrincipioFuente" class="w-full border border-gray-300 rounded px-2 py-1 text-[10px] mb-2 bg-white" placeholder="Fuente de referencia (opcional)">
+                            <button @click.prevent="addPrincipio()" :disabled="!newPrincipioNombre.trim() || !newPrincipioDefinicion.trim()" class="w-full text-[10px] bg-teal-600 hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded px-2 py-1 font-bold transition">+ Añadir Principio</button>
+                        </div>
+                    </div>
+
+                    <!-- Articulación con el PTEE — todos los ítems pre-mapeados -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Documentos del PTEE que se articulan</label>
+                        <p class="text-[10px] text-gray-500 mb-2 italic">Los capítulos que forman parte del PTEE se marcan automáticamente. Los protocolos del Cap. 2 se activan según lo configurado allí.</p>
+                        <div class="space-y-1.5 text-xs">
+
+                            <!-- Cap. 1 — siempre presente -->
+                            <div>
+                                <label class="flex items-center gap-2 opacity-80">
+                                    <input type="checkbox" disabled checked class="w-3 h-3 accent-blue-600">
+                                    <span>Política de Cumplimiento (Cap. 1)</span>
+                                    <span class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 1</span>
+                                </label>
+                                <div class="text-[10px] text-blue-600 pl-5">Siempre articulado.
+                                    <button @click="navigateToTab('politica')" class="underline hover:text-blue-900">Ir a Cap. 1</button>
+                                </div>
+                            </div>
+
+                            <!-- Protocolo Regalos — condicionado a protocols.gifts.applies -->
+                            <div>
+                                <label class="flex items-center gap-2" :class="protocols.gifts.applies ? 'opacity-80' : ''">
+                                    <input type="checkbox" v-model="contratacion.articulacion.protocoloRegalos" :disabled="protocols.gifts.applies" class="w-3 h-3">
+                                    <span>Protocolo de Regalos y Beneficios con terceros (Cap. 2)</span>
+                                    <span v-if="protocols.gifts.applies" class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 2</span>
+                                </label>
+                                <div v-if="protocols.gifts.applies" class="text-[10px] text-blue-600 pl-5">Protocolo activo en Cap. 2.
+                                    <button @click="navigateToTab('protocolos')" class="underline hover:text-blue-900">Modificar en Cap. 2</button>
+                                </div>
+                            </div>
+
+                            <!-- Protocolo Lobby — condicionado a protocols.lobbying.applies -->
+                            <div>
+                                <label class="flex items-center gap-2" :class="protocols.lobbying.applies ? 'opacity-80' : ''">
+                                    <input type="checkbox" v-model="contratacion.articulacion.protocoloLobby" :disabled="protocols.lobbying.applies" class="w-3 h-3">
+                                    <span>Protocolo de Cabildeo (Lobby) y relaciones públicas (Cap. 2)</span>
+                                    <span v-if="protocols.lobbying.applies" class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 2</span>
+                                </label>
+                                <div v-if="protocols.lobbying.applies" class="text-[10px] text-blue-600 pl-5">Protocolo activo en Cap. 2.
+                                    <button @click="navigateToTab('protocolos')" class="underline hover:text-blue-900">Modificar en Cap. 2</button>
+                                </div>
+                            </div>
+
+                            <!-- Protocolo Contribuciones — condicionado a protocols.political.applies -->
+                            <div>
+                                <label class="flex items-center gap-2" :class="protocols.political.applies ? 'opacity-80' : ''">
+                                    <input type="checkbox" v-model="contratacion.articulacion.protocoloContribuciones" :disabled="protocols.political.applies" class="w-3 h-3">
+                                    <span>Protocolo de Campañas o contribuciones políticas (Cap. 2)</span>
+                                    <span v-if="protocols.political.applies" class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 2</span>
+                                </label>
+                                <div v-if="protocols.political.applies" class="text-[10px] text-blue-600 pl-5">Protocolo activo en Cap. 2.
+                                    <button @click="navigateToTab('protocolos')" class="underline hover:text-blue-900">Modificar en Cap. 2</button>
+                                </div>
+                            </div>
+
+                            <!-- Cap. 4 — siempre presente -->
+                            <div>
+                                <label class="flex items-center gap-2 opacity-80">
+                                    <input type="checkbox" disabled checked class="w-3 h-3 accent-blue-600">
+                                    <span>Gestión de Riesgos C/ST (Cap. 4)</span>
+                                    <span class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 4</span>
+                                </label>
+                                <div class="text-[10px] text-blue-600 pl-5">Siempre articulado.
+                                    <button @click="navigateToTab('riesgos')" class="underline hover:text-blue-900">Ir a Cap. 4</button>
+                                </div>
+                            </div>
+
+                            <!-- Cap. 5 — siempre presente -->
+                            <div>
+                                <label class="flex items-center gap-2 opacity-80">
+                                    <input type="checkbox" disabled checked class="w-3 h-3 accent-blue-600">
+                                    <span>Debida Diligencia a Terceros (Cap. 5)</span>
+                                    <span class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 5</span>
+                                </label>
+                                <div class="text-[10px] text-blue-600 pl-5">Siempre articulado.
+                                    <button @click="navigateToTab('debida')" class="underline hover:text-blue-900">Ir a Cap. 5</button>
+                                </div>
+                            </div>
+
+                            <!-- Cap. 6 — siempre presente -->
+                            <div>
+                                <label class="flex items-center gap-2 opacity-80">
+                                    <input type="checkbox" disabled checked class="w-3 h-3 accent-blue-600">
+                                    <span>Monitoreo y Canal de Denuncias (Cap. 6)</span>
+                                    <span class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 6</span>
+                                </label>
+                                <div class="text-[10px] text-blue-600 pl-5">Siempre articulado.
+                                    <button @click="navigateToTab('monitoreo')" class="underline hover:text-blue-900">Ir a Cap. 6</button>
+                                </div>
+                            </div>
+
+                            <!-- Cap. 8 — siempre presente -->
+                            <div>
+                                <label class="flex items-center gap-2 opacity-80">
+                                    <input type="checkbox" disabled checked class="w-3 h-3 accent-blue-600">
+                                    <span>Gestión de Conflictos de Intereses (Cap. 8)</span>
+                                    <span class="ml-auto text-[9px] bg-blue-100 text-blue-700 border border-blue-200 rounded px-1 shrink-0">Cap. 8</span>
+                                </label>
+                                <div class="text-[10px] text-blue-600 pl-5">Siempre articulado.
+                                    <button @click="navigateToTab('conflictos')" class="underline hover:text-blue-900">Ir a Cap. 8</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-500 italic mt-4">
+                        Navegue las subpestañas en el panel derecho (9.1 Política, 9.2 Flujograma, 9.3 Trazabilidad) para visualizar y personalizar cada componente.
+                    </div>
                 </section>
             </div>
         </aside>
@@ -1819,6 +2108,10 @@
                             <span class="text-xs font-semibold text-gray-700">Política de Conflictos de Interés</span>
                             <span :class="((confTipos && Object.values(confTipos).some(v=>v)) || (customConfTipos && customConfTipos.length > 0)) ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-600 border-red-100'" class="px-2 py-1 border rounded text-xs font-bold w-12 text-center">{{ ((confTipos && Object.values(confTipos).some(v=>v)) || (customConfTipos && customConfTipos.length > 0)) ? 'SÍ' : 'NO' }}</span>
                         </div>
+                        <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded shadow-sm">
+                            <span class="text-xs font-semibold text-gray-700">Política Contratación c/Estado (Cap. 9)</span>
+                            <span :class="contratacion.tieneContratacionEstado ? 'bg-blue-100 text-blue-800 border-blue-200' : 'bg-gray-100 text-gray-500 border-gray-200'" class="px-2 py-1 border rounded text-xs font-bold w-12 text-center">{{ contratacion.tieneContratacionEstado ? 'SÍ' : 'N/A' }}</span>
+                        </div>
                     </div>
 
                     <!-- Detalles Adicionales SI/NO -->
@@ -1970,6 +2263,22 @@
                                             <li>Pre-aprobación: <b>{{ protocols.expenses.preApproval ? 'Sí' : 'No' }} ({{ protocols.expenses.approvalRole }})</b></li>
                                             <li>Legalización: <b>máx {{ protocols.expenses.legalizationDays }} días</b></li>
                                         </ul>
+                                    </td>
+                                </tr>
+                                <!-- Contratación con el Estado -->
+                                <tr class="hover:bg-blue-50">
+                                    <td class="px-4 py-2 font-semibold">Contratación con el Estado (Cap. 9)</td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span v-if="contratacion.tieneContratacionEstado" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold w-full inline-block">Incluido</span>
+                                        <span v-else class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold w-full inline-block">Ref. Documental</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-xs">
+                                        <ul v-if="contratacion.tieneContratacionEstado" class="list-disc pl-4">
+                                            <li>Tipos de relación activos: <b>{{ Object.values(contratacion.tiposRelacion).filter(v => v).length + contratacion.tiposRelacionOtro.length }}</b></li>
+                                            <li>Principios rectores activos: <b>{{ contratacion.principios.filter(p => p.activo).length }}</b></li>
+                                            <li>Capítulos articulados (Anexo 1): <b>{{ Object.values(contratacion.articulacion).filter(v => v).length }}</b></li>
+                                        </ul>
+                                        <span v-else class="text-gray-400 italic">La entidad no realiza contratos o convenios con el Estado</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -2146,6 +2455,146 @@
                                     <span :class="item.enabled ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ item.enabled ? 'SÍ' : 'NO' }}</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 7: CONTRATACIÓN CON EL ESTADO (Cap. 9) -->
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+                    <h3 class="font-bold text-blue-900 mb-4 border-b border-gray-300 pb-2">7. Estado de la Política de Contratación con el Estado (Cap. 9)</h3>
+
+                    <!-- Indicadores KPI -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                        <div class="bg-white border rounded-lg p-4 text-center shadow-sm"
+                             :class="contratacion.tieneContratacionEstado ? 'border-blue-300' : 'border-gray-200'">
+                            <div class="text-3xl font-black mb-1" :class="contratacion.tieneContratacionEstado ? 'text-blue-700' : 'text-gray-400'">
+                                {{ contratacion.tieneContratacionEstado ? 'SÍ' : 'N/A' }}
+                            </div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide leading-tight">Política activada</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black mb-1" :class="contratacion.tieneContratacionEstado ? 'text-indigo-700' : 'text-gray-400'">
+                                {{ Object.values(contratacion.tiposRelacion).filter(v => v).length + contratacion.tiposRelacionOtro.length }}
+                            </div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide leading-tight">Tipos de relación activos</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black mb-1" :class="contratacion.principios.filter(p => p.activo).length > 0 ? 'text-teal-700' : 'text-gray-400'">
+                                {{ contratacion.principios.filter(p => p.activo).length }}
+                            </div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide leading-tight">Principios rectores activos</div>
+                        </div>
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                            <div class="text-3xl font-black mb-1" :class="Object.values(contratacion.articulacion).filter(v => v).length > 0 ? 'text-emerald-700' : 'text-gray-400'">
+                                {{ Object.values(contratacion.articulacion).filter(v => v).length }}
+                            </div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide leading-tight">Capítulos articulados</div>
+                        </div>
+                    </div>
+
+                    <div v-if="contratacion.tieneContratacionEstado" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tipos de relación con el Estado -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-blue-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wide">Tipos de relación con el Estado (9.1.2)</h4>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Contratos Art. 355 C.P. / Decreto 092/2017</span>
+                                    <span :class="contratacion.tiposRelacion.art355 ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.art355 ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Convenios interadministrativos o de asociación</span>
+                                    <span :class="contratacion.tiposRelacion.convenios ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.convenios ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Subvenciones / transferencias / aportes del Estado</span>
+                                    <span :class="contratacion.tiposRelacion.subvenciones ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.subvenciones ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Operador de recursos públicos</span>
+                                    <span :class="contratacion.tiposRelacion.operador ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.operador ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Contratos con vigencias futuras</span>
+                                    <span :class="contratacion.tiposRelacion.vigenciasFuturas ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.vigenciasFuturas ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Esquemas asociativos con entidades públicas</span>
+                                    <span :class="contratacion.tiposRelacion.esquemaAsociativo ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.esquemaAsociativo ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Contratación Distrital Bogotá (Dir. 003/2017 y 014/2018)</span>
+                                    <span :class="contratacion.tiposRelacion.distrital ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.tiposRelacion.distrital ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div v-for="(otro, idx) in contratacion.tiposRelacionOtro" :key="'diag-otro-'+idx" class="flex items-center justify-between text-[11px] p-1.5 bg-yellow-50 border border-yellow-100 rounded">
+                                    <span class="text-gray-800 font-medium leading-tight pr-2">{{ otro }} (Otro)</span>
+                                    <span class="text-green-600 font-black">SÍ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Articulación con el PTEE (Anexo 1) -->
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <div class="bg-indigo-50 px-3 py-2 border-b border-gray-200">
+                                <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wide">Articulación con el PTEE — Anexo 1 (Cap. 9)</h4>
+                            </div>
+                            <div class="p-2 space-y-1">
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Política de Cumplimiento (Cap. 1)</span>
+                                    <span :class="contratacion.articulacion.politicaCumplimiento ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.politicaCumplimiento ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Protocolo de Regalos y Beneficios (Cap. 2)</span>
+                                    <span :class="contratacion.articulacion.protocoloRegalos ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.protocoloRegalos ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Protocolo de Cabildeo / Lobby (Cap. 2)</span>
+                                    <span :class="contratacion.articulacion.protocoloLobby ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.protocoloLobby ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Protocolo de Contribuciones Políticas (Cap. 2)</span>
+                                    <span :class="contratacion.articulacion.protocoloContribuciones ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.protocoloContribuciones ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Gestión de Riesgos C/ST (Cap. 4)</span>
+                                    <span :class="contratacion.articulacion.gestionRiesgos ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.gestionRiesgos ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Debida Diligencia a Terceros (Cap. 5)</span>
+                                    <span :class="contratacion.articulacion.debidaDiligencia ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.debidaDiligencia ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Monitoreo y Canal de Denuncias (Cap. 6)</span>
+                                    <span :class="contratacion.articulacion.monitoreo ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.monitoreo ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] p-1.5 bg-gray-50 border border-gray-100 rounded">
+                                    <span class="text-gray-700 leading-tight pr-2">Gestión de Conflictos de Intereses (Cap. 8)</span>
+                                    <span :class="contratacion.articulacion.conflictosInteres ? 'text-green-600 font-black' : 'text-gray-300 font-bold'">{{ contratacion.articulacion.conflictosInteres ? 'SÍ' : 'NO' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aviso cuando no aplica -->
+                    <div v-if="!contratacion.tieneContratacionEstado" class="flex items-start gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-xs text-gray-500 mt-2">
+                        <span class="material-icons text-gray-400 text-base shrink-0 mt-0.5">info</span>
+                        <p>La entidad no ha indicado que realiza contratos o convenios con el Estado. El Cap. 9 se incluye en el documento como referencia documental con nota de no aplicabilidad. Si la situación cambia, active la opción en el panel de configuración (Tab 9).</p>
+                    </div>
+
+                    <!-- Alertas cruzadas con Cap. 9 -->
+                    <div v-if="contratacion.tieneContratacionEstado" class="mt-4 space-y-2">
+                        <div v-if="!contratacion.articulacion.conflictosInteres" class="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-800">
+                            <span class="material-icons text-amber-500 text-sm shrink-0 mt-0.5">warning</span>
+                            <span><strong>Alerta:</strong> La articulación con la Política de Conflictos de Intereses (Cap. 8) no está activada. En contextos de contratación con el Estado, la declaración de conflictos de interés precontractual es un control obligatorio (ver sección 9.1.4 y 9.1.6).</span>
+                        </div>
+                        <div v-if="!contratacion.articulacion.gestionRiesgos" class="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2 text-xs text-amber-800">
+                            <span class="material-icons text-amber-500 text-sm shrink-0 mt-0.5">warning</span>
+                            <span><strong>Alerta:</strong> La articulación con la Gestión de Riesgos C/ST (Cap. 4) no está activada. Los riesgos de contratación estatal deben integrarse en la matriz de riesgos institucional del PTEE.</span>
+                        </div>
+                        <div v-if="contratacion.principios.filter(p => p.activo).length === 0" class="flex items-start gap-2 bg-orange-50 border border-orange-200 rounded px-3 py-2 text-xs text-orange-800">
+                            <span class="material-icons text-orange-500 text-sm shrink-0 mt-0.5">warning</span>
+                            <span><strong>Alerta:</strong> No hay principios rectores activos para la política de contratación con el Estado (sección 9.1.3). Active al menos uno desde el panel de configuración (Tab 9).</span>
                         </div>
                     </div>
                 </div>
@@ -7629,11 +8078,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Tipo B: Auditoría interna/externa — Recomendado -->
+                                <!-- Tipo B: Auditoría de Cumplimiento — Discrecional -->
                                 <div class="border-2 border-teal-600 rounded-lg overflow-hidden shadow-sm">
                                     <div class="bg-teal-600 text-white px-3 py-2 font-bold text-xs flex items-center gap-2">
                                         <span class="material-icons" style="font-size:inherit">search</span> TIPO B — Auditoría de Cumplimiento
-                                        <span class="ml-auto bg-white text-teal-700 px-2 py-0.5 rounded-full text-[9px] font-black">RECOMENDADO</span>
+                                        <span class="ml-auto bg-white text-gray-600 px-2 py-0.5 rounded-full text-[9px] font-black">DISCRECIONAL</span>
                                     </div>
                                     <div class="p-3 bg-white text-[10px]">
                                         <ul class="space-y-1.5 text-gray-700">
@@ -7644,8 +8093,12 @@
                                             <li class="flex gap-1.5"><span class="text-teal-600 font-bold"><span class="material-icons" style="font-size:inherit;font-size:10px">play_arrow</span></span> Benchmarking frente a estándares (ISO 37001, ISO 37301)</li>
                                             <li class="flex gap-1.5"><span class="text-teal-600 font-bold"><span class="material-icons" style="font-size:inherit;font-size:10px">play_arrow</span></span> Informe de hallazgos y plan de mejora</li>
                                         </ul>
-                                        <div class="mt-2 pt-2 border-t border-gray-200">
-                                            <p class="text-[9px] text-gray-500 italic">Práctica recomendada (no obligatoria); fortalece la gobernanza y genera evidencia de compromiso.</p>
+                                        <div class="mt-2 pt-2 border-t border-gray-200 space-y-1.5">
+                                            <p class="text-[9px] text-gray-500 italic">Práctica discrecional: cada entidad decide si y con qué periodicidad la incorpora, según su nivel de riesgo y madurez del PTEE; fortalece la gobernanza y genera evidencia de compromiso.</p>
+                                            <div class="flex items-start gap-1.5 bg-amber-50 border border-amber-300 rounded px-2 py-1.5">
+                                                <span class="material-icons text-amber-600 shrink-0" style="font-size:12px">location_on</span>
+                                                <p class="text-[9px] text-amber-800"><strong>Antioquia:</strong> Para las entidades del departamento de Antioquia, esta auditoría de cumplimiento debe realizarse <strong>mínimo una (1) vez al año</strong>, debiendo quedar incluida en el plan de auditoría o de control interno de la entidad.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -8985,7 +9438,7 @@
                                 <li>Conexión con <strong>contrapartes del sector público y funcionarios:</strong> La interacción de la Entidad (directivos, empleados o terceros) prestando o recibiendo servicios frente a lo público, requiere un alto <em>deber de diligencia</em>. Pueden generarse presiones por favores, agilización de trámites a cambio de vinculación familiar, contribuciones a actores políticos, o intercambios indebidos de beneficios.</li>
                                 <li>Intervención de <strong>terceros vinculados a la entidad </strong> (<span v-if="form.thirdParties && form.thirdParties.length">{{ form.thirdParties.join(', ') }}</span><span v-else>ej. donantes o aliados</span>) en las operaciones, condicionando desembolsos o decisiones, o exigiendo que se trabaje o se subcontraten a ciertas organizaciones donde estos u otros colaboradores puedan poseer influencia o ventajas indebidas.</li>
                                 <li>Procedimientos deficientes de <strong>debida diligencia</strong>. Al revelar un conflicto de intereses de manera temprana, permite enfocar las debidas diligencias y cruces de información de manera precisa.</li>
-                                <li v-if="confConexionRiesgos"><strong>Disposiciones del Estatuto Anticorrupción / Ley 1474 de 2011 (Art.4) y PEPs:</strong> Se revisará en la declaración e investigación que el perfil particular no advierta inhabilidades ni incompatibilidades derivadas por figurar como Persona Expuesta Políticamente (PEP), familiar u organización estrecha ligada a este, así como restricciones aplicables a ex-servidores públicos que durante el año previo hayan actuado con capacidad de decisión sobre la ESAL o contratos vinculados.</li>
+                                <li v-if="confConexionRiesgos"><strong>Disposiciones del Estatuto Anticorrupción / Ley 1474 de 2011 (Art.4) y PEPs:</strong> Se revisará en la declaración e investigación que el perfil particular no advierta inhabilidades ni incompatibilidades derivadas por figurar como Persona Expuesta Políticamente (PEP), familiar u organización estrecha ligada a este, así como restricciones aplicables a ex-servidores públicos que durante el año previo hayan actuado con capacidad de decisión sobre la ESAL o contratos vinculados. <em>En el contexto específico de contratación con entidades estatales, véase el detalle de las obligaciones de declaración y los controles de puertas giratorias en la <strong>Política de Contratación con el Estado (Cap. 9, secciones 9.1.4 y 9.1.7)</strong>.</em></li>
                             </ul>
 
                             <h3 class="text-md font-bold text-blue-800 mt-6 mb-4 mt-8">Flujograma y rutas de tratamiento</h3>
@@ -9696,10 +10149,621 @@
                     </div>
                 </div> <!-- Cierra conflictos-view -->
 
-        </main>
-        
-        </div> <!-- Cierra div de APLICACIÓN PRINCIPAL v-if="isAuthenticated" -->
-    </div> <!-- Cierra div id="app" -->
+                <!-- =====================================================================
+                     TAB 9: CONTRATACIÓN CON EL ESTADO
+                     ===================================================================== -->
+                <div id="contratacion-view" v-show="showContratacion" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded relative">
+                    <div class="nota-ilustrativa">Documento orientador PTEE — Contratación con el Estado</div>
+
+                    <!-- Subtabs -->
+                    <div class="flex flex-wrap gap-1 border-b border-gray-200 mb-6 no-print">
+                        <button @click="contratacionSubTab = 'politica'" :class="contratacionSubTab === 'politica' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">gavel</span> 9.1 Política
+                        </button>
+                        <button @click="contratacionSubTab = 'flujograma'" :class="contratacionSubTab === 'flujograma' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">account_tree</span> 9.2 Flujograma
+                        </button>
+                        <button @click="contratacionSubTab = 'trazabilidad'" :class="contratacionSubTab === 'trazabilidad' ? 'border-b-2 border-blue-900 text-blue-900 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-blue-800 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons text-base">checklist</span> 9.3 Trazabilidad
+                        </button>
+                    </div>
+
+                    <!-- ——— 9.1 POLÍTICA DE CONTRATACIÓN CON EL ESTADO ——— -->
+                    <div v-show="contratacionSubTab === 'politica'">
+                        <div class="word-doc">
+                            <h1 style="color: #1e3a8a; border-bottom: 3px solid #1e3a8a; text-transform: none; text-align: left; font-size: 18pt; padding-bottom: 10px; margin-bottom: 24px; letter-spacing: 0.01em;">9. Política de contratación con el Estado</h1>
+                            <p v-if="!contratacion.tieneContratacionEstado" class="text-center text-gray-400 italic text-sm border border-dashed border-gray-300 p-4 rounded">
+                                <span class="material-icons align-middle" style="font-size:16px">info</span>
+                                La entidad ha indicado que no realiza operaciones o contratos con entidades estatales. Este capítulo se incluye como referencia documental con nota de no aplicabilidad actual.
+                            </p>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.1 Declaración de compromiso</h2>
+                            <p>{{ form.entityName || '[Nombre de la Entidad]' }} reconoce que la contratación con entidades del Estado y el manejo de recursos públicos exigen los más altos estándares de transparencia, integridad y legalidad. En consecuencia, establece la presente Política como parte integral de su Programa de Transparencia y Ética Empresarial (PTEE), con el propósito de prevenir y mitigar los riesgos de Corrupción (C) y Soborno Transnacional (ST) en todas las etapas del ciclo contractual con el sector público.</p>
+
+                            <p class="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2 mb-2"><span class="material-icons align-middle" style="font-size:11px">info</span> El marco normativo de referencia aplicable a esta política se detalla en el <strong>Anexo 2</strong> al final de este documento.</p>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.2 Ámbito y alcance</h2>
+                            <p>Esta política aplica a <strong>{{ form.entityName || '[Nombre de la Entidad]' }}</strong> y cubre todas las operaciones, transacciones y contratos en los cuales la entidad:</p>
+                            <ul>
+                                <li v-if="contratacion.tiposRelacion.art355">Celebra contratos al amparo del Artículo 355 de la Constitución Política y el Decreto 092 de 2017.</li>
+                                <li v-if="contratacion.tiposRelacion.convenios">Suscribe convenios interadministrativos, convenios de asociación o convenios de cooperación con entidades públicas.</li>
+                                <li v-if="contratacion.tiposRelacion.subvenciones">Recibe subvenciones, transferencias, aportes o ayudas del Estado en cualquiera de sus niveles.</li>
+                                <li v-if="contratacion.tiposRelacion.operador">Actúa como operador de recursos públicos o administra fondos de naturaleza pública.</li>
+                                <li v-if="contratacion.tiposRelacion.vigenciasFuturas">Suscribe contratos con vigencias futuras con entidades estatales.</li>
+                                <li v-if="contratacion.tiposRelacion.esquemaAsociativo">Participa en esquemas asociativos con entidades públicas para la ejecución de proyectos.</li>
+                                <li v-if="contratacion.tiposRelacion.distrital">Adelanta procesos de contratación en el Distrito Capital de Bogotá, bajo los lineamientos de las Directivas 003/2017 y 014/2018.</li>
+                                <template v-if="contratacion.tiposRelacionOtro && contratacion.tiposRelacionOtro.length">
+                                    <li v-for="(otro, idx) in contratacion.tiposRelacionOtro" :key="'otro-'+idx">{{ otro }}</li>
+                                </template>
+                            </ul>
+                            <p>La presente política obliga a todos los colaboradores, directivos, representantes legales, gestores y terceros vinculados que, en el marco de sus funciones, participen en cualquier etapa de los procesos de contratación con el Estado.</p>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.3 Prácticas rectoras</h2>
+                            <template v-if="contratacion.principios && contratacion.principios.some(p => p.activo)">
+                                <ul>
+                                    <li v-for="p in contratacion.principios.filter(p => p.activo)" :key="p.nombre">
+                                        <strong>{{ p.nombre }}:</strong> {{ p.definicion }}
+                                    </li>
+                                </ul>
+                            </template>
+                            <p v-else class="text-gray-400 italic text-sm">No se han seleccionado principios rectores. Active al menos uno desde el panel de configuración (sección 9.1.3).</p>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.4 Prohibiciones explícitas</h2>
+                            <p>Queda expresamente prohibido en el marco de cualquier relacionamiento con entidades estatales:</p>
+                            <ul>
+                                <li><strong>Ofrecer o dar incentivos:</strong> Proporcionar, prometer o autorizar, directa o indirectamente, dinero, regalos, favores, hospitalidades excesivas u cualquier otro beneficio a servidores públicos, funcionarios o empleados de entidades estatales con el propósito de obtener, conservar o facilitar contratos o cualquier ventaja indebida.</li>
+                                <li><strong>Falsificar documentos o información:</strong> Presentar documentos, certificaciones, estados financieros, hojas de vida, referencias o cualquier información requerida en procesos de contratación de manera falsa, incompleta o engañosa.</li>
+                                <li><strong>Información imprecisa o engañosa:</strong> Suministrar datos incorrectos sobre la capacidad técnica, financiera, operativa o de idoneidad de la entidad durante los procesos precontractual, contractual o poscontractual.</li>
+                                <li><strong>Acceder a pretensiones ilícitas:</strong> Ceder a solicitudes indebidas, extorsivas o ilegales por parte de la entidad contratante o sus funcionarios, y reportar de inmediato cualquier insinuación de este tipo al canal ético institucional.</li>
+                                <li><strong>Direccionamiento de pliegos:</strong> Participar o coordinar con servidores públicos el diseño de condiciones contractuales que favorezcan a la entidad de manera indebida o que excluyan indebidamente a competidores.</li>
+                                <li><strong>Conflictos de interés no declarados en procesos de contratación estatal:</strong> Participar en cualquier etapa del ciclo contractual —precontractual, contractual o poscontractual— cuando existan situaciones de conflicto de interés no declaradas oportunamente mediante el formato del <strong>Cap. 8 — Gestión de Conflictos de Intereses</strong>. La declaración debe realizarse antes de participar en el proceso y actualizarse ante cualquier situación sobreviniente. El detalle de los tipos de conflicto aplicables y su alcance se encuentra en el <strong>Cap. 8</strong>.</li>
+                                <li><strong>Uso indebido de recursos públicos:</strong> Destinar recursos de origen público a fines distintos a los establecidos en el objeto del contrato o convenio.</li>
+                                <li><strong>Intermediarios sin justificación:</strong> Efectuar pagos a terceros sin justificación contractual legítima con el propósito encubierto de facilitar la obtención de contratos estatales.</li>
+                            </ul>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.5 Pagos de facilitación — definición, prohibición absoluta y protocolo de respuesta</h2>
+                            <p>Los pagos de facilitación constituyen un riesgo específico y recurrente en la contratación con el Estado. Esta sección los define con precisión, establece la prohibición absoluta vigente en Colombia y fija el protocolo de respuesta ante cualquier solicitud de este tipo.</p>
+                            <p class="text-xs text-gray-500 italic"><span class="material-icons align-middle" style="font-size:11px">info</span> Para efectos de esta sección, los conceptos de <strong>Corrupción</strong>, <strong>Soborno</strong> y <strong>Soborno Transnacional</strong> se entienden en los términos definidos en la sección <em>«5. Riesgos cubiertos, definiciones y perfil de riesgo»</em> y el <em>«Anexo A: Glosario de términos clave»</em> de la Política de Prevención del PTEE. En la tabla siguiente se reproduce la definición canónica de Soborno para contextualizar la distinción con el pago de facilitación y la extorsión/concusión.</p>
+
+                            <p class="font-bold text-sm mt-6 mb-2" style="color: #1e40af; border-left: 3px solid #93c5fd; padding: 4px 12px; background: #eff6ff; border-radius: 0 4px 4px 0;">A. Distinción conceptual</p>
+                            <div class="overflow-x-auto mb-4">
+                                <table class="w-full text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-700 text-white">
+                                            <th class="p-2 border border-gray-500 text-left w-36">Concepto</th>
+                                            <th class="p-2 border border-gray-500 text-left">Definición</th>
+                                            <th class="p-2 border border-gray-500 text-left w-52">Régimen en Colombia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-red-50">
+                                            <td class="p-2 border border-gray-300 font-bold text-red-800 align-top">Pago de facilitación<br><span class="font-normal italic text-gray-600 text-[11px]">speed money / grease payment</span></td>
+                                            <td class="p-2 border border-gray-300 align-top">Pago pequeño, rutinario o habitual a un funcionario para que ejecute una función que ya está legalmente obligado a realizar: expedir un permiso, registrar un contrato, realizar una inspección o liberar un desembolso.</td>
+                                            <td class="p-2 border border-gray-300 align-top"><strong class="text-red-700">Prohibido.</strong> Art. 407 C.P. (cohecho por dar u ofrecer). No existe excepción legal en Colombia por monto mínimo ni urgencia operativa.</td>
+                                        </tr>
+                                        <tr class="bg-orange-50">
+                                            <td class="p-2 border border-gray-300 font-bold text-orange-800 align-top">Soborno</td>
+                                            <td class="p-2 border border-gray-300 align-top">Acto de dar, ofrecer, prometer, solicitar o recibir cualquier dádiva, regalo o beneficio, a cambio de que se realice, omita o retarde un acto, a fin de obtener una ventaja competitiva ilegítima para sí mismo o para un tercero. <em class="text-gray-500 text-[10px]">(Definición PTEE — Anexo A / Sección 5)</em></td>
+                                            <td class="p-2 border border-gray-300 align-top"><strong class="text-red-700">Prohibido.</strong> Art. 407 C.P. y Ley 1778/2016 (Soborno Transnacional).</td>
+                                        </tr>
+                                        <tr class="bg-yellow-50">
+                                            <td class="p-2 border border-gray-300 font-bold text-yellow-800 align-top">Extorsión / Concusión</td>
+                                            <td class="p-2 border border-gray-300 align-top">El funcionario exige el pago bajo coacción, amenaza o abuso de su cargo. La ESAL es la víctima de la conducta del funcionario.</td>
+                                            <td class="p-2 border border-gray-300 align-top"><strong class="text-red-700">Delito del funcionario</strong> (Arts. 404 y 433 C.P.). La ESAL no debe ceder: debe documentar y denunciar.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="bg-red-50 border border-red-300 rounded p-3 text-xs text-red-800 mb-4">
+                                <strong>⚠ Nota crítica:</strong> En Colombia no existe ninguna figura de "excepción por urgencia operativa" ni "pago menor tolerado". El monto mínimo, la presión del trámite o la costumbre del sector no legitiman ninguno de estos pagos.
+                            </div>
+
+                            <p class="font-bold text-sm mt-6 mb-2" style="color: #1e40af; border-left: 3px solid #93c5fd; padding: 4px 12px; background: #eff6ff; border-radius: 0 4px 4px 0;">B. Prohibición absoluta</p>
+                            <p>Ningún colaborador, directivo, representante legal o tercero vinculado a <strong>{{ form.entityName || '[Nombre de la Entidad]' }}</strong> está autorizado a realizar, aprobar, insinuar o tolerar un pago de facilitación, independientemente de:</p>
+                            <ul>
+                                <li>El monto o valor involucrado.</li>
+                                <li>La urgencia operativa del trámite o la proximidad de una fecha límite contractual.</li>
+                                <li>La costumbre, práctica habitual o antecedente de la entidad o región.</li>
+                                <li>La presión verbal, escrita o implícita del funcionario solicitante.</li>
+                                <li>El riesgo de perder el contrato, sufrir retrasos en la ejecución o recibir trato desfavorable.</li>
+                            </ul>
+                            <p>Esta prohibición rige en todas las etapas del ciclo contractual: precontractual, contractual y poscontractual.</p>
+
+                            <p class="font-bold text-sm mt-6 mb-2" style="color: #1e40af; border-left: 3px solid #93c5fd; padding: 4px 12px; background: #eff6ff; border-radius: 0 4px 4px 0;">C. Protocolo de respuesta en cuatro pasos</p>
+                            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-3 my-3">
+                                <div class="bg-blue-900 text-white rounded-lg p-3 text-xs">
+                                    <p class="font-black text-xl text-blue-300 mb-1 leading-none">01</p>
+                                    <p class="font-bold mb-1">Negar de inmediato</p>
+                                    <p class="text-blue-200">Declinar verbal y firmemente la solicitud. No negociar, no comprometer respuesta futura, no entregar suma alguna así sea mínima.</p>
+                                </div>
+                                <div class="bg-orange-700 text-white rounded-lg p-3 text-xs">
+                                    <p class="font-black text-xl text-orange-300 mb-1 leading-none">02</p>
+                                    <p class="font-bold mb-1">Documentar en el acto</p>
+                                    <p class="text-orange-100">Registrar: fecha, lugar, nombre y cargo del funcionario (si se conoce), entidad, descripción exacta de la solicitud, monto exigido y testigos presentes.</p>
+                                </div>
+                                <div class="bg-teal-700 text-white rounded-lg p-3 text-xs">
+                                    <p class="font-black text-xl text-teal-300 mb-1 leading-none">03</p>
+                                    <p class="font-bold mb-1">Reportar de inmediato</p>
+                                    <p class="text-teal-100">Notificar al Oficial de Cumplimiento por el canal ético institucional de forma inmediata o en el menor tiempo posible. El reporte activa el registro interno y la evaluación de denuncia ante autoridades.</p>
+                                </div>
+                                <div class="bg-indigo-700 text-white rounded-lg p-3 text-xs">
+                                    <p class="font-black text-xl text-indigo-300 mb-1 leading-none">04</p>
+                                    <p class="font-bold mb-1">Decisión institucional</p>
+                                    <p class="text-indigo-100">El Oficial de Cumplimiento y la Dirección deciden: continuar el trámite por vía legal formal, denunciar ante Fiscalía / Procuraduría / Contraloría, o notificar a la entidad contratante sobre la conducta de su funcionario.</p>
+                                </div>
+                            </div>
+
+                            <p class="font-bold text-sm mt-6 mb-2" style="color: #1e40af; border-left: 3px solid #93c5fd; padding: 4px 12px; background: #eff6ff; border-radius: 0 4px 4px 0;">D. Protección al reportante</p>
+                            <p>Quien reporte de buena fe una solicitud de pago de facilitación está protegido contra represalias por la política interna del PTEE y por el ordenamiento jurídico colombiano en materia anticorrupción. Esta protección aplica con independencia del resultado de la investigación.</p>
+
+                            <p class="font-bold text-sm mt-6 mb-2" style="color: #1e40af; border-left: 3px solid #93c5fd; padding: 4px 12px; background: #eff6ff; border-radius: 0 4px 4px 0;">E. Articulación con el Protocolo de Regalos (Cap. 2)</p>
+                            <p>El <strong>Protocolo de Regalos y Beneficios con Terceros (Cap. 2)</strong> rige el intercambio de cortesías, atenciones y hospitalidades con servidores públicos en el marco general del relacionamiento institucional. Esta sección 9.1.5 regula específicamente los pagos de facilitación en el contexto de la contratación estatal. Ambos instrumentos se complementan: ante cualquier duda sobre si una solicitud configura un pago de facilitación, regalo indebido o soborno, el colaborador debe aplicar el protocolo de respuesta de este parágrafo y consultar al Oficial de Cumplimiento.</p>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.6 Relacionamiento en las etapas de contratación</h2>
+                            <p>En cada etapa del ciclo contractual rigen pautas de conducta específicas orientadas a garantizar la transparencia, la integridad y el cumplimiento normativo:</p>
+                            <ul>
+                                <li><strong>Etapa precontractual:</strong> Todo contacto con la entidad contratante se realiza por canales formales; está prohibido buscar información privilegiada por vías informales. Antes de presentar la propuesta, los integrantes del equipo deben suscribir la declaración de conflicto de interés (Cap. 8), indicando vínculos familiares, financieros, políticos o de exservidor público con la entidad.</li>
+                                <li><strong>Etapa contractual:</strong> La ejecución se ajusta estrictamente al clausulado y toda comunicación con el supervisor o interventor queda documentada. Cualquier modificación se tramita por los canales oficiales. Si surge un conflicto de interés sobreviniente, el colaborador actualiza su declaración (Cap. 8) y se aparta de las decisiones relacionadas hasta resolución del Oficial de Cumplimiento.</li>
+                                <li><strong>Etapa poscontractual:</strong> La liquidación se adelanta por los procedimientos legales, conservando la documentación soporte durante los plazos exigidos. Cualquier conflicto de interés en la rendición de cuentas o certificación de cumplimiento debe declararse antes de suscribir el acta de cierre.</li>
+                            </ul>
+
+                            <h2 style="background: #1e3a8a; color: white; padding: 7px 18px; border-radius: 5px; margin-top: 28px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.01em;">9.1.7 Responsabilidad y sanciones</h2>
+                            <p>El incumplimiento de esta política y de las prohibiciones aquí establecidas constituye una falta grave que puede derivar en:</p>
+                            <ul>
+                                <li>Sanciones disciplinarias internas conforme al Reglamento Interno de Trabajo y el Código de Ética y Conducta.</li>
+                                <li>Responsabilidad penal individual por delitos de corrupción, cohecho, soborno transnacional, falsedad en documentos y otros contemplados en el Código Penal Colombiano.</li>
+                                <li>Responsabilidad fiscal o disciplinaria ante los organismos de control (Contraloría, Procuraduría) cuando se afecten recursos públicos.</li>
+                                <li>Terminación del contrato y exclusión de futuros procesos de contratación con entidades estatales.</li>
+                                <li>Reporte ante las autoridades competentes por parte de la entidad, cuando existan indicios de conductas delictivas.</li>
+                            </ul>
+                            <p>El <span v-if="form.riskLevel === 'alto'">Oficial de Cumplimiento</span><span v-else>Responsable de Cumplimiento</span> velará por la implementación, seguimiento y actualización de esta política. Su cumplimiento hace parte del seguimiento general al PTEE.</p>
+
+                            <p class="text-xs text-gray-400 italic mt-8 text-center border-t border-gray-200 pt-4">Política de Contratación con el Estado — {{ form.entityName || 'ESAL' }} — Versión vigente del PTEE.</p>
+
+                            <!-- ANEXO 1: Articulación con el PTEE -->
+                            <br clear="all" style="page-break-before: always; margin-top: 32px;" />
+                            <h2 style="background: #374151; color: white; padding: 8px 18px; border-radius: 5px; margin-top: 32px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.04em; text-align: center;">ANEXO 1 — Articulación de la política de contratación con el Estado con el PTEE</h2>
+                            <p>La presente política se articula e integra con los siguientes componentes del Programa de Transparencia y Ética Empresarial (PTEE) de la entidad, que deben consultarse y aplicarse de manera coordinada en todas las etapas del ciclo contractual:</p>
+                            <ul>
+                                <li v-if="contratacion.articulacion.politicaCumplimiento"><strong>Política de Cumplimiento (Cap. 1):</strong> Marco general de principios, cero tolerancia a C/ST, compromisos de la Alta Dirección y del Oficial de Cumplimiento.</li>
+                                <li v-if="contratacion.articulacion.protocoloRegalos"><strong>Protocolo de Regalos y Beneficios con Terceros (Cap. 2):</strong> Define los límites, condiciones y procedimientos para la entrega o recepción de regalos, atenciones u hospitalidades con servidores públicos, con especial rigor en contextos de contratación estatal.</li>
+                                <li v-if="contratacion.articulacion.protocoloLobby"><strong>Protocolo de Cabildeo (Lobby) y Relaciones Públicas (Cap. 2):</strong> Regula las actividades de incidencia ante entidades gubernamentales, distinguiendo entre el lobby legítimo y las prácticas corruptas.</li>
+                                <li v-if="contratacion.articulacion.protocoloContribuciones"><strong>Protocolo de Campañas o Contribuciones Políticas (Cap. 2):</strong> Establece las restricciones para contribuciones a campañas políticas de funcionarios o candidatos con quienes la entidad tenga o pueda tener relaciones contractuales.</li>
+                                <li v-if="contratacion.articulacion.gestionRiesgos"><strong>Gestión de Riesgos C/ST (Cap. 4):</strong> Los riesgos de corrupción y soborno transnacional en contratación estatal hacen parte de la matriz de riesgos institucional y tienen controles específicos asignados.</li>
+                                <li v-if="contratacion.articulacion.debidaDiligencia"><strong>Debida Diligencia a Terceros (Cap. 5):</strong> Antes de participar en procesos contractuales, se verificarán los requisitos adicionales que exija la entidad contratante para prevenir o mitigar riesgos de C/ST según los documentos del proceso de contratación.</li>
+                                <li v-if="contratacion.articulacion.monitoreo"><strong>Monitoreo y Canal de Denuncias (Cap. 6):</strong> Todo indicio o sospecha de irregularidad en un proceso de contratación con el Estado debe reportarse al canal ético institucional.</li>
+                                <li v-if="contratacion.articulacion.conflictosInteres">
+                                    <strong>Gestión de Conflictos de Intereses (Cap. 8):</strong> La contratación con el Estado es uno de los contextos de mayor riesgo de conflicto de interés. Esta política y el Cap. 8 se articulan de forma directa en los siguientes puntos:
+                                    <ul>
+                                        <li><strong>Momento de declaración:</strong> Antes de participar en cualquier proceso contractual (etapa precontractual); al producirse un cambio de supervisor o interventor durante la ejecución; y ante cualquier situación sobreviniente que genere un conflicto real, potencial o aparente.</li>
+                                        <li><strong>Tipos de conflicto aplicables en contexto contractual:</strong><span v-if="confTipos.familiares"> vínculos familiares ({{ confAlcanceFamiliarTexto }}) con evaluadores o funcionarios de la entidad contratante;</span><span v-if="confTipos.financieros"> intereses económicos en la contraparte o en subcontratistas del convenio;</span><span v-if="confTipos.cargosExternos"> cargos simultáneos en organizaciones supervisoras o vinculadas al contrato;</span><span v-if="confTipos.informacion"> acceso a información privilegiada sobre pliegos, términos de referencia o evaluaciones;</span><span v-if="confTipos.politicos"> relacionamiento con funcionarios o PEPs en condiciones que comprometan la independencia institucional;</span><span v-if="confConexionRiesgos"> ex-calidad de servidor público en la entidad contratante durante el año anterior al retiro (Ley 1474/2011, Art. 4 — puertas giratorias).</span><span v-if="!confTipos.familiares && !confTipos.financieros && !confTipos.cargosExternos && !confTipos.informacion && !confTipos.politicos"> los tipos definidos en la Política de Conflictos de Intereses (Cap. 8) son aplicables a todas las etapas del ciclo contractual.</span></li>
+                                        <li><strong>Canal de declaración:</strong> <span v-if="confCanalDeclaracion">{{ confCanalDeclaracion }}</span><span v-else>el canal definido en la Política de Conflictos de Intereses (Cap. 8)</span>. La declaración firmada debe incorporarse al expediente contractual y registrarse en el archivo del PTEE (ver sección 9.3, ítem 9).</li>
+                                        <li><strong>Gestión del conflicto identificado:</strong> Quien declara un conflicto de interés debe apartarse de toda decisión, comunicación o suscripción de documentos relacionados con ese contrato hasta que <span v-if="confNiveles.operativos || confNiveles.gerencia">{{ confNiveles.operativos || confNiveles.gerencia }}</span><span v-else>el Oficial de Cumplimiento</span> evalúe la situación y emita una resolución documentada.</li>
+                                        <li v-if="confConexionRiesgos"><strong>Inhabilitaciones (Ley 1474/2011, Art. 4):</strong> En los procesos con entidades estatales se verificará expresamente si algún integrante del equipo o directivo figura como Persona Expuesta Políticamente (PEP), es familiar de un PEP, o fue servidor público de la entidad contratante en el último año. La participación en estos casos requiere aprobación explícita del Oficial de Cumplimiento previo análisis de inhabilidades e incompatibilidades.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p class="text-xs text-gray-400 italic mt-6 text-center border-t border-gray-200 pt-4">Anexo 1 — Articulación con el PTEE — Política de contratación con el Estado — {{ form.entityName || 'ESAL' }}</p>
+
+                            <!-- ANEXO 2: Marco normativo de referencia -->
+                            <br clear="all" style="page-break-before: always; margin-top: 32px;" />
+                            <h2 style="background: #374151; color: white; padding: 8px 18px; border-radius: 5px; margin-top: 32px; margin-bottom: 14px; font-size: 11.5pt; letter-spacing: 0.04em; text-align: center;">ANEXO 2 — Marco normativo de referencia de la política de contratación con el Estado</h2>
+                            <p>Las normas y guías que fundamentan los compromisos asumidos en esta política son:</p>
+                            <ul>
+                                <li><strong>Artículo 355 de la Constitución Política de Colombia:</strong> Faculta a las entidades gubernamentales de los niveles nacional, departamental, distrital y municipal para celebrar contratos con entidades privadas sin ánimo de lucro de reconocida idoneidad, con el fin de impulsar programas y actividades de interés público acordes con los Planes de Desarrollo.</li>
+                                <li><strong>Decreto Nacional 092 de 2017:</strong> Reglamenta la contratación con entidades privadas sin ánimo de lucro a que hace referencia el inciso segundo del artículo 355 de la Constitución. Define los requisitos de idoneidad y establece las condiciones para la celebración, ejecución y liquidación de estos contratos. Los <strong>requisitos clave de idoneidad</strong> que debe acreditar la ESAL son: (i) <strong>objeto social y experiencia</strong> — el objeto del contrato debe guardar relación directa y verificable con el objeto social registrado y con la experiencia demostrada en la actividad de interés público a contratar; (ii) <strong>capacidad jurídica</strong> — personería jurídica vigente, representación legal debidamente acreditada y ausencia de incompatibilidades o inhabilidades; (iii) <strong>capacidad administrativa y financiera</strong> — estructura de gobernanza, personal idóneo y estados financieros que soporten la ejecución del contrato; (iv) <strong>ausencia de conflictos de interés</strong> — inexistencia de vínculos entre los directivos o gestores de la ESAL y los funcionarios decisores de la entidad contratante que comprometan la transparencia del proceso; y (v) <strong>reconocida idoneidad</strong> — trayectoria verificable en la ejecución de programas similares, acreditada mediante soportes documentales ante la entidad contratante.</li>
+                                <li><strong>Decreto 1082 de 2015 (Decreto Único Reglamentario del Sector Administrativo de Planeación Nacional):</strong> Unifica las normas reglamentarias del Sistema de Compras y Contratación Pública. Regula el uso del <strong>Sistema Electrónico para la Contratación Pública (SECOP II)</strong> como plataforma oficial de publicidad, acceso a documentos del proceso, presentación de ofertas y seguimiento contractual. La ESAL debe consultar la convocatoria y sus documentos únicamente a través de SECOP II o del sistema que indique la entidad contratante, y verificar que el contrato y sus modificaciones queden publicados en dicha plataforma.</li>
+                                <li><strong>Guía Colombia Compra Eficiente:</strong> Guía para la contratación con ESAL de reconocida idoneidad. Define las características que deben acreditar las entidades privadas sin ánimo de lucro que contratan con entidades estatales.</li>
+                                <li><strong>Ley 1474 de 2011 (Estatuto Anticorrupción):</strong> Define las conductas constitutivas de corrupción en la contratación pública y establece las responsabilidades de los particulares que participan en procesos de contratación estatal.</li>
+                                <li><strong>Ley 1712 de 2014 (Ley de Transparencia y Acceso a la Información Pública):</strong> En su Artículo 5°, establece los sujetos obligados y los deberes de transparencia activa. Aplica a las ESAL que reciban, administren o ejecuten recursos públicos.</li>
+                                <li><strong>Ley 1778 de 2016 (Soborno Transnacional):</strong> Prohíbe dar u ofrecer, directa o indirectamente, a un servidor público extranjero, sumas de dinero u otras ventajas de cualquier naturaleza para obtener a su favor o a favor de un tercero contratos, concesiones u otras ventajas indebidas en transacciones comerciales internacionales.</li>
+                                <li><strong>Ley 2195 de 2022 (Transparencia, Prevención y Lucha contra la Corrupción):</strong> Fortalece el marco anticorrupción colombiano. En su <strong>Artículo 9°</strong> (que adiciona el Artículo 34-7 a la Ley 1474 de 2011) obliga a las <strong>personas jurídicas sujetas a inspección, vigilancia o control</strong> de las respectivas superintendencias o autoridades competentes a adoptar <strong>Programas de Transparencia y Ética Empresarial (PTEE)</strong> que incluyan mecanismos y normas internas de auditoría. El contenido del programa es determinado por cada autoridad de inspección, vigilancia y control, teniendo en cuenta criterios como el sector, los riesgos, el monto de los activos, los ingresos, el número de empleados y el objeto social. En cuanto a la revisoría fiscal, el <strong>Parágrafo 4°</strong> del mismo artículo establece que el Revisor Fiscal, cuando se tuviere, <em>«debe valorar los programas de transparencia y ética empresarial y emitir opinión sobre los mismos»</em>.</li>
+                                <li v-if="contratacion.tiposRelacion.distrital"><strong>Directivas Secretaría Jurídica Distrital 003 de 2017 y 014 de 2018 (Bogotá):</strong> Establecen los lineamientos para adelantar contratos con ESAL en el Distrito Capital.</li>
+                            </ul>
+                            <p class="text-xs text-gray-400 italic mt-6 text-center border-t border-gray-200 pt-4">Anexo 2 — Marco normativo de referencia — Política de contratación con el Estado — {{ form.entityName || 'ESAL' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- ——— 9.2 FLUJOGRAMA DEL PROCESO DE CONTRATACIÓN ——— -->
+                    <div v-show="contratacionSubTab === 'flujograma'" class="text-justify">
+                        <div class="flex justify-between flex-wrap gap-2 items-center border-b-2 border-blue-700 pb-2 mb-6">
+                            <h2 class="text-lg font-bold text-blue-900 tracking-tight text-left">9.2 Flujograma del proceso de contratación con el Estado</h2>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-4">El siguiente flujograma describe las etapas clave del ciclo de contratación con entidades estatales, los factores de riesgo de Corrupción (C) y Soborno Transnacional (ST) en cada etapa, y los controles clave a implementar.</p>
+
+                        <div class="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 mb-6 text-xs text-blue-800">
+                            <span class="material-icons text-blue-500 text-base shrink-0 mt-0.5">info</span>
+                            <p>Cada una de las etapas descritas en este flujograma debe contar con la documentación y trazabilidad correspondiente. Los requisitos de conservación, publicación y disponibilidad de información aplicables se detallan en la <strong>sección 9.3 — Trazabilidad y disponibilidad de información pública</strong> de este capítulo.</p>
+                        </div>
+
+                        <!-- ETAPA 1: PRECONTRACTUAL -->
+                        <div class="mb-8 rounded-xl shadow-md overflow-hidden">
+                            <div class="bg-blue-900 text-white px-6 py-4 flex items-center gap-4">
+                                <span class="bg-blue-100 text-blue-900 font-black rounded-lg w-9 h-9 flex items-center justify-center text-base shrink-0">1</span>
+                                <div>
+                                    <div class="font-bold text-base tracking-wide">Etapa precontractual</div>
+                                    <div class="text-blue-200 text-xs mt-0.5">Desde la identificación de la oportunidad hasta la adjudicación y firma del contrato</div>
+                                </div>
+                            </div>
+                            <div class="border-x border-b border-blue-900">
+                                <div class="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                                    <div class="p-4">
+                                        <p class="font-semibold text-blue-800 text-xs mb-3 flex items-center gap-2 border-b border-blue-200 pb-2"><span class="material-icons text-sm">playlist_add_check</span> Actividades clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Identificación y análisis de la convocatoria en <strong>SECOP II</strong> (secop2.colombiacompra.gov.co) o plataforma oficial de la entidad contratante</li>
+                                            <li>Verificación de requisitos de habilitación e idoneidad (Decreto 092/2017 y guía CCE)</li>
+                                            <li>Revisión y análisis de pliegos o términos de referencia exclusivamente desde SECOP II; consultas y observaciones solo por los mecanismos oficiales allí habilitados</li>
+                                            <li>Debida diligencia interna previa a participar: declaración de conflicto de interés del equipo ejecutor mediante el formato del <strong>Cap. 8</strong> antes de presentar la propuesta (tipos aplicables: familiares, financieros<span v-if="confConexionRiesgos">, políticos / ex-servidores públicos</span>)</li>
+                                            <li>Declaraciones y autorizaciones requeridas por la entidad contratante</li>
+                                            <li>Formulación y presentación de propuestas con información veraz y completa</li>
+                                            <li>Atención a preguntas y aclaraciones del proceso únicamente por canales formales</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-red-50">
+                                        <p class="font-semibold text-red-700 text-xs mb-3 flex items-center gap-2 border-b border-red-200 pb-2"><span class="material-icons text-sm">warning</span> Factores de riesgo C/ST</p>
+                                        <ul class="text-xs text-gray-700 space-y-1">
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Direccionamiento indebido de pliegos con funcionarios</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Contacto informal con evaluadores para obtener ventaja</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Presentación de documentos falsos o información engañosa</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Conflicto de interés no declarado con funcionarios o evaluadores de la entidad (vínculo familiar o personal)</li>
+                                            <li v-if="confTipos.financieros" class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Interés financiero no declarado: participación patrimonial en la entidad contratante o en organizaciones vinculadas al proceso</li>
+                                            <li v-if="confTipos.cargosExternos" class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Cargo paralelo no declarado en organización supervisora, evaluadora o contraparte del proceso</li>
+                                            <li class="flex items-start gap-1"><span class="text-orange-500 font-bold shrink-0">ST</span> Soborno a funcionarios para adjudicación de contratos</li>
+                                            <li class="flex items-start gap-1"><span class="text-orange-500 font-bold shrink-0">ST</span> Uso de intermediarios para pagar sobornos</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Solicitud de pago de facilitación para agilizar trámites precontractuales, inscripción de propuesta o evaluación técnica</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-green-50">
+                                        <p class="font-semibold text-green-700 text-xs mb-3 flex items-center gap-2 border-b border-green-200 pb-2"><span class="material-icons text-sm">shield</span> Controles clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Verificar habilitación y requisitos de idoneidad antes de participar</li>
+                                            <li>Declaración de conflicto de interés previa (formato <strong>Cap. 8</strong>) por todos los integrantes del equipo; especial atención a vínculos familiares, financieros<span v-if="confConexionRiesgos"> y situaciones de ex-servidores públicos de la entidad contratante (Ley 1474/2011, Art. 4)</span> con evaluadores y supervisores</li>
+                                            <li>Comunicación con entidad contratante solo por canales oficiales y documentados (incluyendo los mensajeros de SECOP II)</li>
+                                            <li>Aprobación interna de la propuesta con visto bueno de la Dirección / Oficial de Cumplimiento</li>
+                                            <li>Verificación de intermediarios comerciales (si aplica) con debida diligencia</li>
+                                            <li>Registro del proceso en el Sistema de Gestión Documental; guardar evidencia de acceso y consulta a SECOP II</li>
+                                            <li>Rechazar, documentar y reportar de inmediato al Oficial de Cumplimiento cualquier solicitud de pago para agilizar trámites (ver sección 9.1.5)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flecha -->
+                        <div class="flex flex-col items-center my-3">
+                            <div class="w-px h-4 bg-blue-300"></div>
+                            <span class="material-icons text-blue-600 text-2xl">south</span>
+                            <div class="w-px h-4 bg-blue-300"></div>
+                        </div>
+
+                        <!-- ETAPA 2: CONTRACTUAL -->
+                        <div class="mb-8 rounded-xl shadow-md overflow-hidden">
+                            <div class="bg-teal-700 text-white px-6 py-4 flex items-center gap-4">
+                                <span class="bg-teal-100 text-teal-800 font-black rounded-lg w-9 h-9 flex items-center justify-center text-base shrink-0">2</span>
+                                <div>
+                                    <div class="font-bold text-base tracking-wide">Etapa contractual</div>
+                                    <div class="text-teal-200 text-xs mt-0.5">Desde la suscripción del contrato hasta su terminación o expiración</div>
+                                </div>
+                            </div>
+                            <div class="border-x border-b border-teal-700">
+                                <div class="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                                    <div class="p-4">
+                                        <p class="font-semibold text-teal-700 text-xs mb-3 flex items-center gap-2 border-b border-teal-200 pb-2"><span class="material-icons text-sm">playlist_add_check</span> Actividades clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Revisión jurídica y técnica del contrato antes de la firma</li>
+                                            <li>Socialización interna del contrato y designación del equipo ejecutor</li>
+                                            <li>Apertura del expediente contractual completo; verificar publicación inicial del contrato en SECOP II</li>
+                                            <li>Ejecución del objeto contractual conforme a obligaciones pactadas</li>
+                                            <li>Presentación de informes al supervisor o interventor según frecuencia establecida</li>
+                                            <li>Gestión de modificaciones (adendas, otrosí, suspensiones) por canales formales; verificar su publicación en SECOP II</li>
+                                            <li>Seguimiento al avance financiero y técnico del contrato</li>
+                                            <li>Identificación y reporte oportuno de novedades contractuales</li>
+                                            <li>Actualización de la declaración de conflicto de interés (Cap. 8) ante situaciones sobrevinientes durante la ejecución (cambio de supervisor, nuevo vínculo o interés económico)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-red-50">
+                                        <p class="font-semibold text-red-700 text-xs mb-3 flex items-center gap-2 border-b border-red-200 pb-2"><span class="material-icons text-sm">warning</span> Factores de riesgo C/ST</p>
+                                        <ul class="text-xs text-gray-700 space-y-1">
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Uso de recursos públicos en fines distintos al objeto del contrato</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Solicitudes de soborno del supervisor o interventor (extorsión)</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Facturación o cobro de actividades no ejecutadas</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Conflicto de interés en la ejecución con terceros contratados (vínculos no declarados con subcontratistas o proveedores)</li>
+                                            <li v-if="confConexionRiesgos" class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Colaborador o directivo es exfuncionario de la entidad contratante dentro del año de retiro — puertas giratorias (Ley 1474/2011, Art. 4)</li>
+                                            <li class="flex items-start gap-1"><span class="text-orange-500 font-bold shrink-0">ST</span> Pagos a funcionarios extranjeros en contratos con componente internacional</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Modificaciones contractuales sin justificación o en condiciones que favorecen intereses privados</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Solicitud de pago de facilitación por parte del supervisor o interventor para aprobar informes, firmar actas de entrega o liberar desembolsos</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-green-50">
+                                        <p class="font-semibold text-green-700 text-xs mb-3 flex items-center gap-2 border-b border-green-200 pb-2"><span class="material-icons text-sm">shield</span> Controles clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Segregación de funciones entre quien ejecuta y quien aprueba pagos</li>
+                                            <li>Mantenimiento de expediente contractual actualizado y disponible; verificación periódica de que el contrato y sus modificaciones están publicados en SECOP II</li>
+                                            <li>Reporte inmediato al canal ético ante solicitudes indebidas de funcionarios</li>
+                                            <li>Verificación de conflictos de interés sobrevinientes; actualizar declaración Cap. 8 cuando cambie el supervisor o surja un nuevo vínculo con la contraparte</li>
+                                            <li>Control financiero con conciliación periódica de recursos públicos ejecutados</li>
+                                            <li>Informes de avance verificados con soportes y alineados con el supervisor</li>
+                                            <li>Cláusulas anticorrupción en subcontratos (si aplica)</li>
+                                            <li>Revisión ante modificaciones contractuales significativas</li>
+                                            <li>Ningún pago por fuera del clausulado contractual es autorizable; ante solicitud indebida del supervisor, reporte inmediato al canal ético (ver sección 9.1.5)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flecha -->
+                        <div class="flex flex-col items-center my-3">
+                            <div class="w-px h-4 bg-teal-300"></div>
+                            <span class="material-icons text-teal-600 text-2xl">south</span>
+                            <div class="w-px h-4 bg-teal-300"></div>
+                        </div>
+
+                        <!-- ETAPA 3: POSCONTRACTUAL -->
+                        <div class="mb-8 rounded-xl shadow-md overflow-hidden">
+                            <div class="bg-indigo-700 text-white px-6 py-4 flex items-center gap-4">
+                                <span class="bg-indigo-100 text-indigo-900 font-black rounded-lg w-9 h-9 flex items-center justify-center text-base shrink-0">3</span>
+                                <div>
+                                    <div class="font-bold text-base tracking-wide">Etapa poscontractual</div>
+                                    <div class="text-indigo-200 text-xs mt-0.5">Liquidación, cierre, lecciones aprendidas y conservación documental</div>
+                                </div>
+                            </div>
+                            <div class="border-x border-b border-indigo-700">
+                                <div class="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                                    <div class="p-4">
+                                        <p class="font-semibold text-indigo-700 text-xs mb-3 flex items-center gap-2 border-b border-indigo-200 pb-2"><span class="material-icons text-sm">playlist_add_check</span> Actividades clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Elaboración del acta de liquidación (bilateral o unilateral)</li>
+                                            <li>Rendición de cuentas final al contratante</li>
+                                            <li>Restitución de saldos o garantías pendientes</li>
+                                            <li>Cierre del expediente contractual con toda la documentación soporte</li>
+                                            <li>Registro del contrato en los sistemas de información aplicables (SECOP, si aplica)</li>
+                                            <li>Análisis de lecciones aprendidas y retroalimentación al PTEE</li>
+                                            <li>Conservación de la documentación durante los períodos requeridos</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-red-50">
+                                        <p class="font-semibold text-red-700 text-xs mb-3 flex items-center gap-2 border-b border-red-200 pb-2"><span class="material-icons text-sm">warning</span> Factores de riesgo C/ST</p>
+                                        <ul class="text-xs text-gray-700 space-y-1">
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Liquidación con saldos no justificados o mal rendidos</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Destrucción o no conservación de documentación soporte</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Entrega de dádivas en el cierre para obtener liquidaciones favorables</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Omisión de registro en sistemas de información públicos</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Incumplimiento de obligaciones de transparencia activa (Ley 1712)</li>
+                                            <li class="flex items-start gap-1"><span class="text-red-500 font-bold shrink-0">C</span> Solicitud de pago de facilitación para agilizar la liquidación, liberar saldos o suscribir el acta de terminación</li>
+                                        </ul>
+                                    </div>
+                                    <div class="p-4 bg-green-50">
+                                        <p class="font-semibold text-green-700 text-xs mb-3 flex items-center gap-2 border-b border-green-200 pb-2"><span class="material-icons text-sm">shield</span> Controles clave</p>
+                                        <ul class="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                            <li>Revisión jurídica y financiera del acta de liquidación antes de suscribirla</li>
+                                            <li>Verificación de cumplimiento de obligaciones de transparencia (Ley 1712)</li>
+                                            <li>Actualización de registros en SECOP y sistemas de información aplicables</li>
+                                            <li>Retención documental mínima de 10 años (o según norma aplicable)</li>
+                                            <li>Informe de cierre al Oficial de Cumplimiento con evaluación de riesgos</li>
+                                            <li>Lecciones aprendidas incorporadas al proceso de mejora del PTEE</li>
+                                            <li>Revisión ante demoras injustificadas en la liquidación; toda gestión de cierre se tramita exclusivamente por canales formales (ver sección 9.1.5)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumen de factores de riesgo -->
+                        <div class="mt-6 bg-gray-800 text-white rounded-xl p-5 text-xs shadow-xl">
+                            <p class="font-bold text-sm mb-4 flex items-center gap-2 border-b border-gray-600 pb-3"><span class="material-icons text-base text-yellow-300">tips_and_updates</span> Factores de riesgo transversales en contratación con el Estado</p>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                <div class="bg-red-900 bg-opacity-60 rounded-lg p-4">
+                                    <p class="font-semibold text-red-200 mb-1">Relacionamiento con sector público</p>
+                                    <p class="text-gray-300">Uso de contactos políticos para obtener contratos; presión de funcionarios sobre la ejecución; puertas giratorias (contratación de exfuncionarios para aprovechamiento de información privilegiada).</p>
+                                </div>
+                                <div class="bg-red-900 bg-opacity-60 rounded-lg p-4">
+                                    <p class="font-semibold text-red-200 mb-1">Gestión financiera de recursos públicos</p>
+                                    <p class="text-gray-300">Desvío o destinación diferente a la pactada; manejo de caja menor sin controles; pagos a terceros no justificados; facturación de actividades no ejecutadas.</p>
+                                </div>
+                                <div class="bg-orange-900 bg-opacity-60 rounded-lg p-4">
+                                    <p class="font-semibold text-orange-200 mb-1">Soborno transnacional (ST)</p>
+                                    <p class="text-gray-300">Aplica cuando hay contratos con entidades estatales de nivel nacional que tengan componente internacional, o cuando la contraparte pública involucra agentes o funcionarios extranjeros. Se activa bajo la Ley 1778 de 2016.</p>
+                                </div>
+                                <div class="bg-yellow-900 bg-opacity-60 rounded-lg p-4">
+                                    <p class="font-semibold text-yellow-200 mb-1">Debilidad jurídica y contractual</p>
+                                    <p class="text-gray-300">Suscripción de contratos sin revisión jurídica; incumplimiento de requisitos de idoneidad del Decreto 092/2017; modificaciones contractuales injustificadas; falta de supervisión interna del contrato.</p>
+                                </div>
+                                <div class="bg-rose-900 bg-opacity-70 rounded-lg p-4 md:col-span-2">
+                                    <p class="font-semibold text-rose-200 mb-1">Pagos de facilitación y extorsión por funcionarios</p>
+                                    <p class="text-gray-300">Aplica en las tres etapas. La presión operativa, el monto mínimo o la costumbre del sector no justifican ningún pago de facilitación. Ante cualquier solicitud: <strong class="text-rose-200">negar → documentar → reportar de inmediato al Oficial de Cumplimiento</strong>. Protocolo completo en la sección 9.1.5 de esta política.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ——— 9.3 TRAZABILIDAD Y DISPONIBILIDAD DE INFORMACIÓN PÚBLICA ——— -->
+                    <div v-show="contratacionSubTab === 'trazabilidad'">
+                        <div class="flex justify-between flex-wrap gap-2 items-center border-b border-blue-200 pb-1 mb-6">
+                            <h2 class="text-lg font-bold text-blue-800">9.3 Trazabilidad y disponibilidad de información pública</h2>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800 mb-6">
+                            <p class="font-bold mb-2"><span class="material-icons align-middle" style="font-size:16px">info</span> Base normativa</p>
+                            <p>El <strong>Artículo 5° de la Ley 1712 de 2014</strong> establece que son sujetos obligados de la ley, entre otros, las personas naturales y jurídicas, privadas o públicas, que reciban, administren o ejecuten fondos o activos del Estado. Esto incluye a las <strong>ESAL que contraten con el Estado o reciban recursos públicos</strong> en el marco de programas de interés público.</p>
+                            <p class="mt-2">La Ley impone obligaciones de <strong>transparencia activa</strong> (publicación proactiva de información sin necesidad de solicitud) y <strong>transparencia pasiva</strong> (respuesta a solicitudes de acceso a la información). Su incumplimiento puede generar sanciones disciplinarias y afectar la continuidad de los contratos.</p>
+                        </div>
+
+                        <h3 class="font-bold text-gray-800 mb-3 text-sm">Lista de chequeo — cumplimiento Ley 1712 de 2014 y buenas prácticas</h3>
+                        <p class="text-xs text-gray-500 mb-4">La siguiente tabla delimita los requerimientos de documentación, trazabilidad y disponibilidad de información aplicables a ESAL que contratan con el Estado. Para cada ítem se indica su fundamento (normativo o de buena práctica), el medio de publicación y el período de conservación recomendado.</p>
+
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-xs text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-blue-900 text-white">
+                                        <th class="p-2 border border-blue-700 w-6 no-print">#</th>
+                                        <th class="p-2 border border-blue-700">Documento / Información requerida</th>
+                                        <th class="p-2 border border-blue-700 w-28">Fundamento</th>
+                                        <th class="p-2 border border-blue-700 w-32">Medio de publicación / disponibilidad</th>
+                                        <th class="p-2 border border-blue-700 w-24">Período de conservación</th>
+                                        <th class="p-2 border border-blue-700 w-16 no-print">Estado</th>
+                                        <th class="p-2 border border-blue-700 w-16 no-print"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="cat in trazabilidadCats" :key="cat.id">
+                                        <!-- Encabezado de categoría -->
+                                        <tr :class="cat.bgClass">
+                                            <td colspan="6" class="p-2 border border-gray-300 font-bold text-xs" :class="cat.textClass">{{ cat.label }}</td>
+                                            <td class="p-2 border border-gray-300 text-center no-print">
+                                                <button @click="trazabilidadShowNewForm = true; trazabilidadNewForm.cat = cat.id" title="Agregar ítem en esta categoría" class="text-gray-400 hover:text-blue-700 transition-colors">
+                                                    <span class="material-icons text-base">add_circle_outline</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <!-- Filas de ítems -->
+                                        <tr v-for="item in trazItemsForCat(cat.id)" :key="item.id"
+                                            :class="item._condRiesgos ? 'bg-red-50' : 'hover:bg-gray-50'">
+                                            <!-- MODO VISUALIZACIÓN -->
+                                            <template v-if="trazabilidadEditingId !== item.id">
+                                                <td class="p-2 border border-gray-300 text-center font-mono text-[10px] text-gray-500 no-print">{{ item.num }}</td>
+                                                <td class="p-2 border border-gray-300">
+                                                    {{ item.documento }}
+                                                    <span v-if="item._canalRef && confCanalDeclaracion" class="text-gray-500">; canal: {{ confCanalDeclaracion }}</span>
+                                                    <span v-else-if="item._canalRef" class="text-gray-500">; canal: según Cap. 8</span>
+                                                </td>
+                                                <td class="p-2 border border-gray-300 text-center">
+                                                    <span class="px-1 py-0.5 rounded text-[10px] font-bold" :class="trazBadgeCls(item.fundColor)">{{ item.fundamento }}</span>
+                                                </td>
+                                                <td class="p-2 border border-gray-300">{{ item.medio }}</td>
+                                                <td class="p-2 border border-gray-300 text-center">{{ item.periodo }}</td>
+                                                <td class="p-2 border border-gray-300 text-center no-print">
+                                                    <input type="checkbox" v-model="item.checked" class="w-4 h-4" :class="trazAccentCls(item.fundColor)">
+                                                </td>
+                                                <td class="p-2 border border-gray-300 text-center no-print">
+                                                    <div class="flex items-center justify-center gap-1">
+                                                        <button @click="trazStartEdit(item)" class="text-gray-400 hover:text-blue-600 transition-colors" title="Editar ítem">
+                                                            <span class="material-icons text-base">edit</span>
+                                                        </button>
+                                                        <button @click="trazDeleteItem(item.id)" class="text-gray-400 hover:text-red-600 transition-colors" title="Eliminar ítem">
+                                                            <span class="material-icons text-base">delete_outline</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </template>
+                                            <!-- MODO EDICIÓN INLINE -->
+                                            <template v-else>
+                                                <td colspan="7" class="p-3 border border-blue-300 bg-blue-50">
+                                                    <div class="grid grid-cols-1 gap-2">
+                                                        <div>
+                                                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Documento / Información requerida</label>
+                                                            <textarea v-model="trazabilidadEditBuffer.documento" rows="3" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                                        </div>
+                                                        <div class="grid grid-cols-3 gap-2">
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Fundamento</label>
+                                                                <input v-model="trazabilidadEditBuffer.fundamento" type="text" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Color badge</label>
+                                                                <select v-model="trazabilidadEditBuffer.fundColor" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                                                    <option value="blue">Azul</option>
+                                                                    <option value="teal">Verde azulado</option>
+                                                                    <option value="indigo">Índigo</option>
+                                                                    <option value="rose">Rosado</option>
+                                                                    <option value="red">Rojo</option>
+                                                                </select>
+                                                            </div>
+                                                            <div></div>
+                                                        </div>
+                                                        <div class="grid grid-cols-2 gap-2">
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Medio de publicación / disponibilidad</label>
+                                                                <input v-model="trazabilidadEditBuffer.medio" type="text" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Período de conservación</label>
+                                                                <input v-model="trazabilidadEditBuffer.periodo" type="text" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex gap-2 justify-end">
+                                                            <button @click="trazCancelEdit()" class="px-3 py-1 text-xs rounded border border-gray-300 bg-white hover:bg-gray-100">Cancelar</button>
+                                                            <button @click="trazSaveEdit(item)" class="px-3 py-1 text-xs rounded bg-blue-700 text-white hover:bg-blue-800">Guardar</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </template>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Formulario para agregar nuevo ítem -->
+                        <div v-if="trazabilidadShowNewForm" class="mb-6 border border-blue-300 rounded-lg p-4 bg-blue-50 no-print">
+                            <p class="font-bold text-blue-800 text-xs mb-3 flex items-center gap-1"><span class="material-icons text-sm">add_circle</span> Nuevo ítem de trazabilidad</p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Categoría</label>
+                                    <select v-model="trazabilidadNewForm.cat" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                        <option v-for="c in trazabilidadCats" :key="c.id" :value="c.id">{{ c.label }}</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Documento / Información requerida <span class="text-red-500">*</span></label>
+                                    <textarea v-model="trazabilidadNewForm.documento" rows="3" placeholder="Describa el documento o información requerida..." class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Fundamento</label>
+                                        <input v-model="trazabilidadNewForm.fundamento" type="text" placeholder="Ej: Ley 1712 Art. 9" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Color badge</label>
+                                        <select v-model="trazabilidadNewForm.fundColor" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="blue">Azul</option>
+                                            <option value="teal">Verde azulado</option>
+                                            <option value="indigo">Índigo</option>
+                                            <option value="rose">Rosado</option>
+                                            <option value="red">Rojo</option>
+                                        </select>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Medio de publicación / disponibilidad</label>
+                                        <input v-model="trazabilidadNewForm.medio" type="text" placeholder="Ej: Página web / Expediente contractual" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Período de conservación</label>
+                                        <input v-model="trazabilidadNewForm.periodo" type="text" placeholder="Ej: Mínimo 10 años" class="w-full border border-gray-300 rounded p-1.5 text-xs bg-white focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 justify-end">
+                                    <button @click="trazabilidadShowNewForm = false; trazabilidadNewForm = { documento: '', fundamento: '', fundColor: 'blue', medio: '', periodo: '', cat: 'obligatoria' }" class="px-3 py-1.5 text-xs rounded border border-gray-300 bg-white hover:bg-gray-100">Cancelar</button>
+                                    <button @click="trazAddItem()" :disabled="!trazabilidadNewForm.documento.trim()" class="px-3 py-1.5 text-xs rounded bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed">Agregar ítem</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="!trazabilidadShowNewForm" class="flex justify-end mb-4 no-print">
+                            <button @click="trazabilidadShowNewForm = true; trazabilidadNewForm.cat = 'obligatoria'" class="flex items-center gap-1 text-xs text-blue-700 border border-blue-300 rounded px-3 py-1.5 hover:bg-blue-50 transition-colors">
+                                <span class="material-icons text-sm">add</span> Agregar ítem a la lista
+                            </button>
+                        </div>
+
+
+                        <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 text-xs text-gray-700 mt-4">
+                            <p class="font-bold mb-2 text-gray-800">Notas sobre períodos de actualización y conservación:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Información sobre contratos y ejecución:</strong> Mínimo 10 años desde la liquidación o terminación del contrato (conforme al Código General del Proceso y las normas de retención documental aplicables al sector).</li>
+                                <li><strong>Información financiera y contable:</strong> Mínimo 10 años de conformidad con el Código de Comercio y normas tributarias.</li>
+                                <li><strong>Declaraciones de conflicto de interés:</strong> Por lo menos <b>{{ protocols.documents.retentionYears || 10 }} años</b> contados a partir de la terminación de la relación laboral o contractual del declarante, o desde la liquidación del contrato al que se refiere la declaración, lo que ocurra después — conforme al período de retención documental establecido en el Cap. 1 del PTEE.</li>
+                                <li><strong>Información de transparencia activa (Ley 1712):</strong> Debe estar disponible y actualizada en los plazos establecidos en la norma y en los reglamentos de la entidad contratante.</li>
+                                <li><strong>Actualización de políticas:</strong> Cada revisión del PTEE implica actualizar este capítulo, con registro de las versiones anteriores.</li>
+                                <li><strong>Coordinación con la entidad contratante:</strong> Para cada contrato, la ESAL debe verificar los requisitos adicionales de documentación y publicación exigidos por la entidad contratante en los documentos del proceso.</li>
+                            </ul>
+                        </div>
+
+                        <p class="text-xs text-gray-400 italic mt-6 text-center border-t border-gray-200 pt-4">Lista de chequeo — Contratación con el Estado — {{ form.entityName || 'ESAL' }} — Seguimiento PTEE.</p>
+                    </div>
+                </div> <!-- Cierra contratacion-view -->
+
 
     <script>
         const { createApp } = Vue
@@ -9727,10 +10791,88 @@
                     showMonitoreo: false,
                     showDivulgacion: false,
                     showConflictos: false,
+                    showContratacion: false,
                     ddSubTab: 'flujo',
                     monitoreoSubTab: 'flujograma',
                     divulgacionSubTab: 'flujograma',
                     conflictosSubTab: 'politica',
+                    contratacionSubTab: 'politica',
+                    // ---- CONTRATACIÓN CON EL ESTADO ----
+                    contratacion: {
+                        tieneContratacionEstado: true,
+                        tiposRelacion: {
+                            art355: true,
+                            convenios: false,
+                            subvenciones: false,
+                            operador: false,
+                            vigenciasFuturas: false,
+                            esquemaAsociativo: false,
+                            distrital: false
+                        },
+                        tiposRelacionOtro: [],
+                        entidadesEstatales: '',
+                        aplicaLey1712: true,
+                        responsableContratacion: '',
+                        articulacion: {
+                            politicaCumplimiento: true,
+                            protocoloRegalos: true,
+                            protocoloLobby: true,
+                            protocoloContribuciones: true,
+                            gestionRiesgos: true,
+                            debidaDiligencia: true,
+                            monitoreo: true,
+                            conflictosInteres: true
+                        },
+                        principios: [
+                            { activo: true, nombre: 'Transparencia', definicion: 'Todos los procesos de contratación con entidades estatales se adelantarán con plena apertura y publicidad de la información, cumpliendo los principios de la contratación pública y los deberes de divulgación activa establecidos en la Ley 1712 de 2014.', fuente: 'Ley 80/1993 Art. 24 / Ley 1712/2014' },
+                            { activo: true, nombre: 'Integridad y Probidad', definicion: 'Ningún colaborador, directivo o representante de la entidad usará su posición, información privilegiada o relaciones institucionales para obtener ventajas indebidas en procesos de contratación estatal.', fuente: 'Ley 1474/2011 (Estatuto Anticorrupción) / OCDE' },
+                            { activo: true, nombre: 'Legalidad', definicion: 'La entidad cumplirá rigurosamente la normatividad vigente en materia de contratación estatal, los requisitos de idoneidad y los términos contractuales pactados con las entidades contratantes.', fuente: 'Ley 80/1993 Art. 23 / Ley 1150/2007' },
+                            { activo: true, nombre: 'Imparcialidad', definicion: 'Los procesos de selección, evaluación y contratación se desarrollarán con criterios objetivos, documentados y verificables, sin favoritismos ni discriminaciones.', fuente: 'Ley 80/1993 Art. 24 / Decreto 092/2017' },
+                            { activo: true, nombre: 'Responsabilidad', definicion: 'La entidad responderá por la correcta ejecución, destinación y rendición de cuentas de los recursos públicos recibidos, en los términos establecidos en cada contrato.', fuente: 'Ley 80/1993 Art. 26 / Ley 610/2000' },
+                            { activo: true, nombre: 'Independencia', definicion: 'Se garantizará la plena independencia en la toma de decisiones contractuales, libre de presiones políticas, influencias indebidas o intereses particulares.', fuente: 'Política de Conflictos de Intereses (Cap. 8) / Ley 1474/2011' }
+                        ]
+                    },
+                    newRelacionOtro: '',
+                    newPrincipioNombre: '',
+                    newPrincipioDefinicion: '',
+                    newPrincipioFuente: '',
+                    expandedPrincipio: null,
+                    // ---- 9.3 TRAZABILIDAD ----
+                    trazabilidadItems: [
+                        { id: 'tr1',  num: '1',   cat: 'obligatoria', documento: 'Estructura orgánica, funciones y deberes de la entidad', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'Página web oficial o plataforma habilitada', periodo: 'Permanente (actualizar ante cambios)', checked: false },
+                        { id: 'tr2',  num: '2',   cat: 'obligatoria', documento: 'Presupuesto, estados financieros y ejecución del mismo', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'Página web / Solicitud directa', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr3',  num: '3',   cat: 'obligatoria', documento: 'Contrato suscrito con la entidad estatal (objeto, valor, plazo, obligaciones)', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'SECOP / Sistema del contratante / página web', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr4',  num: '4',   cat: 'obligatoria', documento: 'Informes de gestión, avance y resultados del contrato', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'Expediente contractual / página web (cuando aplique)', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr5',  num: '5',   cat: 'obligatoria', documento: 'Actos administrativos o resoluciones que afectan el contrato', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'Expediente contractual / página web', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr6',  num: '6',   cat: 'obligatoria', documento: 'Políticas, lineamientos o manuales institucionales relacionados con el uso de recursos públicos', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'Página web / Intranet / solicitud directa', periodo: 'Permanente (vigente)', checked: false },
+                        { id: 'tr7',  num: '7',   cat: 'obligatoria', documento: 'Información sobre el proceso de contratación: etapas, requisitos, evaluación y adjudicación', fundamento: 'Ley 1712 Art. 9', fundColor: 'blue', medio: 'SECOP / página del contratante', periodo: 'Durante vigencia + mínimo 10 años', checked: false },
+                        { id: 'tr8',  num: '8',   cat: 'interna', documento: 'Expediente contractual completo (pliegos, propuesta, contrato, modificaciones, informes, actas, soportes de pago, liquidación)', fundamento: 'Buena Práctica PTEE', fundColor: 'teal', medio: 'Archivo físico y/o digital centralizado en la entidad', periodo: 'Mínimo 10 años tras la liquidación', checked: false },
+                        { id: 'tr9',  num: '9',   cat: 'interna', documento: 'Declaraciones de conflicto de interés del equipo ejecutor del contrato (al inicio del proceso precontractual y ante situaciones sobrevinientes)', fundamento: 'PTEE Cap. 8 / Decreto 092/2017', fundColor: 'teal', medio: 'Expediente contractual / archivo PTEE', periodo: 'Duración del contrato + 5 años', checked: false, _canalRef: true },
+                        { id: 'tr9b', num: '9.b', cat: 'interna', documento: 'Declaración y verificación específica para casos de vinculación con PEPs o exfuncionarios de la entidad contratante — inhabilitaciones (Ley 1474/2011, Art. 4); incluye constancia de aprobación', fundamento: 'PTEE Cap. 8 / Ley 1474/2011 Art.4', fundColor: 'red', medio: 'Archivo confidencial PTEE / Expediente contractual', periodo: 'Mínimo 5 años', checked: false, _condRiesgos: true },
+                        { id: 'tr10', num: '10',  cat: 'interna', documento: 'Informe de debida diligencia de la contraparte estatal o de sus supervisores/interventores', fundamento: 'PTEE Cap. 5', fundColor: 'teal', medio: 'Archivo confidencial PTEE', periodo: 'Mínimo 5 años', checked: false },
+                        { id: 'tr11', num: '11',  cat: 'interna', documento: 'Registro de aprobación interna de la propuesta o de la participación en el proceso', fundamento: 'Buena Práctica PTEE', fundColor: 'teal', medio: 'Acta o correo formal interno / sistema de gestión', periodo: 'Mínimo 5 años', checked: false },
+                        { id: 'tr12', num: '12',  cat: 'interna', documento: 'Evidencias de comunicación formal con la entidad contratante (solo canales oficiales)', fundamento: 'Buena Práctica PTEE', fundColor: 'teal', medio: 'Expediente contractual (correos, oficios, actas de comité)', periodo: 'Duración del contrato + 5 años', checked: false },
+                        { id: 'tr13', num: '13',  cat: 'interna', documento: 'Registros de control financiero y uso de recursos públicos (conciliaciones, comprobantes, pagos)', fundamento: 'Buena Práctica / Normativa Fiscal', fundColor: 'teal', medio: 'Contabilidad / Expediente contractual', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr14', num: '14',  cat: 'interna', documento: 'Acta de liquidación del contrato con cierre financiero y técnico', fundamento: 'Decreto 092/2017 / Ley 1712', fundColor: 'teal', medio: 'Expediente contractual / SECOP', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr15', num: '15',  cat: 'publicacion', documento: 'Política de contratación con el Estado (este capítulo del PTEE) disponible al público', fundamento: 'PTEE / Ley 1712 Art. 9', fundColor: 'indigo', medio: 'Página web / intranet de la entidad', periodo: 'Permanente (actualizar con cada revisión)', checked: false },
+                        { id: 'tr16', num: '16',  cat: 'publicacion', documento: 'Índice de información pública clasificada y reservada (si aplica)', fundamento: 'Ley 1712 Art. 23', fundColor: 'indigo', medio: 'Página web / disponible bajo solicitud', periodo: 'Anual (actualizar)', checked: false },
+                        { id: 'tr17', num: '17',  cat: 'publicacion', documento: 'Registro actualizado de contratos con el Estado en SECOP o sistema equivalente de la entidad contratante', fundamento: 'Decreto 092/2017 / CCE', fundColor: 'indigo', medio: 'Portal SECOP (carga o solicitud a contratante)', periodo: 'Durante vigencia del contrato', checked: false },
+                        { id: 'tr18', num: '18',  cat: 'publicacion', documento: 'Seguimiento al cumplimiento de este capítulo incluido en el informe general de seguimiento al PTEE', fundamento: 'Ley 1712 / PTEE Seguimiento', fundColor: 'indigo', medio: 'Informe anual al Órgano de Gobierno / Oficial de Cumplimiento', periodo: 'Anual (mínimo)', checked: false },
+                        { id: 'tr19', num: '19',  cat: 'pagos', documento: 'Bitácora de solicitudes indebidas de pagos de facilitación — registro individual de cada evento: fecha, lugar, nombre y cargo del funcionario (si se conoce), entidad, descripción de la solicitud, respuesta dada por la ESAL, fecha de reporte y número de caso asignado', fundamento: 'Buena Práctica PTEE / Art. 407 C.P. / Ley 1778/2016', fundColor: 'rose', medio: 'Archivo confidencial PTEE / sistema de gestión de casos', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr20', num: '20',  cat: 'pagos', documento: 'Reporte formal al canal ético de cada solicitud recibida, con número de caso asignado, descripción de los hechos y decisión institucional adoptada', fundamento: 'PTEE Cap. 6 / Art. 67 Ley 2195/2022', fundColor: 'rose', medio: 'Archivo de gestión de casos PTEE (confidencial)', periodo: 'Mínimo 10 años', checked: false },
+                        { id: 'tr21', num: '21',  cat: 'pagos', documento: 'Denuncia formal ante autoridades (Fiscalía, Procuraduría, Contraloría) cuando la decisión institucional así lo determine — incluir número de radicado y seguimiento al proceso', fundamento: 'Arts. 404, 407, 433 C.P. / Ley 1474/2011', fundColor: 'rose', medio: 'Expediente legal / archivo PTEE', periodo: 'Hasta resolución + 5 años', checked: false }
+                    ],
+                    trazabilidadCats: [
+                        { id: 'obligatoria', label: 'INFORMACIÓN MÍNIMA OBLIGATORIA — Transparencia Activa (Art. 9, 10 Ley 1712/2014)',                                                         bgClass: 'bg-blue-50',   textClass: 'text-blue-900'   },
+                        { id: 'interna',     label: 'DOCUMENTOS INTERNOS DE TRAZABILIDAD PTEE (Buenas Prácticas y Req. Contractuales)',                                                         bgClass: 'bg-teal-50',   textClass: 'text-teal-900'   },
+                        { id: 'publicacion', label: 'PUBLICACIÓN PROACTIVA Y SEGUIMIENTO AL PTEE (Requisitos adicionales)',                                                                    bgClass: 'bg-indigo-50', textClass: 'text-indigo-900' },
+                        { id: 'pagos',       label: 'GESTIÓN DE SOLICITUDES DE PAGOS DE FACILITACIÓN — Trazabilidad Obligatoria (Art. 407 C.P. / Ley 1778/2016 / Ley 2195/2022)',           bgClass: 'bg-rose-50',   textClass: 'text-rose-900'   }
+                    ],
+                    trazabilidadEditingId: null,
+                    trazabilidadEditBuffer: { documento: '', fundamento: '', fundColor: 'blue', medio: '', periodo: '' },
+                    trazabilidadNewForm: { documento: '', fundamento: '', fundColor: 'blue', medio: '', periodo: '', cat: 'obligatoria' },
+                    trazabilidadShowNewForm: false,
+                    trazabilidadCounter: 100,
                     // ---- CONFLICTOS DE INTERESES ----
                     confDefinicion: 'Situación en la cual los intereses personales, directos o indirectos, de los empleados, directivos, o sus familiares, interfieren o parecen interferir con los intereses de la entidad, comprometiendo su objetividad al tomar decisiones y ejercer su rol y funciones.',
                     confIntegrarCodigoEtica: false,
@@ -10212,6 +11354,9 @@
                 }
             },
             computed: {
+                isDistritoDetected() {
+                    return !!(this.form.localAreas && this.form.localAreas.toLowerCase().includes('bogot'));
+                },
                 confAlcanceFamiliarTexto() {
                     return `hasta el ${this.confAlcanceFamilia.consanguinidad}° grado de consanguinidad, ${this.confAlcanceFamilia.afinidad}° de afinidad o ${this.confAlcanceFamilia.civil}° civil, núcleo familiar y compañeros/as sentimentales permanentes`;
                 },
@@ -10746,6 +11891,27 @@
                 customConfCanales: {
                     handler() { this.saveDraft(); },
                     deep: true
+                },
+                // Sincronización de campos derivados — Cap. 9
+                'form.publicResources'(val) {
+                    if (val) {
+                        this.contratacion.tieneContratacionEstado = true;
+                        this.contratacion.aplicaLey1712 = true;
+                    }
+                },
+                'form.localAreas'(val) {
+                    if (val && val.toLowerCase().includes('bogot')) {
+                        this.contratacion.tiposRelacion.distrital = true;
+                    }
+                },
+                'protocols.gifts.applies'(val) {
+                    if (val) this.contratacion.articulacion.protocoloRegalos = true;
+                },
+                'protocols.lobbying.applies'(val) {
+                    if (val) this.contratacion.articulacion.protocoloLobby = true;
+                },
+                'protocols.political.applies'(val) {
+                    if (val) this.contratacion.articulacion.protocoloContribuciones = true;
                 }
             },
             mounted() {
@@ -10758,11 +11924,146 @@
                     this.riskBank = this.riskBank.filter(r => !idsEnMatriz.has(r.id));
                     this.normalizeControls();
                 }
+                // Sincronizar campos derivados de Cap. 9 con datos ya configurados
+                if (this.form.publicResources) {
+                    this.contratacion.tieneContratacionEstado = true;
+                    this.contratacion.aplicaLey1712 = true;
+                }
+                if (this.form.localAreas && this.form.localAreas.toLowerCase().includes('bogot')) {
+                    this.contratacion.tiposRelacion.distrital = true;
+                }
+                if (this.protocols.gifts.applies)    this.contratacion.articulacion.protocoloRegalos = true;
+                if (this.protocols.lobbying.applies)  this.contratacion.articulacion.protocoloLobby = true;
+                if (this.protocols.political.applies) this.contratacion.articulacion.protocoloContribuciones = true;
+                // Caps. siempre presentes en el PTEE
+                this.contratacion.articulacion.politicaCumplimiento = true;
+                this.contratacion.articulacion.gestionRiesgos = true;
+                this.contratacion.articulacion.debidaDiligencia = true;
+                this.contratacion.articulacion.monitoreo = true;
+                this.contratacion.articulacion.conflictosInteres = true;
             },
             beforeUnmount() {
                 window.removeEventListener('beforeunload', this.handleBeforeUnload);
             },
             methods: {
+                navigateToTab(tab) {
+                    this.showPolitica = false; this.showProtocolos = false; this.showDiagnostico = false;
+                    this.showRiesgos = false; this.showControles = false; this.showDebida = false;
+                    this.showMonitoreo = false; this.showDivulgacion = false; this.showConflictos = false;
+                    this.showContratacion = false;
+                    if (tab === 'politica')      this.showPolitica = true;
+                    else if (tab === 'protocolos') this.showProtocolos = true;
+                    else if (tab === 'riesgos')  { this.showRiesgos = true; this.riesgosTab = 'matriz'; }
+                    else if (tab === 'debida')    this.showDebida = true;
+                    else if (tab === 'monitoreo') { this.showMonitoreo = true; this.monitoreoSubTab = 'flujograma'; }
+                    else if (tab === 'divulgacion') { this.showDivulgacion = true; this.divulgacionSubTab = 'flujograma'; }
+                    else if (tab === 'conflictos') { this.showConflictos = true; this.conflictosSubTab = 'politica'; }
+                },
+                addRelacionOtro() {
+                    const val = this.newRelacionOtro.trim();
+                    if (!val) return;
+                    this.contratacion.tiposRelacionOtro.push(val);
+                    this.newRelacionOtro = '';
+                },
+                removeRelacionOtro(idx) {
+                    this.contratacion.tiposRelacionOtro.splice(idx, 1);
+                },
+                addPrincipio() {
+                    const nombre = this.newPrincipioNombre.trim();
+                    const definicion = this.newPrincipioDefinicion.trim();
+                    if (!nombre || !definicion) return;
+                    this.contratacion.principios.push({
+                        activo: true,
+                        nombre,
+                        definicion,
+                        fuente: this.newPrincipioFuente.trim() || ''
+                    });
+                    this.newPrincipioNombre = '';
+                    this.newPrincipioDefinicion = '';
+                    this.newPrincipioFuente = '';
+                    this.saveDraft();
+                },
+                removePrincipio(idx) {
+                    this.contratacion.principios.splice(idx, 1);
+                    if (this.expandedPrincipio === idx) this.expandedPrincipio = null;
+                    this.saveDraft();
+                },
+                toggleExpandPrincipio(idx) {
+                    this.expandedPrincipio = this.expandedPrincipio === idx ? null : idx;
+                },
+                // ---- 9.3 TRAZABILIDAD: CRUD ----
+                trazItemsForCat(catId) {
+                    return this.trazabilidadItems.filter(it => {
+                        if (it.cat !== catId) return false;
+                        if (it._condRiesgos && !this.confConexionRiesgos) return false;
+                        return true;
+                    });
+                },
+                trazStartEdit(item) {
+                    this.trazabilidadEditingId = item.id;
+                    this.trazabilidadEditBuffer = {
+                        documento: item.documento,
+                        fundamento: item.fundamento,
+                        fundColor: item.fundColor || 'blue',
+                        medio: item.medio,
+                        periodo: item.periodo
+                    };
+                },
+                trazSaveEdit(item) {
+                    item.documento  = this.trazabilidadEditBuffer.documento.trim() || item.documento;
+                    item.fundamento = this.trazabilidadEditBuffer.fundamento.trim() || item.fundamento;
+                    item.fundColor  = this.trazabilidadEditBuffer.fundColor;
+                    item.medio      = this.trazabilidadEditBuffer.medio.trim() || item.medio;
+                    item.periodo    = this.trazabilidadEditBuffer.periodo.trim() || item.periodo;
+                    this.trazabilidadEditingId = null;
+                    this.saveDraft();
+                },
+                trazCancelEdit() {
+                    this.trazabilidadEditingId = null;
+                },
+                trazDeleteItem(id) {
+                    const idx = this.trazabilidadItems.findIndex(it => it.id === id);
+                    if (idx !== -1) { this.trazabilidadItems.splice(idx, 1); this.saveDraft(); }
+                },
+                trazAddItem() {
+                    const doc = this.trazabilidadNewForm.documento.trim();
+                    if (!doc) return;
+                    this.trazabilidadCounter++;
+                    this.trazabilidadItems.push({
+                        id: 'trC' + this.trazabilidadCounter,
+                        num: String(this.trazabilidadCounter - 99),
+                        cat: this.trazabilidadNewForm.cat,
+                        documento: doc,
+                        fundamento: this.trazabilidadNewForm.fundamento.trim() || '—',
+                        fundColor:  this.trazabilidadNewForm.fundColor || 'blue',
+                        medio:      this.trazabilidadNewForm.medio.trim() || '—',
+                        periodo:    this.trazabilidadNewForm.periodo.trim() || '—',
+                        checked: false
+                    });
+                    this.trazabilidadNewForm = { documento: '', fundamento: '', fundColor: 'blue', medio: '', periodo: '', cat: this.trazabilidadNewForm.cat };
+                    this.trazabilidadShowNewForm = false;
+                    this.saveDraft();
+                },
+                trazBadgeCls(color) {
+                    const map = {
+                        blue:   'bg-blue-100 text-blue-800',
+                        teal:   'bg-teal-100 text-teal-800',
+                        indigo: 'bg-indigo-100 text-indigo-800',
+                        rose:   'bg-rose-100 text-rose-800',
+                        red:    'bg-red-100 text-red-800'
+                    };
+                    return map[color] || 'bg-gray-100 text-gray-800';
+                },
+                trazAccentCls(color) {
+                    const map = {
+                        blue:   'accent-blue-600',
+                        teal:   'accent-teal-600',
+                        indigo: 'accent-indigo-600',
+                        rose:   'accent-rose-600',
+                        red:    'accent-red-600'
+                    };
+                    return map[color] || 'accent-gray-600';
+                },
                 addDivCanal() {
                     if (!this.newCanal.label.trim()) return;
                     this.divCanalCounter++;
@@ -10905,6 +12206,8 @@
                     // v4.0: + confTipos, confNiveles, confAlcanceFamilia, confCanalDeclaracion, customConf*, fci
                     // v4.1: + customConfTipos, customConfNiveles, customConfResolutores, customConfPeriodicidades,
                     //         confCanalDeclaracion, customConfCanales y fci incluidos en autoguardado
+                    // v5.0: + contratacion (Cap. 9 política, principios, tipos de relación, etc.)
+                    // v5.1: + trazabilidadItems, trazabilidadCounter (lista de chequeo 9.3 editable)
                     const version = parsed.version || '1.0';
                     const vNum = parseFloat(version);
                     const seccionesNuevas = [];
@@ -11063,6 +12366,38 @@
                     } else if (tieneConflictos) {
                         // El capítulo Conflictos existía pero fci no fue guardado (borradores v4.0 previo a fix)
                         seccionesNuevas.push('Formulario de Declaración de Conflictos de Interés');
+                    }
+
+                    // --- Secciones de Contratación con el Estado (v5.0+) ---
+                    const tieneContratacion = !!(parsed.contratacion);
+                    if (!tieneContratacion) {
+                        seccionesNuevas.push('Contratación con el Estado');
+                    } else {
+                        this.contratacion = deepMerge(this.contratacion, parsed.contratacion);
+                        // Migrar tiposRelacionOtro de string (pre-v5.1) a array
+                        if (typeof this.contratacion.tiposRelacionOtro === 'string') {
+                            const val = this.contratacion.tiposRelacionOtro.trim();
+                            this.contratacion.tiposRelacionOtro = val ? [val] : [];
+                        }
+                        // Inicializar principios si draft antiguo no lo tiene (pre-v5.2)
+                        if (!Array.isArray(this.contratacion.principios) || this.contratacion.principios.length === 0) {
+                            this.contratacion.principios = [
+                                { activo: true, nombre: 'Transparencia', definicion: 'Todos los procesos de contratación con entidades estatales se adelantarán con plena apertura y publicidad de la información, cumpliendo los principios de la contratación pública y los deberes de divulgación activa establecidos en la Ley 1712 de 2014.', fuente: 'Ley 80/1993 Art. 24 / Ley 1712/2014' },
+                                { activo: true, nombre: 'Integridad y Probidad', definicion: 'Ningún colaborador, directivo o representante de la entidad usará su posición, información privilegiada o relaciones institucionales para obtener ventajas indebidas en procesos de contratación estatal.', fuente: 'Ley 1474/2011 (Estatuto Anticorrupción) / OCDE' },
+                                { activo: true, nombre: 'Legalidad', definicion: 'La entidad cumplirá rigurosamente la normatividad vigente en materia de contratación estatal, los requisitos de idoneidad y los términos contractuales pactados con las entidades contratantes.', fuente: 'Ley 80/1993 Art. 23 / Ley 1150/2007' },
+                                { activo: true, nombre: 'Imparcialidad', definicion: 'Los procesos de selección, evaluación y contratación se desarrollarán con criterios objetivos, documentados y verificables, sin favoritismos ni discriminaciones.', fuente: 'Ley 80/1993 Art. 24 / Decreto 092/2017' },
+                                { activo: true, nombre: 'Responsabilidad', definicion: 'La entidad responderá por la correcta ejecución, destinación y rendición de cuentas de los recursos públicos recibidos, en los términos establecidos en cada contrato.', fuente: 'Ley 80/1993 Art. 26 / Ley 610/2000' },
+                                { activo: true, nombre: 'Independencia', definicion: 'Se garantizará la plena independencia en la toma de decisiones contractuales, libre de presiones políticas, influencias indebidas o intereses particulares.', fuente: 'Política de Conflictos de Intereses (Cap. 8) / Ley 1474/2011' }
+                            ];
+                        }
+                    }
+
+                    // --- 9.3 Trazabilidad (v5.1+) ---
+                    if (parsed.trazabilidadItems && Array.isArray(parsed.trazabilidadItems)) {
+                        this.trazabilidadItems = parsed.trazabilidadItems;
+                    }
+                    if (parsed.trazabilidadCounter) {
+                        this.trazabilidadCounter = parsed.trazabilidadCounter;
                     }
 
                     // --- Normalizar controles de riesgos ---
@@ -11886,7 +13221,10 @@
                         customConfCanales: this.customConfCanales,
                         confConexionRiesgos: this.confConexionRiesgos,
                         confDeclaracionPeriodicidad: this.confDeclaracionPeriodicidad,
-                        version: '4.1',
+                        contratacion: this.contratacion,
+                        trazabilidadItems: this.trazabilidadItems,
+                        trazabilidadCounter: this.trazabilidadCounter,
+                        version: '5.1',
                         timestamp: new Date().toISOString()
                     };
                     localStorage.setItem('ptee_esal_draft', JSON.stringify(draft));
@@ -11919,6 +13257,7 @@
                     }
                 },
                 exportDraft() {
+                    this.syncControlsToBank();
                     const draft = {
                         form: this.form,
                         protocols: this.protocols,
@@ -11950,7 +13289,11 @@
                         customConfCanales: this.customConfCanales,
                         confConexionRiesgos: this.confConexionRiesgos,
                         confDeclaracionPeriodicidad: this.confDeclaracionPeriodicidad,
-                        version: '4.1'
+                        contratacion: this.contratacion,
+                        trazabilidadItems: this.trazabilidadItems,
+                        trazabilidadCounter: this.trazabilidadCounter,
+                        version: '5.1',
+                        timestamp: new Date().toISOString()
                     };
                     const jsonStr = JSON.stringify(draft, null, 2);
                     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -12241,6 +13584,31 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         .bg-div-teal { background-color: #0f766e; }
                         .bg-div-amber { background-color: #d97706; }
                         .bg-div-purple { background-color: #7e22ce; }
+                        /* Cap. 9 — Flujograma: cabeceras de etapas */
+                        .stage-hdr-blue   { background-color: #1e3a8a; color: #fff; padding: 8px 14px; font-weight: bold; font-size: 10pt; }
+                        .stage-hdr-teal   { background-color: #0f766e; color: #fff; padding: 8px 14px; font-weight: bold; font-size: 10pt; }
+                        .stage-hdr-indigo { background-color: #4338ca; color: #fff; padding: 8px 14px; font-weight: bold; font-size: 10pt; }
+                        /* Cap. 9 — Flujograma: columnas internas */
+                        .col-risk  { background-color: #fef2f2; }
+                        .col-ctrl  { background-color: #f0fdf4; }
+                        /* Cap. 9 — Resumen factores transversales (fondo oscuro) */
+                        .summary-dark       { background-color: #1f2937; color: #f9fafb; padding: 10px; margin-top: 12pt; }
+                        .summary-dark p     { color: #d1d5db; }
+                        .summary-sub-red    { background-color: #7f1d1d; color: #fef2f2; padding: 8px; margin: 4pt 0; }
+                        .summary-sub-orange { background-color: #7c2d12; color: #fff7ed; padding: 8px; margin: 4pt 0; }
+                        .summary-sub-yellow { background-color: #713f12; color: #fefce8; padding: 8px; margin: 4pt 0; }
+                        .summary-sub-rose   { background-color: #881337; color: #fff1f2; padding: 8px; margin: 4pt 0; }
+                        /* Cap. 9 — Trazabilidad: cabeceras de categoría */
+                        .cat-obligatoria { background-color: #eff6ff; color: #1e3a8a; font-weight: bold; }
+                        .cat-interna     { background-color: #f0fdfa; color: #134e4a; font-weight: bold; }
+                        .cat-publicacion { background-color: #eef2ff; color: #312e81; font-weight: bold; }
+                        .cat-pagos       { background-color: #fff1f2; color: #881337; font-weight: bold; }
+                        /* Cap. 9 — Trazabilidad: badges de fundamento */
+                        .traz-blue   { background-color: #dbeafe; color: #1e40af; padding: 2px 6px; font-size: 8pt; }
+                        .traz-teal   { background-color: #ccfbf1; color: #115e59; padding: 2px 6px; font-size: 8pt; }
+                        .traz-indigo { background-color: #e0e7ff; color: #3730a3; padding: 2px 6px; font-size: 8pt; }
+                        .traz-rose   { background-color: #ffe4e6; color: #9f1239; padding: 2px 6px; font-size: 8pt; }
+                        .traz-red    { background-color: #fee2e2; color: #991b1b; padding: 2px 6px; font-size: 8pt; }
                     </style>`;
                 },
                 _downloadWordFile(contentHTML, fileSuffix) {
@@ -12576,6 +13944,91 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         }
                     });
 
+                    // ============================================================
+                    // --- Cap. 9: Contratación con el Estado ---
+                    // ============================================================
+
+                    // 9.2 Flujograma — fondos de columnas (deben quedar como inline style
+                    // ANTES de que _convertGridsToTablesForWord copie child.style.backgroundColor)
+                    clone.querySelectorAll('[class*="bg-red-50"]').forEach(el => {
+                        if (!el.style.backgroundColor) el.style.backgroundColor = '#fef2f2';
+                    });
+                    clone.querySelectorAll('[class*="bg-green-50"]').forEach(el => {
+                        if (!el.style.backgroundColor) el.style.backgroundColor = '#f0fdf4';
+                    });
+                    clone.querySelectorAll('[class*="bg-rose-50"]').forEach(el => {
+                        if (!el.style.backgroundColor) el.style.backgroundColor = '#fff1f2';
+                    });
+                    // 9.2 — Badges de riesgo C / ST
+                    clone.querySelectorAll('[class*="text-red-500"]').forEach(el => {
+                        if (!el.style.color) { el.style.color = '#ef4444'; el.style.fontWeight = 'bold'; }
+                    });
+                    clone.querySelectorAll('[class*="text-orange-500"]').forEach(el => {
+                        if (!el.style.color) { el.style.color = '#f97316'; el.style.fontWeight = 'bold'; }
+                    });
+                    // 9.2 — Cabeceras de columnas
+                    clone.querySelectorAll('[class*="text-red-700"]').forEach(el => {
+                        if (!el.style.color) el.style.color = '#b91c1c';
+                    });
+                    // 9.2 — Resumen: fondo oscuro y sub-tarjetas de riesgo transversal
+                    clone.querySelectorAll('[class*="bg-gray-800"]').forEach(el => {
+                        el.style.backgroundColor = '#1f2937'; el.style.color = '#f9fafb';
+                        if (!el.style.padding) el.style.padding = '10px';
+                    });
+                    clone.querySelectorAll('[class*="bg-red-900"]').forEach(el => {
+                        el.style.backgroundColor = '#7f1d1d'; el.style.color = '#fef2f2';
+                        if (!el.style.padding) el.style.padding = '8px';
+                    });
+                    clone.querySelectorAll('[class*="bg-orange-900"]').forEach(el => {
+                        el.style.backgroundColor = '#7c2d12'; el.style.color = '#fff7ed';
+                        if (!el.style.padding) el.style.padding = '8px';
+                    });
+                    clone.querySelectorAll('[class*="bg-yellow-900"]').forEach(el => {
+                        el.style.backgroundColor = '#713f12'; el.style.color = '#fefce8';
+                        if (!el.style.padding) el.style.padding = '8px';
+                    });
+                    clone.querySelectorAll('[class*="bg-rose-900"]').forEach(el => {
+                        el.style.backgroundColor = '#881337'; el.style.color = '#fff1f2';
+                        if (!el.style.padding) el.style.padding = '8px';
+                    });
+                    clone.querySelectorAll('[class*="text-red-200"]').forEach(el => { if (!el.style.color) el.style.color = '#fecaca'; });
+                    clone.querySelectorAll('[class*="text-orange-200"]').forEach(el => { if (!el.style.color) el.style.color = '#fed7aa'; });
+                    clone.querySelectorAll('[class*="text-yellow-200"]').forEach(el => { if (!el.style.color) el.style.color = '#fef08a'; });
+                    clone.querySelectorAll('[class*="text-rose-200"]').forEach(el => { if (!el.style.color) el.style.color = '#fecdd3'; });
+                    clone.querySelectorAll('[class*="text-gray-300"]').forEach(el => { if (!el.style.color) el.style.color = '#d1d5db'; });
+                    // 9.2 — Flechas entre etapas (líneas w-px + icono south ya removido => convertir a ↓)
+                    clone.querySelectorAll('div').forEach(el => {
+                        const cls2 = el.className || '';
+                        if (cls2.includes('flex-col') && cls2.includes('items-center') && cls2.includes('my-3')) {
+                            const hasPxLine = Array.from(el.children).some(c => (c.className || '').includes('w-px'));
+                            if (hasPxLine) {
+                                el.innerHTML = '<p style="text-align:center;font-size:14pt;color:#9ca3af;margin:4pt 0;">&#8595;</p>';
+                            }
+                        }
+                    });
+                    // 9.3 — Trazabilidad: badges de fundamento (bg-[color]-100)
+                    clone.querySelectorAll('[class*="bg-blue-100"]').forEach(el => {
+                        if (!el.style.backgroundColor) { el.style.backgroundColor = '#dbeafe'; if (!el.style.padding) el.style.padding = '2px 6px'; }
+                    });
+                    clone.querySelectorAll('[class*="bg-teal-100"]').forEach(el => {
+                        if (!el.style.backgroundColor) { el.style.backgroundColor = '#ccfbf1'; if (!el.style.padding) el.style.padding = '2px 6px'; }
+                    });
+                    clone.querySelectorAll('[class*="bg-rose-100"]').forEach(el => {
+                        if (!el.style.backgroundColor) { el.style.backgroundColor = '#ffe4e6'; if (!el.style.padding) el.style.padding = '2px 6px'; }
+                    });
+                    clone.querySelectorAll('[class*="bg-red-100"]').forEach(el => {
+                        if (!el.style.backgroundColor) { el.style.backgroundColor = '#fee2e2'; if (!el.style.padding) el.style.padding = '2px 6px'; }
+                    });
+                    clone.querySelectorAll('[class*="bg-indigo-100"]').forEach(el => {
+                        if (!el.style.backgroundColor) { el.style.backgroundColor = '#e0e7ff'; if (!el.style.padding) el.style.padding = '2px 6px'; }
+                    });
+                    // 9.3 — Trazabilidad: colores de texto en badges y filas
+                    clone.querySelectorAll('[class*="text-rose-800"]').forEach(el => { if (!el.style.color) el.style.color = '#9f1239'; });
+                    clone.querySelectorAll('[class*="text-rose-900"]').forEach(el => { if (!el.style.color) el.style.color = '#881337'; });
+                    clone.querySelectorAll('[class*="text-red-800"]').forEach(el => { if (!el.style.color) el.style.color = '#991b1b'; });
+                    clone.querySelectorAll('[class*="text-blue-800"]').forEach(el => { if (!el.style.color) el.style.color = '#1e40af'; });
+                    // ============================================================
+
                     // -- Divulgación: CSS Grid ? tablas HTML para Word --
                     this._convertGridsToTablesForWord(clone);
                 },
@@ -12739,6 +14192,7 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                     if (this.showMonitoreo) return 'Monitoreo';
                     if (this.showDivulgacion) return 'Divulgacion';
                     if (this.showConflictos) return 'Conflictos';
+                    if (this.showContratacion) return 'Contratacion_Estado';
                     return 'Seccion';
                 },
                 exportWordSheet() {
@@ -12755,6 +14209,8 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         sourceEl = document.getElementById('divulgacion-view');
                     } else if (this.showConflictos) {
                         sourceEl = document.getElementById('conflictos-view');
+                    } else if (this.showContratacion) {
+                        sourceEl = document.getElementById('contratacion-view');
                     }
                     if (!sourceEl) { alert('No hay un componente visible para exportar.'); return; }
                     const clone = sourceEl.cloneNode(true);
@@ -12958,13 +14414,34 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                     if (this.showConflictos) {
                         sourceEl = document.getElementById('conflictos-view');
                         if (!sourceEl) return;
-                        const originalSubTab = this.conflictosSubTab;
-                        // Conflictos usa v-show, pero es mejor usar el mismo patrón si es que algunas cosas cambian
-                        // Aunque como es v-show, están todas en el DOM. Pero igual iteremos o simplemente exportamos entero
                         const clone = sourceEl.cloneNode(true);
-                        // Mostrar todos los ocultos por v-show local
                         this._cleanCloneForWord(clone, true);
                         this._downloadWordFile(clone.innerHTML, suffix + '_Completo');
+                        return;
+                    }
+                    if (this.showContratacion) {
+                        sourceEl = document.getElementById('contratacion-view');
+                        if (!sourceEl) return;
+                        const originalSubTab = this.contratacionSubTab;
+                        const subTabs = ['politica', 'flujograma', 'trazabilidad'];
+                        const pageBreak = '<div class="page-break"></div>';
+                        let chapterContent = '';
+                        const collectSubTabs = async () => {
+                            for (let i = 0; i < subTabs.length; i++) {
+                                this.contratacionSubTab = subTabs[i];
+                                await this.$nextTick();
+                                const freshEl = document.getElementById('contratacion-view');
+                                if (freshEl) {
+                                    const tabClone = freshEl.cloneNode(true);
+                                    this._cleanCloneForWord(tabClone, true);
+                                    if (i > 0) chapterContent += pageBreak;
+                                    chapterContent += tabClone.innerHTML;
+                                }
+                            }
+                            this.contratacionSubTab = originalSubTab;
+                            this._downloadWordFile(chapterContent, suffix + '_Completo');
+                        };
+                        collectSubTabs();
                         return;
                     }
                     alert('No hay un capítulo activo para exportar.');
@@ -13034,6 +14511,21 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         this._cleanCloneForWord(clone, true);
                         allContent += pageBreak + clone.innerHTML;
                     }
+
+                    // 7. Contratación con el Estado — iterar sub-pestañas
+                    const originalContTab = this.contratacionSubTab;
+                    const contSubTabs = ['politica', 'flujograma', 'trazabilidad'];
+                    for (let i = 0; i < contSubTabs.length; i++) {
+                        this.contratacionSubTab = contSubTabs[i];
+                        await this.$nextTick();
+                        const contEl = document.getElementById('contratacion-view');
+                        if (contEl) {
+                            const clone = contEl.cloneNode(true);
+                            this._cleanCloneForWord(clone, true);
+                            allContent += pageBreak + clone.innerHTML;
+                        }
+                    }
+                    this.contratacionSubTab = originalContTab;
 
                     this._downloadWordFile(allContent, 'Programa_Completo');
                 },
@@ -13631,7 +15123,8 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         "Nivel de Riesgo (C/ST)", "Figura de Cumplimiento", "Órgano de Administración", "Pactos Anticorrupción",
                         "Var: Maneja Recursos Públicos", "Var: Maneja Recursos Privados", "Var: Cooperación Int.", "Var: Entidad Controlante",
                         "Var: Posee Subsidiarias", "Var: Tiene Cod. Buen Gobierno", "Var: Tiene Cod. Ética/Conducta", "Var: Matriz/Gestión de Riesgos",
-                        "Var: Tiene Auditoría", "Var: Tiene Revisoría Fiscal", "Var: Posee Comité Ética"
+                        "Var: Tiene Auditoría", "Var: Tiene Revisoría Fiscal", "Var: Posee Comité Ética",
+                        "Var: Junta Directiva/Consejo", "Var: Oficial de Cumplimiento", "Var: Política Conflictos de Interés", "Var: Política Contratación c/Estado (Cap.9)"
                     ];
                     
                     const row = [
@@ -13657,7 +15150,11 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         this.form.hasRiskManagement ? 'SI' : 'NO',
                         this.form.hasAuditoria ? 'SI' : 'NO',
                         this.form.hasRevisoria ? 'SI' : 'NO',
-                        this.form.hasEthicsCommittee ? 'SI' : 'NO'
+                        this.form.hasEthicsCommittee ? 'SI' : 'NO',
+                        this.form.hasAdminOrgan ? 'SI' : 'NO',
+                        this.form.complianceRoleType ? 'SI' : 'NO',
+                        ((this.confTipos && Object.values(this.confTipos).some(v => v)) || (this.customConfTipos && this.customConfTipos.length > 0)) ? 'SI' : 'NO',
+                        this.contratacion.tieneContratacionEstado ? 'SI' : 'N/A'
                     ];
 
                     // Explode Fuentes de Financiación
@@ -13686,6 +15183,25 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         "Prot: Gestión Documental", "Prot Doc: Años Retención", "Prot Doc: Respaldo Digital",
                         "Prot: Regalos y Obsequios", "Prot Regalos: Política", "Prot Regalos: Valor Máximo", "Prot Regalos: Roles Aprobación", "Prot Regalos: Restricción en Negociaciones", "Prot Regalos: Sanciones",
                         "Prot: Gastos Representación", "Prot Gastos: Días Legalización", "Prot Gastos: Pre-aprobación requerida", "Prot Gastos: Rol Aprobador", "Prot Gastos: Sanciones",
+                        "Cap9: Aplica Contratación c/Estado",
+                        "Cap9: N.° Tipos Relación Activos",
+                        "Cap9: Tipo — Art.355 / Decreto 092",
+                        "Cap9: Tipo — Convenios Interadministrativos",
+                        "Cap9: Tipo — Subvenciones / Transferencias",
+                        "Cap9: Tipo — Operador Rec. Públicos",
+                        "Cap9: Tipo — Vigencias Futuras",
+                        "Cap9: Tipo — Esquemas Asociativos",
+                        "Cap9: Tipo — Distrital Bogotá",
+                        "Cap9: Tipos Otros (adicionales)",
+                        "Cap9: N.° Principios Rectores Activos",
+                        "Cap9: Art. — Política Cumplimiento (Cap.1)",
+                        "Cap9: Art. — Regalos y Beneficios (Cap.2)",
+                        "Cap9: Art. — Cabildeo / Lobby (Cap.2)",
+                        "Cap9: Art. — Contribuciones Políticas (Cap.2)",
+                        "Cap9: Art. — Gestión Riesgos (Cap.4)",
+                        "Cap9: Art. — Debida Diligencia (Cap.5)",
+                        "Cap9: Art. — Monitoreo y Denuncias (Cap.6)",
+                        "Cap9: Art. — Conflictos de Interés (Cap.8)",
                         "PUNTAJE GLOBAL", "NIVEL MADUREZ PTEE",
                         "DIM: Gobernanza y Ética (%)", "DIM: Normatividad y Política (%)", "DIM: Gestión de Riesgos (%)", "DIM: Debida Diligencia (%)", "DIM: Monitoreo y Denuncia (%)", "DIM: Divulgación y Conflictos (%)",
                         "RIESGOS: Total en Matriz", "RIESGOS: Con Controles", "RIESGOS: Cobertura Controles (%)",
@@ -13729,6 +15245,27 @@ ${d.reporteAutoridades === 'Sí' ? '<p><b>Reporte a autoridades:</b> Entidad: ' 
                         this.protocols.expenses.preApproval ? 'SI' : 'NO',
                         this.protocols.expenses.approvalRole,
                         this.protocols.expenses.sanctions,
+
+                        // Cap. 9 — Contratación con el Estado
+                        this.contratacion.tieneContratacionEstado ? 'SI' : 'NO',
+                        Object.values(this.contratacion.tiposRelacion).filter(v => v).length + this.contratacion.tiposRelacionOtro.length,
+                        this.contratacion.tiposRelacion.art355 ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.convenios ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.subvenciones ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.operador ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.vigenciasFuturas ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.esquemaAsociativo ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacion.distrital ? 'SI' : 'NO',
+                        this.contratacion.tiposRelacionOtro && this.contratacion.tiposRelacionOtro.length > 0 ? this.contratacion.tiposRelacionOtro.join(' | ') : 'NO',
+                        this.contratacion.principios.filter(p => p.activo).length,
+                        this.contratacion.articulacion.politicaCumplimiento ? 'SI' : 'NO',
+                        this.contratacion.articulacion.protocoloRegalos ? 'SI' : 'NO',
+                        this.contratacion.articulacion.protocoloLobby ? 'SI' : 'NO',
+                        this.contratacion.articulacion.protocoloContribuciones ? 'SI' : 'NO',
+                        this.contratacion.articulacion.gestionRiesgos ? 'SI' : 'NO',
+                        this.contratacion.articulacion.debidaDiligencia ? 'SI' : 'NO',
+                        this.contratacion.articulacion.monitoreo ? 'SI' : 'NO',
+                        this.contratacion.articulacion.conflictosInteres ? 'SI' : 'NO',
 
                         this.diagnostico.puntajeGlobal,
                         this.nivelMadurezInfo.nivel,
