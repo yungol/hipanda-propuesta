@@ -110,32 +110,35 @@
                     
                     <!-- Tabs -->
                     <div class="grid grid-cols-4 gap-1 mt-3">
-                        <div @click="showPolitica = true; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showPolitica = true; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showPolitica ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             1. Política
                         </div>
-                        <div @click="showProtocolos = true; showPolitica = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showProtocolos = true; showPolitica = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showProtocolos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             2. Protocolos
                         </div>
-                        <div @click="showDiagnostico = true; showPolitica = false; showProtocolos = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDiagnostico = true; showPolitica = false; showProtocolos = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showDiagnostico ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             3. Diagnóstico
                         </div>
-                        <div @click="showRiesgos = true; riesgosTab = 'matriz'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showRiesgos && riesgosTab !== 'controles' ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showRiesgos = true; riesgosTab = 'matriz'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showRiesgos && riesgosTab !== 'controles' ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             4. Riesgos
                         </div>
-                        <div @click="showDebida = true; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showDebida ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDebida = true; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showDebida ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             5. Deb. Diligencia
                         </div>
-                        <div @click="showMonitoreo = true; monitoreoSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showMonitoreo ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showMonitoreo = true; monitoreoSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showDivulgacion = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showMonitoreo ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             6. Monitoreo
                         </div>
-                        <div @click="showDivulgacion = true; divulgacionSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showConflictos = false; showContratacion = false;" :class="[showDivulgacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showDivulgacion = true; divulgacionSubTab = 'flujograma'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showConflictos = false; showContratacion = false; showIntegridad = false;" :class="[showDivulgacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             7. Divulgación
                         </div>
-                        <div @click="showConflictos = true; conflictosSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showContratacion = false;" :class="[showConflictos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
+                        <div @click="showConflictos = true; conflictosSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showContratacion = false; showIntegridad = false;" :class="[showConflictos ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none']">
                             8. Conflictos
                         </div>
-                        <div @click="showContratacion = true; contratacionSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false;" :class="[showContratacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none col-span-4']">
-                            9. Contratación con el Estado
+                        <div @click="showContratacion = true; contratacionSubTab = 'politica'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showIntegridad = false;" :class="[showContratacion ? 'bg-white text-blue-900 font-bold' : 'bg-blue-800 text-blue-200 hover:bg-blue-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none col-span-2']">
+                            9. Contratación Estado
+                        </div>
+                        <div @click="showIntegridad = true; integridadSubTab = 'flujo'; showPolitica = false; showProtocolos = false; showDiagnostico = false; showRiesgos = false; showControles = false; showDebida = false; showMonitoreo = false; showDivulgacion = false; showConflictos = false; showContratacion = false;" :class="[showIntegridad ? 'bg-white text-emerald-900 font-bold' : 'bg-emerald-800 text-emerald-100 hover:bg-emerald-700', 'py-1 text-xs sm:text-xs text-center cursor-pointer rounded-t-lg transition-colors flex items-center justify-center gap-1 select-none col-span-2']">
+                            10. Integridad Financiera
                         </div>
                     </div>
                     
@@ -1940,6 +1943,81 @@
 
                     <div class="text-xs text-gray-500 italic mt-4">
                         Navegue las subpestañas en el panel derecho (9.1 Política, 9.2 Flujograma, 9.3 Trazabilidad) para visualizar y personalizar cada componente.
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 10: INTEGRIDAD FINANCIERA -->
+            <div class="p-6 flex flex-col gap-6" v-show="showIntegridad">
+                <section>
+                    <h3 class="font-bold text-emerald-800 border-b border-emerald-200 pb-2 mb-3">10. Integridad Financiera</h3>
+                    <p class="text-sm text-gray-600 mb-3">
+                        Capítulo dedicado a la <strong>trazabilidad e integridad contable y financiera</strong> como pilar transversal del PTEE, en línea con los lineamientos de la Superintendencia de Sociedades y el Código de Comercio (libros, soportes, conservación y aseguramiento).
+                    </p>
+
+                    <div class="mb-4 bg-emerald-50 border border-emerald-200 rounded p-3 text-xs text-emerald-800">
+                        <p class="font-bold mb-1 flex items-center gap-1"><span class="material-icons align-middle" style="font-size:13px">account_balance</span> Foco del capítulo</p>
+                        <p>Asegurar fidelidad de la contabilidad, conservación documental, prevención del fraude/soborno camuflado en cuentas sensibles (representación, comisiones, donaciones, viáticos, efectivo) y mecanismos de control sobre operaciones con sector público e intermediarios.</p>
+                    </div>
+
+                    <!-- Configuración mínima -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Responsable de la gestión financiera</label>
+                        <input type="text" v-model="integridadConfig.responsableFinanciero" class="w-full border p-2 rounded text-xs" placeholder="Ej. Dirección Administrativa y Financiera">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Aseguramiento externo (Revisor Fiscal / Auditor)</label>
+                        <input type="text" v-model="integridadConfig.revisorFiscal" class="w-full border p-2 rounded text-xs" placeholder="Nombre de la firma o profesional independiente">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Periodicidad de revisión integral del capítulo</label>
+                        <select v-model="integridadConfig.periodicidadRevision" class="w-full border p-2 rounded text-xs">
+                            <option>Trimestral</option>
+                            <option>Semestral</option>
+                            <option>Anual</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Umbral efectivo (SMMLV)</label>
+                            <input type="number" v-model.number="integridadConfig.umbralEfectivoSMMLV" min="1" class="w-full border p-2 rounded text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Conservación documental (años)</label>
+                            <input type="number" v-model.number="integridadConfig.conservacionAnios" min="5" class="w-full border p-2 rounded text-xs">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Doble firma de pagos — umbral</label>
+                        <input type="text" v-model="integridadConfig.umbralDobleFirma" class="w-full border p-2 rounded text-xs" placeholder="Ej. Pagos > 50 SMMLV requieren doble firma">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Comentarios / particularidades de la entidad</label>
+                        <textarea v-model="integridadConfig.comentarios" rows="3" class="w-full border p-2 rounded text-xs" placeholder="Ej. Manejo de fondos en moneda extranjera, fideicomisos, alianzas con cooperantes..."></textarea>
+                    </div>
+
+                    <!-- Resumen del estado del banco de controles -->
+                    <div class="mb-4 bg-gray-50 border border-gray-200 rounded p-3 text-xs">
+                        <p class="font-bold text-gray-700 mb-2"><span class="material-icons align-middle" style="font-size:13px">fact_check</span> Estado del banco de controles</p>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-emerald-100 border border-emerald-200 rounded p-2">
+                                <div class="text-lg font-bold text-emerald-800">{{ integridadStats.maduros }}</div>
+                                <div class="text-[9px] text-emerald-700">Maduros</div>
+                            </div>
+                            <div class="bg-amber-100 border border-amber-200 rounded p-2">
+                                <div class="text-lg font-bold text-amber-800">{{ integridadStats.existeNoMaduro }}</div>
+                                <div class="text-[9px] text-amber-700">Existen / no maduros</div>
+                            </div>
+                            <div class="bg-rose-100 border border-rose-200 rounded p-2">
+                                <div class="text-lg font-bold text-rose-800">{{ integridadStats.faltantes }}</div>
+                                <div class="text-[9px] text-rose-700">Ausentes</div>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-2 italic">Total banco: {{ integridadControles.length }} controles. Configure cada uno en la pestaña "Banco de controles" → vista Diagnóstico.</p>
+                    </div>
+
+                    <div class="text-xs text-gray-500 italic mt-4">
+                        Navegue las subpestañas en el panel derecho (10.1 Flujo esencial, 10.2 Banco de controles) para visualizar y personalizar el capítulo.
                     </div>
                 </section>
             </div>
@@ -10853,6 +10931,277 @@
                     </div>
                 </div> <!-- Cierra contratacion-view -->
 
+                <!-- ============================================================
+                     TAB 10: INTEGRIDAD FINANCIERA (Vista principal)
+                ============================================================ -->
+                <div id="integridad-view" v-show="showIntegridad" class="bg-white mx-auto shadow-2xl p-4 md:p-8 max-w-[21cm] mb-8 rounded relative">
+                    <h1 class="text-xl md:text-2xl font-bold uppercase text-center border-b-2 border-black pb-2 mb-2">10. Integridad Financiera y Contable</h1>
+                    <p class="text-center text-xs text-gray-500 italic mb-6">Trazabilidad, fidelidad contable y prevención de fraude/soborno/corrupción en la gestión financiera — {{ form.entityName || 'ESAL' }}</p>
+
+                    <!-- Tabs -->
+                    <div class="flex border-b border-gray-200 mb-6 -mx-2 px-2 overflow-x-auto no-print">
+                        <button @click="integridadSubTab = 'flujo'" :class="integridadSubTab === 'flujo' ? 'border-b-2 border-emerald-700 text-emerald-800 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-emerald-700 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons" style="font-size:16px">timeline</span> 10.1 Flujo esencial
+                        </button>
+                        <button @click="integridadSubTab = 'controles'" :class="integridadSubTab === 'controles' ? 'border-b-2 border-emerald-700 text-emerald-800 font-bold bg-white shadow-sm' : 'text-gray-600 hover:text-emerald-700 bg-gray-100 opacity-80'" class="px-4 py-2 rounded-t-lg transition-all text-sm font-medium focus:outline-none flex items-center gap-2">
+                            <span class="material-icons" style="font-size:16px">verified</span> 10.2 Banco de controles
+                        </button>
+                    </div>
+
+                    <!-- ===== 10.1 FLUJO ESENCIAL ===== -->
+                    <div v-show="integridadSubTab === 'flujo'">
+                        <h2 class="text-base font-bold text-emerald-900 mb-3">10.1 Flujo esencial de estrategia y gestión financiera–contable</h2>
+                        <p class="text-sm text-gray-700 mb-4 text-justify">
+                            La entidad orienta su gestión financiera y contable a garantizar <strong>fidelidad de los registros</strong>, <strong>conservación documental</strong> y <strong>prevención de prácticas asociadas a corrupción, soborno o fraude</strong>. El siguiente flujo presenta, de forma esquemática, las etapas clave que articulan la integridad financiera con el PTEE.
+                        </p>
+
+                        <!-- Flujo gráfico (5 etapas) -->
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 my-6">
+                            <div class="rounded-xl border-2 border-emerald-700 bg-emerald-50 p-3 text-center shadow-sm">
+                                <div class="w-10 h-10 mx-auto rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold mb-2">1</div>
+                                <p class="font-bold text-emerald-900 text-xs mb-1">DIRECCIONAMIENTO</p>
+                                <p class="text-[10px] text-emerald-800 leading-tight">Política financiera, presupuesto, segregación de funciones y matriz de autorizaciones aprobadas por el órgano de gobierno.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-teal-700 bg-teal-50 p-3 text-center shadow-sm">
+                                <div class="w-10 h-10 mx-auto rounded-full bg-teal-700 text-white flex items-center justify-center font-bold mb-2">2</div>
+                                <p class="font-bold text-teal-900 text-xs mb-1">REGISTRO</p>
+                                <p class="text-[10px] text-teal-800 leading-tight">Toda operación se registra con soportes completos (factura, contrato, comprobante), numeración consecutiva y bitácora de sistema.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-cyan-700 bg-cyan-50 p-3 text-center shadow-sm">
+                                <div class="w-10 h-10 mx-auto rounded-full bg-cyan-700 text-white flex items-center justify-center font-bold mb-2">3</div>
+                                <p class="font-bold text-cyan-900 text-xs mb-1">CONCILIACIÓN</p>
+                                <p class="text-[10px] text-cyan-800 leading-tight">Cierre mensual con conciliaciones bancarias, arqueos, cruces con sistemas de terceros (SECOP, donantes, contrapartes) y revisión por persona distinta a quien registra.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-indigo-700 bg-indigo-50 p-3 text-center shadow-sm">
+                                <div class="w-10 h-10 mx-auto rounded-full bg-indigo-700 text-white flex items-center justify-center font-bold mb-2">4</div>
+                                <p class="font-bold text-indigo-900 text-xs mb-1">MONITOREO Y ALERTAS</p>
+                                <p class="text-[10px] text-indigo-800 leading-tight">Análisis de variaciones, indicadores sobre cuentas sensibles (representación, donaciones, comisiones, viáticos, efectivo) y reporte al Oficial de Cumplimiento.</p>
+                            </div>
+                            <div class="rounded-xl border-2 border-purple-700 bg-purple-50 p-3 text-center shadow-sm">
+                                <div class="w-10 h-10 mx-auto rounded-full bg-purple-700 text-white flex items-center justify-center font-bold mb-2">5</div>
+                                <p class="font-bold text-purple-900 text-xs mb-1">ASEGURAMIENTO Y CONSERVACIÓN</p>
+                                <p class="text-[10px] text-purple-800 leading-tight">Auditoría interna, revisoría fiscal/auditoría externa, archivo y conservación de libros y soportes por mínimo {{ integridadConfig.conservacionAnios || 10 }} años (Cód. Comercio).</p>
+                            </div>
+                        </div>
+
+                        <!-- Cuentas / operaciones sensibles -->
+                        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 my-5 rounded">
+                            <p class="font-bold text-rose-900 text-sm mb-2"><span class="material-icons align-middle" style="font-size:16px">warning</span> Operaciones y cuentas con mayor exposición a corrupción / soborno / fraude</p>
+                            <p class="text-xs text-rose-800 mb-2">Estas operaciones requieren <strong>controles reforzados</strong>, soportes específicos y monitoreo permanente, porque concentran el mayor riesgo de camuflaje de destinaciones indebidas:</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-[11px]">
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Sector público</strong><br>Contratos, convenios, subvenciones, rendiciones</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Intermediación / comisiones</strong><br>Honorarios, agentes, brokers</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Gastos de representación</strong><br>Atenciones, eventos, regalos</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Donaciones</strong><br>Recibidas y entregadas</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Efectivo y caja menor</strong><br>Operaciones &gt; a un tope definido por la entidad</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Viáticos y reembolsos</strong><br>Anticipos sin legalizar</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Partes relacionadas</strong><br>Operaciones con vinculados</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Cuentas en el exterior</strong><br>Moneda extranjera, fideicomisos</div>
+                                <div class="bg-white border border-rose-200 rounded p-2"><strong class="text-rose-700">Ajustes manuales</strong><br>Notas de crédito/débito sin trazabilidad</div>
+                            </div>
+                        </div>
+
+                        <!-- Fundamento normativo -->
+                        <div class="bg-blue-50 border border-blue-200 rounded p-4 my-5">
+                            <p class="font-bold text-blue-900 text-sm mb-2"><span class="material-icons align-middle" style="font-size:16px">menu_book</span> Fundamento normativo</p>
+                            <ul class="list-disc pl-5 text-xs text-blue-900 space-y-1">
+                                <li>Verificación de la <strong>fidelidad contable</strong> y cuidado constante sobre bienes y valores de la entidad.</li>
+                                <li>Medidas, auditoría y mecanismos para que <strong>libros, registros, inventarios, EEFF, comprobantes y demás papeles</strong> contengan información veraz, completa y actualizada — y se conserven conforme al <strong>Código de Comercio</strong>.</li>
+                                <li>Políticas, métodos y procedimientos para prevenir <strong>adulteración, evasión, destrucción de archivos, fuga de información, vulnerabilidades de sistemas, alteración de datos</strong>, alteración de la justificación de transacciones en efectivo y <strong>ocultamiento del origen, legalidad y destino de los recursos</strong>.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Articulación con otros capítulos -->
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 text-xs text-gray-700">
+                            <p class="font-bold mb-1"><span class="material-icons align-middle" style="font-size:13px">link</span> Articulación con el PTEE</p>
+                            <ul class="list-disc pl-5 space-y-0.5">
+                                <li><strong>Cap. 2</strong> — Protocolos (regalos, lobby, contribuciones políticas) y conservación documental.</li>
+                                <li><strong>Cap. 4</strong> — Gestión de riesgos: alimenta este capítulo con los riesgos financieros priorizados.</li>
+                                <li><strong>Cap. 5</strong> — Debida diligencia de proveedores, donantes y contrapartes.</li>
+                                <li><strong>Cap. 6</strong> — Canal ético: ruta de reporte de alertas financieras.</li>
+                                <li><strong>Cap. 8</strong> — Conflictos de intereses: declaración del equipo financiero y de quienes autorizan pagos.</li>
+                                <li><strong>Cap. 9</strong> — Contratación con el Estado: conciliación entre contabilidad y SECOP.</li>
+                            </ul>
+                        </div>
+
+                        <p class="text-xs text-gray-400 italic mt-6 text-center border-t border-gray-200 pt-4">10.1 Flujo esencial — {{ form.entityName || 'ESAL' }} — Integridad Financiera del PTEE.</p>
+                    </div>
+
+                    <!-- ===== 10.2 BANCO DE CONTROLES ===== -->
+                    <div v-show="integridadSubTab === 'controles'">
+                        <h2 class="text-base font-bold text-emerald-900 mb-3">10.2 Banco de controles clave</h2>
+                        <p class="text-sm text-gray-700 mb-4 text-justify">
+                            Banco de controles contables y financieros recomendados para una ESAL, con tres enfoques complementarios: <strong>(1)</strong> Desde lo estratégico hacia lo operativo, <strong>(2)</strong> Visión de madurez por cada control y <strong>(3)</strong> esquema diagnóstico y plan de mejora.
+                        </p>
+
+                        <!-- Sub-tabs de los 3 enfoques -->
+                        <div class="flex flex-wrap gap-1 border-b border-gray-200 mb-5 no-print">
+                            <button @click="integridadControlesView = 'estrategico'" :class="integridadControlesView === 'estrategico' ? 'border-b-2 border-emerald-700 text-emerald-800 font-bold bg-white' : 'text-gray-600 hover:text-emerald-700 bg-gray-100'" class="px-3 py-2 rounded-t-lg text-xs font-medium">1. Estratégico → Operativo</button>
+                            <button @click="integridadControlesView = 'madurez'" :class="integridadControlesView === 'madurez' ? 'border-b-2 border-emerald-700 text-emerald-800 font-bold bg-white' : 'text-gray-600 hover:text-emerald-700 bg-gray-100'" class="px-3 py-2 rounded-t-lg text-xs font-medium">2. Tips de madurez</button>
+                            <button @click="integridadControlesView = 'diagnostico'" :class="integridadControlesView === 'diagnostico' ? 'border-b-2 border-emerald-700 text-emerald-800 font-bold bg-white' : 'text-gray-600 hover:text-emerald-700 bg-gray-100'" class="px-3 py-2 rounded-t-lg text-xs font-medium">3. Diagnóstico y recomendaciones</button>
+                        </div>
+
+                        <!-- ===== Enfoque 1: Estratégico → Operativo ===== -->
+                        <div v-show="integridadControlesView === 'estrategico'">
+                            <p class="text-xs text-gray-600 mb-3 italic">Vista por nivel: cómo se articulan los controles desde el gobierno corporativo hasta la operación diaria.</p>
+                            <div v-for="nivel in integridadNiveles" :key="nivel" class="mb-5">
+                                <div :class="integridadNivelColor(nivel).header" class="rounded-t-lg px-3 py-2 font-bold text-sm flex items-center gap-2">
+                                    <span class="material-icons" style="font-size:18px">{{ integridadNivelIcon(nivel) }}</span>
+                                    Nivel {{ nivel }}
+                                    <span class="ml-auto text-[10px] bg-white/30 rounded px-2 py-0.5">{{ integridadControlesPorNivel(nivel).length }} controles</span>
+                                </div>
+                                <div :class="integridadNivelColor(nivel).body" class="rounded-b-lg border border-t-0 p-3 space-y-2">
+                                    <div v-for="c in integridadControlesPorNivel(nivel)" :key="c.id" class="bg-white rounded border border-gray-200 p-2.5">
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-[10px] font-mono bg-gray-100 text-gray-700 rounded px-1.5 py-0.5 shrink-0">{{ c.id.toUpperCase() }}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-bold text-gray-800 leading-tight">{{ c.nombre }}</p>
+                                                <p class="text-[11px] text-gray-600 mt-0.5">{{ c.descripcion }}</p>
+                                                <p class="text-[10px] text-rose-700 mt-1"><strong>Riesgo cubierto:</strong> {{ c.riesgo }}</p>
+                                            </div>
+                                            <span class="text-[9px] bg-gray-100 text-gray-700 border border-gray-200 rounded px-1.5 py-0.5 shrink-0">{{ c.categoria }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== Enfoque 2: Tips de Madurez ===== -->
+                        <div v-show="integridadControlesView === 'madurez'">
+                            <p class="text-xs text-gray-600 mb-3 italic">Para cada control, considere los siguientes <strong>tips de validación</strong>. Un control se considera <strong>maduro</strong> cuando cumple razonablemente los tres tips. Si falla uno, el control existe pero no es maduro; si fallan dos o más, está en madurez incipiente.</p>
+
+                            <div class="bg-emerald-50 border border-emerald-200 rounded p-3 mb-4 text-xs">
+                                <p class="font-bold text-emerald-900 mb-1">Criterios transversales de madurez de un control financiero</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-[11px] text-emerald-800">
+                                    <div class="bg-white rounded p-2 border border-emerald-100"><strong>1. Diseño</strong> — Está documentado en política/procedimiento, con responsable, periodicidad y soporte definido.</div>
+                                    <div class="bg-white rounded p-2 border border-emerald-100"><strong>2. Ejecución</strong> — Se ejecuta conforme al diseño y deja evidencia auditable (firmas, actas, logs, soportes).</div>
+                                    <div class="bg-white rounded p-2 border border-emerald-100"><strong>3. Monitoreo</strong> — Sus resultados se reportan a una instancia de gobierno con indicadores y planes de acción.</div>
+                                </div>
+                            </div>
+
+                            <table class="w-full text-[11px] border-collapse">
+                                <thead>
+                                    <tr class="bg-emerald-800 text-white">
+                                        <th class="border border-emerald-900 p-2 text-left">Control</th>
+                                        <th class="border border-emerald-900 p-2 text-left w-1/2">Tips para validar madurez</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(c, idx) in integridadControles" :key="c.id" :class="idx % 2 === 0 ? 'bg-white' : 'bg-emerald-50'">
+                                        <td class="border border-emerald-200 p-2 align-top">
+                                            <p class="font-bold text-gray-800">{{ c.nombre }}</p>
+                                            <p class="text-[10px] text-gray-500 mt-0.5">{{ c.nivel }} · {{ c.categoria }}</p>
+                                        </td>
+                                        <td class="border border-emerald-200 p-2 align-top">
+                                            <ul class="list-disc pl-4 space-y-0.5 text-gray-700">
+                                                <li v-for="(t, i) in c.tips" :key="i">{{ t }}</li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ===== Enfoque 3: Diagnóstico ===== -->
+                        <div v-show="integridadControlesView === 'diagnostico'">
+                            <p class="text-xs text-gray-600 mb-3 italic">Marque para cada control si <strong>existe</strong> y si está <strong>maduro</strong>. Al final del cuestionario se generan recomendaciones automáticas para los controles ausentes o no maduros.</p>
+
+                            <!-- Resumen visual -->
+                            <div class="grid grid-cols-4 gap-2 mb-4 no-print">
+                                <div class="bg-emerald-100 border border-emerald-300 rounded p-2 text-center">
+                                    <div class="text-xl font-bold text-emerald-800">{{ integridadStats.maduros }}</div>
+                                    <div class="text-[9px] text-emerald-700 uppercase tracking-wide">Maduros</div>
+                                </div>
+                                <div class="bg-amber-100 border border-amber-300 rounded p-2 text-center">
+                                    <div class="text-xl font-bold text-amber-800">{{ integridadStats.existeNoMaduro }}</div>
+                                    <div class="text-[9px] text-amber-700 uppercase tracking-wide">Existen / no maduros</div>
+                                </div>
+                                <div class="bg-rose-100 border border-rose-300 rounded p-2 text-center">
+                                    <div class="text-xl font-bold text-rose-800">{{ integridadStats.faltantes }}</div>
+                                    <div class="text-[9px] text-rose-700 uppercase tracking-wide">Ausentes</div>
+                                </div>
+                                <div class="bg-gray-100 border border-gray-300 rounded p-2 text-center">
+                                    <div class="text-xl font-bold text-gray-700">{{ integridadStats.pendientes }}</div>
+                                    <div class="text-[9px] text-gray-600 uppercase tracking-wide">Sin diagnosticar</div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-2 mb-3 no-print">
+                                <button @click="integridadResetDiagnostico" class="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1">Reiniciar diagnóstico</button>
+                                <button @click="integridadMarcarMaduros" class="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white rounded px-2 py-1">Marcar todos como maduros</button>
+                                <button @click="integridadExportarExcel" class="text-[10px] bg-green-700 hover:bg-green-800 text-white rounded px-2 py-1 flex items-center gap-1" title="Imprimir diagnóstico en Excel">
+                                    <span class="material-icons" style="font-size:13px">grid_on</span> Imprimir Excel
+                                </button>
+                            </div>
+
+                            <table class="w-full text-[11px] border-collapse mb-6">
+                                <thead>
+                                    <tr class="bg-emerald-800 text-white">
+                                        <th class="border border-emerald-900 p-2 text-left">Control</th>
+                                        <th class="border border-emerald-900 p-2 text-center w-24">¿Existe?</th>
+                                        <th class="border border-emerald-900 p-2 text-center w-32">¿Maduro?</th>
+                                        <th class="border border-emerald-900 p-2 text-center w-20">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-for="nivel in integridadNiveles" :key="nivel">
+                                        <tr>
+                                            <td colspan="4" :class="integridadNivelColor(nivel).rowHeader" class="p-2 font-bold text-xs uppercase tracking-wide">{{ nivel }}</td>
+                                        </tr>
+                                        <tr v-for="c in integridadControlesPorNivel(nivel)" :key="c.id" class="hover:bg-emerald-50/40">
+                                            <td class="border border-gray-200 p-2 align-top">
+                                                <p class="font-bold text-gray-800">{{ c.nombre }}</p>
+                                                <p class="text-[10px] text-gray-500 mt-0.5">{{ c.categoria }}</p>
+                                            </td>
+                                            <td class="border border-gray-200 p-2 text-center align-middle">
+                                                <select v-model="c.existe" class="border border-gray-300 rounded px-1 py-0.5 text-[10px] bg-white">
+                                                    <option :value="null">—</option>
+                                                    <option :value="true">Sí</option>
+                                                    <option :value="false">No</option>
+                                                </select>
+                                            </td>
+                                            <td class="border border-gray-200 p-2 text-center align-middle">
+                                                <select v-model="c.maduro" :disabled="c.existe !== true" class="border border-gray-300 rounded px-1 py-0.5 text-[10px] bg-white disabled:opacity-40">
+                                                    <option :value="null">—</option>
+                                                    <option value="si">Sí</option>
+                                                    <option value="parcial">Parcial</option>
+                                                    <option value="no">No</option>
+                                                </select>
+                                            </td>
+                                            <td class="border border-gray-200 p-2 text-center align-middle">
+                                                <span :class="integridadEstadoBadge(c).cls" class="text-[9px] font-bold rounded px-2 py-0.5">{{ integridadEstadoBadge(c).label }}</span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+
+                            <!-- Recomendaciones generadas -->
+                            <div class="bg-amber-50 border-l-4 border-amber-500 rounded p-4">
+                                <p class="font-bold text-amber-900 text-sm mb-2"><span class="material-icons align-middle" style="font-size:16px">lightbulb</span> Recomendaciones automáticas</p>
+                                <p class="text-xs text-amber-800 mb-3" v-if="integridadRecomendaciones.length === 0">
+                                    Aún no se han identificado controles ausentes o no maduros. Complete el diagnóstico para generar recomendaciones.
+                                </p>
+                                <div v-else class="space-y-2">
+                                    <p class="text-xs text-amber-800 mb-2">Con base en el diagnóstico, se priorizan las siguientes acciones genéricas. Adáptelas a la realidad de la entidad y asígneles responsable y plazo en el plan de remediación del PTEE.</p>
+                                    <div v-for="(r, idx) in integridadRecomendaciones" :key="idx" class="bg-white border border-amber-200 rounded p-2.5 text-xs">
+                                        <div class="flex items-start gap-2">
+                                            <span class="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 rounded px-1.5 py-0.5 shrink-0">{{ r.prioridad }}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="font-bold text-gray-800">{{ r.titulo }}</p>
+                                                <p class="text-gray-700 mt-0.5">{{ r.accion }}</p>
+                                                <p class="text-[10px] text-gray-500 mt-1"><strong>Control de referencia:</strong> {{ r.control }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400 italic mt-6 text-center border-t border-gray-200 pt-4">10.2 Banco de controles — {{ form.entityName || 'ESAL' }} — Integridad Financiera del PTEE.</p>
+                    </div>
+                </div> <!-- Cierra integridad-view -->
+
 
     <script>
         const { createApp } = Vue
@@ -10895,11 +11244,60 @@
                     showDivulgacion: false,
                     showConflictos: false,
                     showContratacion: false,
+                    showIntegridad: false,
                     ddSubTab: 'flujo',
                     monitoreoSubTab: 'flujograma',
                     divulgacionSubTab: 'flujograma',
                     conflictosSubTab: 'politica',
                     contratacionSubTab: 'politica',
+                    integridadSubTab: 'flujo', // 'flujo' | 'controles'
+                    integridadControlesView: 'estrategico', // 'estrategico' | 'madurez' | 'diagnostico'
+                    integridadConfig: {
+                        responsableFinanciero: '',
+                        revisorFiscal: '',
+                        periodicidadRevision: 'Anual',
+                        umbralEfectivoSMMLV: 10,
+                        umbralDobleFirma: 'Definir según tamaño de la entidad',
+                        conservacionAnios: 10,
+                        comentarios: ''
+                    },
+                    integridadControles: [
+                        // ===== ESTRATÉGICO =====
+                        { id:'if1', nivel:'Estratégico', categoria:'Gobernanza', nombre:'Política contable y financiera aprobada por el Órgano de Gobierno', descripcion:'Documento marco que define principios, lineamientos y responsables para la gestión contable y financiera, alineado con el PTEE.', riesgo:'Decisiones financieras sin marco autorizado; debilidad estructural frente a fraude/corrupción.', tips:['Existe acta de aprobación del órgano de gobierno','Está vigente y revisada en los últimos 24 meses','Es conocida por las áreas financiera, jurídica y de control'], existe:null, maduro:null },
+                        { id:'if2', nivel:'Estratégico', categoria:'Gobernanza', nombre:'Segregación de funciones (autorización / registro / custodia / conciliación)', descripcion:'Asegura que ninguna persona controle de extremo a extremo una transacción financiera.', riesgo:'Apropiación indebida, registros adulterados, fraude interno.', tips:['Está documentada en el manual de funciones','Las funciones incompatibles están separadas en cargos distintos','En entidades pequeñas existen controles compensatorios (revisión por un órgano o rol independiente, junta, revisor fiscal, otro)'], existe:null, maduro:null },
+                        { id:'if3', nivel:'Estratégico', categoria:'Aseguramiento', nombre:'Revisoría Fiscal o auditoría externa con dictamen anual', descripcion:'Aseguramiento independiente sobre la razonabilidad de los estados financieros y el cumplimiento legal.', riesgo:'Falta de mirada externa sobre fidelidad contable; ocultamiento de operaciones.', tips:['Hay informe dictamen del último cierre','Cubre operaciones con sector público, donaciones e intermediación','Las observaciones tienen plan de acción con seguimiento'], existe:null, maduro:null },
+                        { id:'if4', nivel:'Estratégico', categoria:'Aseguramiento', nombre:'Comité de Auditoría / Financiero con independencia', descripcion:'Instancia colegiada que supervisa controles, riesgos y resultados de auditoría.', riesgo:'Ausencia de contrapeso a la administración financiera.', tips:['Tiene reglamento y miembros independientes','Sesiona con periodicidad definida y deja actas','Recibe reportes del Oficial de Cumplimiento y revisor fiscal'], existe:null, maduro:null },
+                        { id:'if5', nivel:'Estratégico', categoria:'Presupuesto', nombre:'Aprobación y seguimiento del presupuesto anual', descripcion:'Presupuesto aprobado por el órgano de gobierno con seguimiento de ejecución.', riesgo:'Gastos no autorizados, desvío de recursos.', tips:['Existe acta de aprobación','Hay informes periódicos de ejecución vs. presupuesto','Las variaciones materiales se justifican y aprueban'], existe:null, maduro:null },
+                        { id:'if6', nivel:'Estratégico', categoria:'Cultura', nombre:'Política de bancarización y restricción al uso de efectivo', descripcion:'Define el uso preferente de medios bancarios y los umbrales para operaciones en efectivo.', riesgo:'Camuflaje del origen/destino de fondos, soborno mediante efectivo.', tips:['Existe umbral documentado para pagos/recibos en efectivo','Toda excepción requiere autorización formal','Se reportan operaciones en efectivo > a un tope definido a una instancia definida, responsable u Oficial de Cumplimiento'], existe:null, maduro:null },
+
+                        // ===== TÁCTICO =====
+                        { id:'if7', nivel:'Táctico', categoria:'Auditoría interna', nombre:'Plan anual de auditoría interna con cobertura financiera', descripcion:'Plan basado en riesgos que cubre procesos contables, tesorería, compras, donaciones y operaciones con sector público.', riesgo:'Procesos críticos sin verificación; sorpresas en cierres.', tips:['El plan se aprueba por el comité de auditoría','Cubre los procesos con mayor exposición a corrupción','Los hallazgos se gestionan con plan de remediación'], existe:null, maduro:null },
+                        { id:'if8', nivel:'Táctico', categoria:'Documental', nombre:'Política de archivo y conservación documental (Cód. Comercio / Cap. 2)', descripcion:'Asegura conservación de libros, comprobantes, contratos, donaciones y soportes por el período legal.', riesgo:'Pérdida o destrucción de evidencia que respalda transacciones.', tips:['Se conserva mínimo 10 años (Código de Comercio)','Hay backups y plan de recuperación de información contable','Existe inventario documental y responsable de archivo'], existe:null, maduro:null },
+                        { id:'if9', nivel:'Táctico', categoria:'Autorizaciones', nombre:'Matriz de autorizaciones y montos por cargo', descripcion:'Tabla que define quién puede aprobar qué monto y qué tipo de operación.', riesgo:'Pagos no autorizados, sobrepaso de atribuciones, fraude.', tips:['Está formalizada y comunicada','Se actualiza ante cambios organizacionales','El sistema contable / banco la valida sistemáticamente'], existe:null, maduro:null },
+                        { id:'if10', nivel:'Táctico', categoria:'Proveedores', nombre:'Política de selección, debida diligencia y rotación de proveedores críticos', descripcion:'Procedimiento para evaluar terceros antes de contratar (conectado con Cap. 5).', riesgo:'Proveedores ficticios, sobreprecio, vínculos con PEPs/inhabilitados.', tips:['Hay verificación en listas restrictivas (OFAC, ONU, vinculación con sector público)','Hay rotación o revisión periódica de proveedores recurrentes','Las excepciones (proveedor único) están justificadas y aprobadas'], existe:null, maduro:null },
+                        { id:'if11', nivel:'Táctico', categoria:'Cierre contable', nombre:'Procedimiento de cierre contable mensual con doble revisión', descripcion:'Cierre con checklist, conciliaciones y revisión por persona distinta a quien registra.', riesgo:'Errores no detectados, ajustes manuales que ocultan partidas.', tips:['Existe checklist documentado','Quien revisa no es quien registra','Las partidas de ajuste tienen soporte y autorización'], existe:null, maduro:null },
+                        { id:'if12', nivel:'Táctico', categoria:'Cuentas sensibles', nombre:'Política específica para cuentas/gastos sensibles (representación, viáticos, comisiones, donaciones)', descripcion:'Reglas, soportes mínimos y autorizaciones reforzadas para rubros con mayor exposición a camuflaje de destinaciones indebidas.', riesgo:'Soborno camuflado como gasto de representación / donación / comisión.', tips:['Cada rubro tiene tope, soporte y autorizador definido','Hay revisión periódica por muestreo de estos rubros','Las desviaciones se reportan al Oficial de Cumplimiento'], existe:null, maduro:null },
+                        { id:'if13', nivel:'Táctico', categoria:'Sector público', nombre:'Procedimiento contable diferenciado para operaciones con sector público', descripcion:'Trazabilidad específica de ingresos, ejecuciones, rendiciones y cierres de contratos/convenios públicos (conexión Cap. 9).', riesgo:'Mezcla de recursos, dificultad de rendición, observaciones de control fiscal.', tips:['Se manejan en centros de costo / cuentas separadas','Hay conciliación entre contabilidad y SECOP / sistema del contratante','Las rendiciones se entregan dentro de los plazos pactados'], existe:null, maduro:null },
+                        { id:'if14', nivel:'Táctico', categoria:'Sistemas', nombre:'Política de seguridad y control de accesos al sistema contable', descripcion:'Define perfiles, segregación TI, bitácora y respaldo de información.', riesgo:'Alteración de registros, fuga de información, destrucción de archivos.', tips:['Cada usuario tiene perfil acotado a sus funciones','Existen logs de acceso y modificación','Hay backups periódicos verificados'], existe:null, maduro:null },
+
+                        // ===== OPERATIVO =====
+                        { id:'if15', nivel:'Operativo', categoria:'Tesorería', nombre:'Conciliaciones bancarias mensuales firmadas y revisadas', descripcion:'Cruce entre extractos bancarios y registros contables, con evidencia de revisión.', riesgo:'Pagos no registrados, partidas conciliatorias antiguas, fraude en cuentas.', tips:['Se hacen dentro de los 10 días siguientes al cierre','Quien concilia no firma cheques / pagos','Partidas conciliatorias > 60 días se escalan'], existe:null, maduro:null },
+                        { id:'if16', nivel:'Operativo', categoria:'Tesorería', nombre:'Arqueos de caja sorpresivos', descripcion:'Verificación física de efectivo y soportes por persona independiente.', riesgo:'Faltantes, pagos no soportados.', tips:['Se realizan sin aviso previo','Quedan en acta firmada','Diferencias se investigan formalmente'], existe:null, maduro:null },
+                        { id:'if17', nivel:'Operativo', categoria:'Pagos', nombre:'Doble firma / doble aprobación de pagos sobre umbral', descripcion:'Pagos relevantes requieren dos autorizadores independientes.', riesgo:'Pagos indebidos a terceros, desvío de recursos.', tips:['El umbral está documentado','El banco valida la doble firma','Existe registro de excepciones autorizadas'], existe:null, maduro:null },
+                        { id:'if18', nivel:'Operativo', categoria:'Soportes', nombre:'Verificación de soportes contables completos (factura, contrato, comprobante)', descripcion:'Ningún pago/registro se procesa sin soporte legal completo y legible.', riesgo:'Pagos sin justificación, fraude documental.', tips:['Existe checklist de soportes mínimos por tipo de transacción','El sistema impide registrar sin adjunto','Hay revisión por muestreo'], existe:null, maduro:null },
+                        { id:'if19', nivel:'Operativo', categoria:'Soportes', nombre:'Numeración consecutiva y no alterable de comprobantes', descripcion:'Comprobantes internos con consecutivo controlado por el sistema.', riesgo:'Comprobantes duplicados, eliminados o sustituidos.', tips:['El sistema bloquea anulaciones sin trazabilidad','Las anulaciones requieren autorización y motivo','Se revisa el consecutivo periódicamente'], existe:null, maduro:null },
+                        { id:'if20', nivel:'Operativo', categoria:'Viáticos', nombre:'Procedimiento de viáticos, anticipos y reembolsos con legalización oportuna', descripcion:'Anticipos con plazo definido de legalización y soportes.', riesgo:'Anticipos sin legalizar usados como caja paralela, gastos personales.', tips:['Hay plazo máximo de legalización','Anticipos sin legalizar bloquean nuevos','Las legalizaciones tienen revisión independiente'], existe:null, maduro:null },
+                        { id:'if21', nivel:'Operativo', categoria:'Inventarios', nombre:'Toma física periódica de inventarios y activos', descripcion:'Verificación independiente de existencias frente a registros.', riesgo:'Pérdida o sustracción no detectada.', tips:['Se hacen con periodicidad definida','Quien toma inventario es independiente de quien custodia','Las diferencias se investigan'], existe:null, maduro:null },
+                        { id:'if22', nivel:'Operativo', categoria:'Cuentas sensibles', nombre:'Trazabilidad de contratos de comisión, intermediación y honorarios', descripcion:'Soportes, entregables y aprobaciones específicas para estos rubros.', riesgo:'Comisiones como vehículo de soborno o pagos indebidos a terceros.', tips:['Cada contrato exige entregables verificables','Las comisiones inusuales se escalan al Oficial de Cumplimiento','Hay revisión por muestreo de estos contratos'], existe:null, maduro:null },
+                        { id:'if23', nivel:'Operativo', categoria:'Donaciones', nombre:'Registro y trazabilidad de donaciones recibidas y entregadas', descripcion:'Documentación que identifica donante/beneficiario, propósito, monto y destinación.', riesgo:'Donaciones como vehículo de lavado, soborno o financiación indebida.', tips:['Hay debida diligencia previa al donante/beneficiario','Existe acta o convenio firmado','Hay rendición de uso de los recursos'], existe:null, maduro:null },
+
+                        // ===== DETECTIVO / MONITOREO =====
+                        { id:'if24', nivel:'Detectivo', categoria:'Monitoreo',nombre:'Indicadores y alertas sobre cuentas sensibles', descripcion:'Tableros con variaciones inusuales en gastos de representación, donaciones, comisiones, viáticos, efectivo.', riesgo:'No detección oportuna de patrones de corrupción/fraude.', tips:['Hay umbrales definidos para alertas','Las alertas llegan al Oficial de Cumplimiento','Existe protocolo de investigación de alertas'], existe:null, maduro:null },
+                        { id:'if25', nivel:'Detectivo', categoria:'Monitoreo', nombre:'Reporte mensual de operaciones inusuales y partes relacionadas', descripcion:'Identificación periódica de operaciones atípicas y operaciones con vinculados.', riesgo:'Operaciones con vinculados sin condiciones de mercado; conflicto de interés.', tips:['Existe definición de "inusual" documentada','El reporte tiene escalamiento a la administración, comité de auditoría, junta directiva o máximo órgano','Las partes relacionadas se revelan en notas a EEFF'], existe:null, maduro:null },
+                        { id:'if26', nivel:'Detectivo', categoria:'Análisis', nombre:'Análisis horizontal y vertical de estados financieros con explicación de variaciones', descripcion:'Comparativo periódico con justificación documentada de variaciones materiales.', riesgo:'Movimientos atípicos no explicados; ajustes ocultos.', tips:['Existe umbral de materialidad','Las variaciones se explican por escrito','El comité financiero lo revisa'], existe:null, maduro:null },
+                        { id:'if27', nivel:'Detectivo', categoria:'Cruces', nombre:'Conciliación entre contabilidad y sistemas de terceros, incluido cuando aplique sector público (SECOP)', descripcion:'Validación cruzada de operaciones con sector público.', riesgo:'Discrepancias entre lo reportado al Estado y lo registrado contablemente.', tips:['Se concilia con periodicidad definida','Las diferencias se documentan y resuelven','Hay evidencia archivada de cada conciliación'], existe:null, maduro:null },
+                        { id:'if28', nivel:'Detectivo', categoria:'Investigación', nombre:'Protocolo de investigación interna ante alertas financieras', descripcion:'Procedimiento para investigar irregularidades detectadas, conectado con Cap. 6.', riesgo:'Alertas sin respuesta institucional; impunidad interna.', tips:['Existe procedimiento documentado','Garantiza confidencialidad y no represalia','Sus resultados se reportan a la alta dirección'], existe:null, maduro:null }
+                    ],
                     // ---- CONTRATACIÓN CON EL ESTADO ----
                     contratacion: {
                         tieneContratacionEstado: true,
@@ -11457,6 +11855,56 @@
                 }
             },
             computed: {
+
+                integridadNiveles() {
+                    return ['Estratégico', 'Táctico', 'Operativo', 'Detectivo'];
+                },
+                integridadStats() {
+                    const r = { maduros: 0, existeNoMaduro: 0, faltantes: 0, pendientes: 0 };
+                    (this.integridadControles || []).forEach(c => {
+                        if (c.existe === false) r.faltantes++;
+                        else if (c.existe === true && c.maduro === 'si') r.maduros++;
+                        else if (c.existe === true && (c.maduro === 'no' || c.maduro === 'parcial')) r.existeNoMaduro++;
+                        else r.pendientes++;
+                    });
+                    return r;
+                },
+                integridadRecomendaciones() {
+                    const recs = [];
+                    (this.integridadControles || []).forEach(c => {
+                        if (c.existe === false) {
+                            recs.push({
+                                prioridad: 'ALTA',
+                                titulo: 'Implementar control ausente: ' + c.nombre,
+                                accion: 'Diseñar, formalizar y poner en operación este control. ' + c.descripcion + ' Mitiga: ' + c.riesgo,
+                                control: c.id.toUpperCase() + ' · ' + c.nivel + ' · ' + c.categoria,
+                                orden: c.nivel === 'Estratégico' ? 1 : (c.nivel === 'Táctico' ? 2 : (c.nivel === 'Operativo' ? 3 : 4))
+                            });
+                        } else if (c.existe === true && c.maduro === 'no') {
+                            recs.push({
+                                prioridad: 'ALTA',
+                                titulo: 'Madurar control existente: ' + c.nombre,
+                                accion: 'El control existe pero no es maduro. Revise diseño, ejecución y monitoreo siguiendo los tips: ' + (c.tips || []).join(' | '),
+                                control: c.id.toUpperCase() + ' · ' + c.nivel + ' · ' + c.categoria,
+                                orden: c.nivel === 'Estratégico' ? 1 : (c.nivel === 'Táctico' ? 2 : (c.nivel === 'Operativo' ? 3 : 4))
+                            });
+                        } else if (c.existe === true && c.maduro === 'parcial') {
+                            recs.push({
+                                prioridad: 'MEDIA',
+                                titulo: 'Reforzar control parcialmente maduro: ' + c.nombre,
+                                accion: 'Cierre las brechas identificadas en diseño, ejecución o monitoreo. Tips de referencia: ' + (c.tips || []).join(' | '),
+                                control: c.id.toUpperCase() + ' · ' + c.nivel + ' · ' + c.categoria,
+                                orden: c.nivel === 'Estratégico' ? 1 : (c.nivel === 'Táctico' ? 2 : (c.nivel === 'Operativo' ? 3 : 4))
+                            });
+                        }
+                    });
+                    recs.sort((a, b) => {
+                        const p = { ALTA: 1, MEDIA: 2, BAJA: 3 };
+                        if (p[a.prioridad] !== p[b.prioridad]) return p[a.prioridad] - p[b.prioridad];
+                        return a.orden - b.orden;
+                    });
+                    return recs;
+                },
 
                 evalOpinionKey() {
                     const s = this.evalSummary.global;
@@ -12074,6 +12522,217 @@
             },
             methods: {
 
+                integridadControlesPorNivel(nivel) {
+                    return (this.integridadControles || []).filter(c => c.nivel === nivel);
+                },
+                integridadNivelColor(nivel) {
+                    const map = {
+                        'Estratégico': { header: 'bg-emerald-700 text-white', body: 'bg-emerald-50 border-emerald-200', rowHeader: 'bg-emerald-100 text-emerald-900' },
+                        'Táctico':     { header: 'bg-teal-700 text-white',    body: 'bg-teal-50 border-teal-200',       rowHeader: 'bg-teal-100 text-teal-900' },
+                        'Operativo':   { header: 'bg-cyan-700 text-white',    body: 'bg-cyan-50 border-cyan-200',       rowHeader: 'bg-cyan-100 text-cyan-900' },
+                        'Detectivo':   { header: 'bg-indigo-700 text-white',  body: 'bg-indigo-50 border-indigo-200',   rowHeader: 'bg-indigo-100 text-indigo-900' }
+                    };
+                    return map[nivel] || map['Operativo'];
+                },
+                integridadNivelIcon(nivel) {
+                    const map = { 'Estratégico': 'flag', 'Táctico': 'fact_check', 'Operativo': 'settings', 'Detectivo': 'search' };
+                    return map[nivel] || 'check_circle';
+                },
+                integridadEstadoBadge(c) {
+                    if (c.existe === false) return { label: 'AUSENTE', cls: 'bg-rose-100 text-rose-800 border border-rose-300' };
+                    if (c.existe === true && c.maduro === 'si') return { label: 'MADURO', cls: 'bg-emerald-100 text-emerald-800 border border-emerald-300' };
+                    if (c.existe === true && c.maduro === 'parcial') return { label: 'PARCIAL', cls: 'bg-amber-100 text-amber-800 border border-amber-300' };
+                    if (c.existe === true && c.maduro === 'no') return { label: 'NO MADURO', cls: 'bg-orange-100 text-orange-800 border border-orange-300' };
+                    if (c.existe === true) return { label: 'EXISTE', cls: 'bg-blue-100 text-blue-800 border border-blue-300' };
+                    return { label: 'PENDIENTE', cls: 'bg-gray-100 text-gray-700 border border-gray-300' };
+                },
+                integridadResetDiagnostico() {
+                    this.integridadControles.forEach(c => { c.existe = null; c.maduro = null; });
+                },
+                integridadMarcarMaduros() {
+                    this.integridadControles.forEach(c => { c.existe = true; c.maduro = 'si'; });
+                },
+                integridadExportarExcel() {
+                    const org = (this.form && this.form.entityName) ? this.form.entityName : 'ESAL';
+                    const today = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+                    const stats = this.integridadStats;
+                    const total = (this.integridadControles || []).length;
+                    const evaluados = stats.maduros + stats.existeNoMaduro + stats.faltantes;
+                    const pctAvance = total > 0 ? Math.round((evaluados / total) * 100) : 0;
+                    const pctMaduros = total > 0 ? Math.round((stats.maduros / total) * 100) : 0;
+
+                    const esc = (s) => String(s == null ? '' : s)
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                    // Paleta corporativa (emerald / teal)
+                    const C = {
+                        primary: '#065f46',      // emerald-800
+                        primaryDark: '#064e3b',  // emerald-900
+                        primaryLight: '#d1fae5', // emerald-100
+                        accent: '#0f766e',       // teal-700
+                        kpiMaduro: '#10b981',
+                        kpiParcial: '#f59e0b',
+                        kpiAusente: '#e11d48',
+                        kpiPend: '#6b7280',
+                        bgSoft: '#f0fdf4',
+                        border: '#a7f3d0',
+                        text: '#111827',
+                        muted: '#6b7280'
+                    };
+
+                    const estadoCell = (c) => {
+                        const b = this.integridadEstadoBadge(c);
+                        let bg = '#f3f4f6', fg = '#374151';
+                        if (b.label === 'MADURO')    { bg = '#d1fae5'; fg = '#065f46'; }
+                        else if (b.label === 'PARCIAL')   { bg = '#fef3c7'; fg = '#92400e'; }
+                        else if (b.label === 'NO MADURO') { bg = '#ffedd5'; fg = '#9a3412'; }
+                        else if (b.label === 'AUSENTE')   { bg = '#ffe4e6'; fg = '#9f1239'; }
+                        else if (b.label === 'EXISTE')    { bg = '#dbeafe'; fg = '#1e40af'; }
+                        return '<td style="border:1px solid #d1d5db;padding:5px;text-align:center;background:' + bg + ';color:' + fg + ';font-weight:bold;font-size:10px">' + b.label + '</td>';
+                    };
+
+                    const yesNo = (v) => v === true ? 'Sí' : (v === false ? 'No' : '—');
+                    const maduroLabel = (m) => m === 'si' ? 'Sí' : (m === 'parcial' ? 'Parcial' : (m === 'no' ? 'No' : '—'));
+
+                    // Filas del cuestionario, agrupadas por nivel
+                    let rows = '';
+                    this.integridadNiveles.forEach(nivel => {
+                        const lista = this.integridadControlesPorNivel(nivel);
+                        if (!lista.length) return;
+                        const col = this.integridadNivelColor(nivel);
+                        const nivelBg = nivel === 'Estratégico' ? '#065f46' :
+                                        nivel === 'Táctico'     ? '#0f766e' :
+                                        nivel === 'Operativo'   ? '#0e7490' : '#4338ca';
+                        rows += '<tr><td colspan="6" style="background:' + nivelBg + ';color:#fff;font-weight:bold;font-size:12px;padding:7px 10px;letter-spacing:0.04em;text-transform:uppercase">Nivel ' + esc(nivel) + ' &nbsp;·&nbsp; ' + lista.length + ' controles</td></tr>';
+                        lista.forEach((c, i) => {
+                            const bg = i % 2 === 0 ? '#ffffff' : '#f0fdf4';
+                            rows += '<tr style="background:' + bg + '">' +
+                                '<td style="border:1px solid #d1d5db;padding:5px 7px;font-weight:bold;color:#065f46;text-align:center;width:55px">' + esc(c.id.toUpperCase()) + '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px 8px;font-size:11px">' +
+                                    '<div style="font-weight:bold;color:#111827">' + esc(c.nombre) + '</div>' +
+                                    '<div style="font-size:10px;color:#6b7280;margin-top:2px"><i>' + esc(c.categoria) + '</i> · ' + esc(c.descripcion || '') + '</div>' +
+                                '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px 7px;font-size:10px;color:#9f1239;width:25%">' + esc(c.riesgo || '') + '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px;text-align:center;font-weight:bold;width:60px">' + yesNo(c.existe) + '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px;text-align:center;width:70px">' + maduroLabel(c.maduro) + '</td>' +
+                                estadoCell(c) +
+                            '</tr>';
+                        });
+                    });
+
+                    // Recomendaciones
+                    let recRows = '';
+                    const recs = this.integridadRecomendaciones || [];
+                    if (recs.length === 0) {
+                        recRows = '<tr><td colspan="4" style="border:1px solid #e5e7eb;padding:12px;text-align:center;color:#6b7280;font-style:italic">No se han generado recomendaciones. Complete el diagnóstico para obtener acciones priorizadas.</td></tr>';
+                    } else {
+                        recs.forEach((r, i) => {
+                            const prBg = r.prioridad === 'ALTA' ? '#fee2e2' : r.prioridad === 'MEDIA' ? '#fef9c3' : '#dcfce7';
+                            const prFg = r.prioridad === 'ALTA' ? '#dc2626' : r.prioridad === 'MEDIA' ? '#b45309' : '#15803d';
+                            const bg = i % 2 === 0 ? '#ffffff' : '#f0fdf4';
+                            recRows += '<tr style="background:' + bg + '">' +
+                                '<td style="border:1px solid #d1d5db;padding:5px;text-align:center;background:' + prBg + ';color:' + prFg + ';font-weight:bold;width:70px">' + esc(r.prioridad) + '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:6px 8px;font-size:11px"><b>' + esc(r.titulo) + '</b><div style="margin-top:3px;color:#374151">' + esc(r.accion) + '</div></td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px 8px;font-size:10px;color:#065f46;width:24%">' + esc(r.control) + '</td>' +
+                                '<td style="border:1px solid #d1d5db;padding:5px;text-align:center;font-size:10px;color:#6b7280;width:80px">Por definir</td>' +
+                            '</tr>';
+                        });
+                    }
+
+                    const html = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
+                        '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Diagnóstico 10.2</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' +
+                        '<style>body{font-family:Calibri,Arial,sans-serif;font-size:11px;color:' + C.text + ';margin:18px}table{border-collapse:collapse;width:100%;margin-bottom:16px}td,th{vertical-align:top}h1,h2{margin:0}</style>' +
+                        '</head><body>' +
+
+                        // Cabecera corporativa
+                        '<table>' +
+                        '<tr><td colspan="6" style="background:' + C.primaryDark + ';color:#fff;padding:14px 16px;letter-spacing:0.05em">' +
+                            '<div style="font-size:10px;color:#a7f3d0;text-transform:uppercase">Programa de Transparencia y Ética Empresarial · PTEE</div>' +
+                            '<div style="font-size:18px;font-weight:bold;margin-top:3px">Capítulo 10 · Integridad Financiera y Contable</div>' +
+                            '<div style="font-size:13px;color:#d1fae5;margin-top:2px">10.2 Banco de Controles — Diagnóstico y recomendaciones</div>' +
+                        '</td></tr>' +
+                        '<tr>' +
+                            '<td colspan="3" style="background:' + C.primary + ';color:#fff;padding:7px 12px;font-size:11px"><b>Entidad:</b> ' + esc(org) + '</td>' +
+                            '<td colspan="3" style="background:' + C.primary + ';color:#fff;padding:7px 12px;font-size:11px;text-align:right"><b>Fecha de impresión:</b> ' + esc(today) + '</td>' +
+                        '</tr>' +
+                        '</table>' +
+
+                        // KPIs
+                        '<table>' +
+                        '<tr><td colspan="4" style="background:' + C.accent + ';color:#fff;font-weight:bold;font-size:12px;padding:6px 10px;letter-spacing:0.04em">RESUMEN EJECUTIVO DEL DIAGNÓSTICO</td></tr>' +
+                        '<tr>' +
+                            '<td style="border:1px solid ' + C.border + ';background:' + C.bgSoft + ';padding:10px;text-align:center;width:25%">' +
+                                '<div style="font-size:26px;font-weight:bold;color:' + C.kpiMaduro + '">' + stats.maduros + '</div>' +
+                                '<div style="font-size:10px;color:' + C.muted + ';text-transform:uppercase;letter-spacing:0.05em">Controles maduros</div>' +
+                            '</td>' +
+                            '<td style="border:1px solid ' + C.border + ';background:' + C.bgSoft + ';padding:10px;text-align:center;width:25%">' +
+                                '<div style="font-size:26px;font-weight:bold;color:' + C.kpiParcial + '">' + stats.existeNoMaduro + '</div>' +
+                                '<div style="font-size:10px;color:' + C.muted + ';text-transform:uppercase;letter-spacing:0.05em">Existen / no maduros</div>' +
+                            '</td>' +
+                            '<td style="border:1px solid ' + C.border + ';background:' + C.bgSoft + ';padding:10px;text-align:center;width:25%">' +
+                                '<div style="font-size:26px;font-weight:bold;color:' + C.kpiAusente + '">' + stats.faltantes + '</div>' +
+                                '<div style="font-size:10px;color:' + C.muted + ';text-transform:uppercase;letter-spacing:0.05em">Ausentes</div>' +
+                            '</td>' +
+                            '<td style="border:1px solid ' + C.border + ';background:' + C.bgSoft + ';padding:10px;text-align:center;width:25%">' +
+                                '<div style="font-size:26px;font-weight:bold;color:' + C.kpiPend + '">' + stats.pendientes + '</div>' +
+                                '<div style="font-size:10px;color:' + C.muted + ';text-transform:uppercase;letter-spacing:0.05em">Sin diagnosticar</div>' +
+                            '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td colspan="2" style="border:1px solid ' + C.border + ';padding:7px 10px;background:#fff;font-size:11px"><b>Total controles del banco:</b> ' + total + '</td>' +
+                            '<td colspan="2" style="border:1px solid ' + C.border + ';padding:7px 10px;background:#fff;font-size:11px;text-align:right"><b>Avance del diagnóstico:</b> ' + pctAvance + '% &nbsp;·&nbsp; <b>Madurez global:</b> ' + pctMaduros + '%</td>' +
+                        '</tr>' +
+                        '</table>' +
+
+                        // Detalle del cuestionario
+                        '<table>' +
+                        '<tr><td colspan="6" style="background:' + C.primaryDark + ';color:#fff;font-weight:bold;font-size:12px;padding:7px 10px;letter-spacing:0.04em">DETALLE DEL DIAGNÓSTICO POR CONTROL</td></tr>' +
+                        '<tr>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">Código</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:left;font-size:10px">Control / Descripción</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:left;font-size:10px">Riesgo mitigado</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">¿Existe?</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">¿Maduro?</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">Estado</th>' +
+                        '</tr>' +
+                        rows +
+                        '</table>' +
+
+                        // Recomendaciones priorizadas
+                        '<table>' +
+                        '<tr><td colspan="4" style="background:' + C.primaryDark + ';color:#fff;font-weight:bold;font-size:12px;padding:7px 10px;letter-spacing:0.04em">RECOMENDACIONES PRIORIZADAS</td></tr>' +
+                        '<tr>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">Prioridad</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:left;font-size:10px">Acción recomendada</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:left;font-size:10px">Control de referencia</th>' +
+                            '<th style="background:' + C.primaryLight + ';color:' + C.primaryDark + ';border:1px solid ' + C.border + ';padding:6px;text-align:center;font-size:10px">Plazo</th>' +
+                        '</tr>' +
+                        recRows +
+                        '</table>' +
+
+                        // Pie
+                        '<table>' +
+                        '<tr><td style="padding:8px 10px;font-size:9px;color:#6b7280;font-style:italic;border-top:2px solid ' + C.primary + '">' +
+                            'Documento generado automáticamente desde el aplicativo PTEE ESAL · ' + esc(org) + ' · ' + esc(today) +
+                            '. Las recomendaciones son sugerencias automatizadas a partir del diagnóstico; deben adaptarse a la realidad de la entidad y formalizarse en el plan de remediación con responsable y plazo asignados.' +
+                        '</td></tr>' +
+                        '</table>' +
+
+                        '</body></html>';
+
+                    const blob = new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const safeOrg = org.replace(/\s+/g, '_').replace(/[^\w\-]/g, '');
+                    const stamp = new Date().toISOString().split('T')[0];
+                    a.download = 'Diagnostico_IntegridadFinanciera_PTEE_' + safeOrg + '_' + stamp + '.xls';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                },
+
                 recPriorityClass(p){
                     if(p==='ALTA') return 'bg-red-100 text-red-700 border-red-200';
                     if(p==='MEDIA') return 'bg-orange-100 text-orange-700 border-orange-200';
@@ -12097,6 +12756,7 @@
                     this.showRiesgos = false; this.showControles = false; this.showDebida = false;
                     this.showMonitoreo = false; this.showDivulgacion = false; this.showConflictos = false;
                     this.showContratacion = false;
+                    this.showIntegridad = false;
                     if (tab === 'politica')      this.showPolitica = true;
                     else if (tab === 'protocolos') this.showProtocolos = true;
                     else if (tab === 'riesgos')  { this.showRiesgos = true; this.riesgosTab = 'matriz'; }
@@ -12104,6 +12764,8 @@
                     else if (tab === 'monitoreo') { this.showMonitoreo = true; this.monitoreoSubTab = 'flujograma'; }
                     else if (tab === 'divulgacion') { this.showDivulgacion = true; this.divulgacionSubTab = 'flujograma'; }
                     else if (tab === 'conflictos') { this.showConflictos = true; this.conflictosSubTab = 'politica'; }
+                    else if (tab === 'contratacion') { this.showContratacion = true; this.contratacionSubTab = 'politica'; }
+                    else if (tab === 'integridad') { this.showIntegridad = true; this.integridadSubTab = 'flujo'; }
                 },
                 addRelacionOtro() {
                     const val = this.newRelacionOtro.trim();
@@ -12357,6 +13019,8 @@
                     // v5.2: + Cap. 6 Monitoreo — campos dentro de form (enabledMonitoreoAct,
                     //         monitoreoActividades, enabledChannels, channelManagement,
                     //         acuseRecibo, tiempoNotificacion)
+                    // v5.3: + Cap. 10 Integridad Financiera (integridadConfig, integridadControles
+                    //         con catálogo fijo de 28 controles y diagnóstico existe/maduro por id)
                     const version = parsed.version || '1.0';
                     const vNum = parseFloat(version);
                     const seccionesNuevas = [];
@@ -12547,6 +13211,28 @@
                     }
                     if (parsed.trazabilidadCounter) {
                         this.trazabilidadCounter = parsed.trazabilidadCounter;
+                    }
+
+                    // --- Cap. 10: Integridad Financiera ---
+                    if (parsed.integridadConfig) {
+                        this.integridadConfig = deepMerge(this.integridadConfig, parsed.integridadConfig);
+                    } else {
+                        seccionesNuevas.push('Configuración de Integridad Financiera (Cap. 10)');
+                    }
+                    if (parsed.integridadControles && Array.isArray(parsed.integridadControles)) {
+                        // Restaurar solo los campos diagnosticables (existe/maduro) por id,
+                        // preservando el catálogo actual de controles definido en data().
+                        const byId = {};
+                        parsed.integridadControles.forEach(c => { if (c && c.id) byId[c.id] = c; });
+                        this.integridadControles.forEach(c => {
+                            const saved = byId[c.id];
+                            if (saved) {
+                                if (saved.existe !== undefined) c.existe = saved.existe;
+                                if (saved.maduro !== undefined) c.maduro = saved.maduro;
+                            }
+                        });
+                    } else {
+                        seccionesNuevas.push('Banco de Controles de Integridad Financiera (Cap. 10)');
                     }
 
                     // --- Cap. 6: Monitoreo — campos de configuración (v5.2+) ---
@@ -13393,7 +14079,9 @@
                         contratacion: this.contratacion,
                         trazabilidadItems: this.trazabilidadItems,
                         trazabilidadCounter: this.trazabilidadCounter,
-                        version: '5.2',
+                        integridadConfig: this.integridadConfig,
+                        integridadControles: this.integridadControles,
+                        version: '5.3',
                         timestamp: new Date().toISOString()
                     };
                     localStorage.setItem('ptee_esal_draft', JSON.stringify(draft));
@@ -13461,7 +14149,9 @@
                         contratacion: this.contratacion,
                         trazabilidadItems: this.trazabilidadItems,
                         trazabilidadCounter: this.trazabilidadCounter,
-                        version: '5.2',
+                        integridadConfig: this.integridadConfig,
+                        integridadControles: this.integridadControles,
+                        version: '5.3',
                         timestamp: new Date().toISOString()
                     };
                     const jsonStr = JSON.stringify(draft, null, 2);
@@ -14653,6 +15343,7 @@ ${recRows}
                     if (this.showDivulgacion) return 'Divulgacion';
                     if (this.showConflictos) return 'Conflictos';
                     if (this.showContratacion) return 'Contratacion_Estado';
+                    if (this.showIntegridad) return 'Integridad_Financiera';
                     return 'Seccion';
                 },
                 exportWordSheet() {
@@ -14671,6 +15362,8 @@ ${recRows}
                         sourceEl = document.getElementById('conflictos-view');
                     } else if (this.showContratacion) {
                         sourceEl = document.getElementById('contratacion-view');
+                    } else if (this.showIntegridad) {
+                        sourceEl = document.getElementById('integridad-view');
                     }
                     if (!sourceEl) { alert('No hay un componente visible para exportar.'); return; }
                     const clone = sourceEl.cloneNode(true);
@@ -14913,6 +15606,43 @@ ${recRows}
                         collectSubTabs();
                         return;
                     }
+                    if (this.showIntegridad) {
+                        sourceEl = document.getElementById('integridad-view');
+                        if (!sourceEl) return;
+                        const originalSubTab = this.integridadSubTab;
+                        const originalCtrlView = this.integridadControlesView;
+                        const pageBreak = '<div class="page-break"></div>';
+                        let chapterContent = '';
+                        const collectSubTabs = async () => {
+                            // 10.1 Flujo
+                            this.integridadSubTab = 'flujo';
+                            await this.$nextTick();
+                            let freshEl = document.getElementById('integridad-view');
+                            if (freshEl) {
+                                const tc = freshEl.cloneNode(true);
+                                this._cleanCloneForWord(tc, true);
+                                chapterContent += tc.innerHTML;
+                            }
+                            // 10.2 Controles (3 enfoques)
+                            this.integridadSubTab = 'controles';
+                            const views = ['estrategico', 'madurez', 'diagnostico'];
+                            for (let i = 0; i < views.length; i++) {
+                                this.integridadControlesView = views[i];
+                                await this.$nextTick();
+                                freshEl = document.getElementById('integridad-view');
+                                if (freshEl) {
+                                    const tc = freshEl.cloneNode(true);
+                                    this._cleanCloneForWord(tc, true);
+                                    chapterContent += pageBreak + tc.innerHTML;
+                                }
+                            }
+                            this.integridadSubTab = originalSubTab;
+                            this.integridadControlesView = originalCtrlView;
+                            this._downloadWordFile(chapterContent, suffix + '_Completo');
+                        };
+                        collectSubTabs();
+                        return;
+                    }
                     alert('No hay un capítulo activo para exportar.');
                 },
                 async exportWordComplete() {
@@ -14998,6 +15728,32 @@ ${recRows}
                         }
                     }
                     this.contratacionSubTab = originalContTab;
+
+                    // 8. Integridad Financiera — iterar sub-pestañas y enfoques
+                    const originalIntegridadTab = this.integridadSubTab;
+                    const originalIntegridadView = this.integridadControlesView;
+                    this.integridadSubTab = 'flujo';
+                    await this.$nextTick();
+                    let integEl = document.getElementById('integridad-view');
+                    if (integEl) {
+                        const clone = integEl.cloneNode(true);
+                        this._cleanCloneForWord(clone, true);
+                        allContent += pageBreak + clone.innerHTML;
+                    }
+                    this.integridadSubTab = 'controles';
+                    const integViews = ['estrategico', 'madurez', 'diagnostico'];
+                    for (let i = 0; i < integViews.length; i++) {
+                        this.integridadControlesView = integViews[i];
+                        await this.$nextTick();
+                        integEl = document.getElementById('integridad-view');
+                        if (integEl) {
+                            const clone = integEl.cloneNode(true);
+                            this._cleanCloneForWord(clone, true);
+                            allContent += pageBreak + clone.innerHTML;
+                        }
+                    }
+                    this.integridadSubTab = originalIntegridadTab;
+                    this.integridadControlesView = originalIntegridadView;
 
                     this._downloadWordFile(allContent, 'Programa_Completo');
                 },
