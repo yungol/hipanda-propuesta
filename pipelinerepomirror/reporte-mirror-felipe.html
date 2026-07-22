@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipeline Mirror Automático | Reporte Técnico Felipe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Libre Franklin', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            paper: '0 24px 80px rgba(45, 39, 32, 0.08)',
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --paper: oklch(0.985 0.005 85);
+      --paper-soft: oklch(0.969 0.007 82);
+      --paper-strong: oklch(0.944 0.008 82);
+      --ink: oklch(0.252 0.012 252);
+      --muted: oklch(0.53 0.016 250);
+      --line: oklch(0.865 0.008 80);
+      --accent: oklch(0.59 0.074 46);
+      --accent-soft: oklch(0.946 0.022 46);
+      --green-soft: oklch(0.94 0.04 155);
+      --green: oklch(0.47 0.15 155);
+      --slate-soft: oklch(0.95 0.012 245);
+      --slate-line: oklch(0.88 0.014 245);
+      --code-bg: oklch(0.96 0.01 255);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Libre Franklin', sans-serif;
+      background:
+        radial-gradient(circle at top left, oklch(0.96 0.012 50) 0, transparent 28%),
+        radial-gradient(circle at top right, oklch(0.958 0.012 235) 0, transparent 30%),
+        linear-gradient(180deg, var(--paper) 0%, oklch(0.978 0.006 84) 100%);
+      color: var(--ink);
+    }
+
+    .ink { color: var(--ink); }
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent); }
+    .bg-paper { background-color: var(--paper); }
+    .bg-paper-soft { background-color: var(--paper-soft); }
+    .bg-paper-strong { background-color: var(--paper-strong); }
+    .bg-accent-soft { background-color: var(--accent-soft); }
+    .bg-green-soft { background-color: var(--green-soft); }
+    .bg-slate-soft { background-color: var(--slate-soft); }
+    .border-line { border-color: var(--line); }
+    .border-slate-line { border-color: var(--slate-line); }
+
+    .kicker {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      font-weight: 700;
+    }
+
+    .section-title {
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .measure { max-width: 72ch; }
+
+    .stat-number {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .repo-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.9rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .repo-row:first-child { border-top: 0; }
+
+    .problem-card {
+      transition: background 0.2s ease;
+    }
+
+    .problem-card:hover {
+      background: oklch(0.975 0.006 83);
+    }
+
+    @media (max-width: 640px) {
+      .repo-row {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 14mm;
+      }
+      html, body { background: var(--paper); }
+      .print-btn, .no-print { display: none !important; }
+      .print-shadow { box-shadow: none !important; }
+      section { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <button onclick="window.print()" class="print-btn no-print inline-flex items-center gap-2 rounded-full border border-line bg-[color:var(--paper)] px-4 py-2.5 text-sm font-semibold ink shadow-paper transition hover:-translate-y-0.5 hover:bg-[color:var(--paper-soft)]" style="position:fixed;top:1rem;right:1rem;z-index:50;">
+    <span>Imprimir / Guardar PDF</span>
+  </button>
+
+  <main class="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pt-10">
+
+    <!-- Header -->
+    <section class="print-shadow overflow-hidden rounded-[2rem] border border-line bg-[color:var(--paper)] shadow-paper">
+      <div class="border-b border-line px-5 py-5 sm:px-8 lg:px-10">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p class="kicker muted">HiPanda &middot; Julio 2026</p>
+            <p class="mt-2 text-xl font-semibold tracking-[-0.03em] ink sm:text-2xl">Pipeline de Mirror Autom&aacute;tico</p>
+            <p class="mt-2 text-sm muted">Documento t&eacute;cnico, preparado para Felipe</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] px-5 py-4">
+            <p class="kicker accent">Repositorios</p>
+            <p class="mt-2 text-base font-semibold ink">5 proyectos &mdash; Galco</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-10 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)] lg:px-10 lg:py-14">
+        <div>
+          <h1 class="section-title text-4xl font-extrabold ink sm:text-5xl lg:text-[4rem]">Push a la rama <span class="accent">felipe</span> y el c&oacute;digo aparece del otro lado. Sin pasos manuales.</h1>
+          <p class="measure mt-6 text-lg leading-8 muted sm:text-xl">Se configur&oacute; un pipeline CI/CD que, ante cada push a la rama <code class="rounded-md bg-[color:var(--paper-strong)] px-1.5 py-0.5 text-sm font-semibold ink">felipe</code> en los repositorios de producci&oacute;n, replica autom&aacute;ticamente el c&oacute;digo completo a los repositorios de Felipe en GitLab. Tres front-ends y dos back-ends sincronizados sin intervenci&oacute;n humana.</p>
+        </div>
+
+        <aside class="rounded-[1.75rem] border border-line bg-[color:var(--paper-soft)] p-6 sm:p-7">
+          <p class="kicker muted">Stack del pipeline</p>
+          <div class="mt-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-line pb-4">
+              <span class="text-sm muted">Imagen</span>
+              <span class="text-sm font-semibold ink">alpine:latest (~20 MB)</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-line pb-4">
+              <span class="text-sm muted">Autenticaci&oacute;n</span>
+              <span class="text-sm font-semibold ink">HTTPS + PAT</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-line pb-4">
+              <span class="text-sm muted">Gatillo</span>
+              <span class="text-sm font-semibold ink">Push a rama felipe</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm muted">Estado</span>
+              <span class="text-sm font-semibold" style="color:var(--green)">5 de 5 funcionando</span>
+            </div>
+          </div>
+          <div class="mt-5 border-t border-line pt-5">
+            <p class="text-sm leading-6 muted">Los cinco repositorios est&aacute;n operando con el pipeline activo. Cada push a la rama <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">felipe</code> replica el c&oacute;digo autom&aacute;ticamente al destino.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Arquitectura -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">1. Arquitectura de la soluci&oacute;n</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Un job de CI que clona y replica. Simple en concepto, con bordes que hubo que resolver.</h2>
+      <p class="measure mt-5 text-base leading-8 muted sm:text-lg">Cuando se hace push a la rama <code class="rounded-md bg-[color:var(--paper-strong)] px-1.5 py-0.5 text-sm font-semibold ink">felipe</code>, GitLab CI ejecuta un job que obtiene el c&oacute;digo completo y lo empuja al repositorio destino usando un token de acceso personal. Sin servidores intermedios, sin cron jobs externos, sin sincronizaci&oacute;n manual.</p>
+
+      <div class="mt-10 rounded-[1.5rem] border border-line bg-[color:var(--code-bg)] p-6 sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.15em] muted mb-4">Flujo del pipeline</p>
+        <div class="grid gap-6 sm:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto_1fr_auto_1fr]">
+          <div class="flex flex-col items-center gap-2 sm:items-start">
+            <span class="rounded-full bg-[color:var(--accent-soft)] px-3 py-1 text-xs font-bold accent">1</span>
+            <p class="text-sm font-semibold ink">Push a rama felipe</p>
+            <p class="text-xs muted">yungol/repo</p>
+          </div>
+          <div class="hidden lg:flex items-center justify-center muted text-lg font-light">&rarr;</div>
+          <div class="flex flex-col items-center gap-2 sm:items-start">
+            <span class="rounded-full bg-[color:var(--accent-soft)] px-3 py-1 text-xs font-bold accent">2</span>
+            <p class="text-sm font-semibold ink">CI clona el repo</p>
+            <p class="text-xs muted">git fetch --unshallow</p>
+          </div>
+          <div class="hidden lg:flex items-center justify-center muted text-lg font-light">&rarr;</div>
+          <div class="flex flex-col items-center gap-2 sm:items-start">
+            <span class="rounded-full bg-[color:var(--accent-soft)] px-3 py-1 text-xs font-bold accent">3</span>
+            <p class="text-sm font-semibold ink">Push autenticado</p>
+            <p class="text-xs muted">HEAD:refs/heads/felipe</p>
+          </div>
+          <div class="hidden lg:flex items-center justify-center muted text-lg font-light">&rarr;</div>
+          <div class="flex flex-col items-center gap-2 sm:items-start">
+            <span class="rounded-full bg-[color:var(--green-soft)] px-3 py-1 text-xs font-bold" style="color:var(--green)">4</span>
+            <p class="text-sm font-semibold ink">C&oacute;digo replicado</p>
+            <p class="text-xs muted">galco2/repo</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Repositorios -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">2. Repositorios configurados</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Cinco proyectos, tres front-ends y dos back-ends, bajo la misma mec&aacute;nica de sincronizaci&oacute;n.</h2>
+      <p class="measure mt-5 text-base leading-8 muted sm:text-lg">Cada proyecto tiene el mismo job de CI. La configuraci&oacute;n es id&eacute;ntica en estructura; solo cambia el nombre del repositorio destino en la URL del remote.</p>
+
+      <div class="mt-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.12em] accent mb-4">Front-ends</p>
+        <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] overflow-hidden">
+          <div class="repo-row px-5 sm:px-6">
+            <div>
+              <p class="text-sm font-semibold ink">front-galco</p>
+              <p class="text-xs muted">yungol/front-galco &rarr; galco2/front-galco</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:var(--green-soft);color:var(--green)">Funcionando</span>
+            <span class="text-xs muted text-right">#1</span>
+          </div>
+          <div class="repo-row px-5 sm:px-6">
+            <div>
+              <p class="text-sm font-semibold ink">frontdosgalco</p>
+              <p class="text-xs muted">yungol/frontdosgalco &rarr; galco2/front-galcodos</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:var(--green-soft);color:var(--green)">Funcionando</span>
+            <span class="text-xs muted text-right">#2</span>
+          </div>
+          <div class="repo-row px-5 sm:px-6">
+            <div>
+              <p class="text-sm font-semibold ink">galco-front-performance</p>
+              <p class="text-xs muted">yungol/galco-front-performance &rarr; galco2/satisfaccionfront-galco</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:var(--green-soft);color:var(--green)">Funcionando</span>
+            <span class="text-xs muted text-right">#3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.12em] accent mb-4">Back-ends</p>
+        <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] overflow-hidden">
+          <div class="repo-row px-5 sm:px-6">
+            <div>
+              <p class="text-sm font-semibold ink">back-galco</p>
+              <p class="text-xs muted">yungol/back-galco &rarr; galco2/back-galco</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:var(--green-soft);color:var(--green)">Funcionando</span>
+            <span class="text-xs muted text-right">#4</span>
+          </div>
+          <div class="repo-row px-5 sm:px-6">
+            <div>
+              <p class="text-sm font-semibold ink">backgalcodos</p>
+              <p class="text-xs muted">yungol/backgalcodos &rarr; galco2/back-galcodos</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-bold" style="background:var(--green-soft);color:var(--green)">Funcionando</span>
+            <span class="text-xs muted text-right">#5</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Problemas encontrados -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">3. Lo que hubo que resolver</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Cinco obst&aacute;culos t&eacute;cnicos que atraviesan la superficie de &laquo;un simple git push&raquo;.</h2>
+      <p class="measure mt-5 text-base leading-8 muted sm:text-lg">Cada uno de estos problemas bloque&oacute; el pipeline en alg&uacute;n momento. Resolverlos fue lo que convirti&oacute; la idea en algo que efectivamente corre. Entenderlos ayuda a ver por qu&eacute; la soluci&oacute;n final tiene la forma que tiene.</p>
+
+      <!-- Problem 1 -->
+      <div class="mt-10 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">1</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">SSH en Alpine no es SSH en macOS</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5 problem-card">
+              <p class="text-sm leading-6 muted">La intuici&oacute;n natural es usar llaves SSH para la autenticaci&oacute;n entre repositorios. Pero Alpine Linux (la imagen que corre el pipeline, apenas 20 MB) usa OpenSSH con una implementaci&oacute;n que rechaza las llaves generadas con el ssh-keygen de macOS. El pipeline fallaba antes de empezar, por una incompatibilidad de formato que no da ninguna pista &uacute;til en los logs.</p>
+              <div class="mt-4 flex items-center gap-3 rounded-[1rem] border border-line bg-[color:var(--paper)] px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.08em]" style="background:var(--green-soft);color:var(--green)">Resuelto</span>
+                <span class="text-sm muted">HTTPS con Personal Access Token: autenticaci&oacute;n que funciona en cualquier entorno sin depender del sistema operativo del runner.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem 2 -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">2</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Deploy Tokens no tienen write_repository</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5 problem-card">
+              <p class="text-sm leading-6 muted">GitLab ofrece Deploy Tokens para operaciones automatizadas. El problema: su scope m&aacute;s alto es <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">read_repository</code>. Para hacer un push necesit&aacute;s <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">write_repository</code>, y ese permiso solo lo otorgan los Personal Access Tokens. Parece un detalle de permisos, pero si eleg&iacute;s la herramienta incorrecta al inicio, perd&eacute;s tiempo antes de darte cuenta de que el scope simplemente no existe.</p>
+              <div class="mt-4 flex items-center gap-3 rounded-[1rem] border border-line bg-[color:var(--paper)] px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.08em]" style="background:var(--green-soft);color:var(--green)">Resuelto</span>
+                <span class="text-sm muted">Personal Access Token con scope <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">write_repository</code> configurado como variable CI.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem 3 -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">3</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Variables protegidas no llegan a ramas no protegidas</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5 problem-card">
+              <p class="text-sm leading-6 muted">GitLab tiene una opci&oacute;n de &laquo;Protected&raquo; en las variables CI. Activarla es buena pr&aacute;ctica de seguridad. Pero las variables protegidas solo se inyectan en ramas protegidas (t&iacute;picamente <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">main</code> o <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">master</code>). La rama <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">felipe</code> no est&aacute; protegida, as&iacute; que el token nunca llegaba al job y la autenticaci&oacute;n fallaba sin un mensaje claro. El comportamiento es correcto seg&uacute;n la documentaci&oacute;n, pero contraintuitivo si no conoc&eacute;s el modelo de seguridad de GitLab CI.</p>
+              <div class="mt-4 flex items-center gap-3 rounded-[1rem] border border-line bg-[color:var(--paper)] px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.08em]" style="background:var(--green-soft);color:var(--green)">Resuelto</span>
+                <span class="text-sm muted">Variable <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">FELIPE_TOKEN</code> sin el flag Protected, manteniendo el flag Masked activo.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem 4 -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">4</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Shallow clone: el runner no tiene la historia completa</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5 problem-card">
+              <p class="text-sm leading-6 muted">Por defecto, GitLab Runner clona los repositorios con profundidad limitada para ahorrar tiempo y espacio. El resultado es un clone superficial (<em>shallow</em>) que GitLab.com rechaza al intentar hacer push porque le faltan objetos en la historia. El error es gen&eacute;rico y no sugiere la causa. La soluci&oacute;n existe pero no es obvia sin conocer la arquitectura de clones de GitLab CI.</p>
+              <div class="mt-4 flex items-center gap-3 rounded-[1rem] border border-line bg-[color:var(--paper)] px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.08em]" style="background:var(--green-soft);color:var(--green)">Resuelto</span>
+                <span class="text-sm muted"><code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">git fetch --unshallow</code> al inicio del job para obtener la historia completa antes del push.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem 5 -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">5</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Refspec ambiguo en el primer push a un repo vac&iacute;o</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5 problem-card">
+              <p class="text-sm leading-6 muted">Cuando el repositorio destino todav&iacute;a no tiene la rama <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">felipe</code>, Git no puede resolver una referencia ambigua con la sintaxis abreviada. El push falla con un mensaje cr&iacute;ptico sobre refspecs. La soluci&oacute;n t&eacute;cnica es simple, pero diagnosticarlo requiere entender el protocolo interno de Git para resoluci&oacute;n de referencias en repositorios remotos sin esa rama creada previamente.</p>
+              <div class="mt-4 flex items-center gap-3 rounded-[1rem] border border-line bg-[color:var(--paper)] px-4 py-3">
+                <span class="rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.08em]" style="background:var(--green-soft);color:var(--green)">Resuelto</span>
+                <span class="text-sm muted"><code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">HEAD:refs/heads/felipe</code> en lugar de la sintaxis abreviada para el primer push.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uso y seguridad -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">4. Operaci&oacute;n y seguridad</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Una vez configurado, el flujo diario es de dos comandos.</h2>
+
+      <div class="mt-10 rounded-[1.5rem] border border-line bg-[color:var(--code-bg)] p-6 sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.15em] muted mb-3">Flujo de trabajo diario</p>
+        <pre class="text-sm leading-relaxed ink"><span class="muted">$</span> git checkout felipe
+<span class="muted">$</span> git merge master          <span class="muted" style="opacity:0.5"># traer lo &uacute;ltimo de producci&oacute;n</span>
+<span class="muted">$</span> git push origin felipe    <span class="muted" style="opacity:0.5"># el CI hace el resto</span></pre>
+      </div>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-6">
+          <p class="text-sm font-bold ink">Lo que no hay que hacer nunca m&aacute;s</p>
+          <ul class="mt-4 space-y-3 text-sm muted">
+            <li class="flex gap-2"><span class="accent font-bold">-</span> Clonar manualmente el repo a una carpeta local de Felipe</li>
+            <li class="flex gap-2"><span class="accent font-bold">-</span> Copiar archivos entre m&aacute;quinas o por correo</li>
+            <li class="flex gap-2"><span class="accent font-bold">-</span> Mantener dos remotes locales y pushear dos veces</li>
+            <li class="flex gap-2"><span class="accent font-bold">-</span> Sincronizar ramas a mano despu&eacute;s de cada cambio</li>
+          </ul>
+        </div>
+
+        <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-6">
+          <p class="text-sm font-bold ink">Consideraciones de seguridad</p>
+          <ul class="mt-4 space-y-3 text-sm muted">
+            <li class="flex gap-2"><span style="color:var(--green)" class="font-bold">&check;</span> Token almacenado como variable CI enmascarada</li>
+            <li class="flex gap-2"><span style="color:var(--green)" class="font-bold">&check;</span> Autenticaci&oacute;n sobre HTTPS, sin llaves SSH en el runner</li>
+            <li class="flex gap-2"><span style="color:var(--green)" class="font-bold">&check;</span> Scope del token limitado a <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">write_repository</code></li>
+            <li class="flex gap-2"><span style="color:var(--green)" class="font-bold">&check;</span> Se recomienda rotar el PAT peri&oacute;dicamente</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Conclusión -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">Resumen</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">El pipeline elimina la fricci&oacute;n de mantener dos copias del c&oacute;digo sincronizadas.</h2>
+      <p class="measure mt-5 text-base leading-8 muted sm:text-lg">La ventaja no es de complejidad t&eacute;cnica exhibida, sino de complejidad operativa eliminada. Sin el pipeline, cada sincronizaci&oacute;n entre los repositorios de producci&oacute;n y los de Felipe requiere pasos manuales, propensos a error y a desactualizaci&oacute;n. Con el pipeline, el push a la rama <code class="rounded-md bg-[color:var(--paper-strong)] px-1.5 py-0.5 text-sm font-semibold ink">felipe</code> es el &uacute;nico paso consciente; la replicaci&oacute;n ocurre sola, con trazabilidad completa en el log de CI y sin depender de que alguien recuerde hacerlo.</p>
+
+      <div class="mt-8 grid gap-5 sm:grid-cols-3">
+        <div class="rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+          <p class="stat-number accent">1</p>
+          <p class="mt-2 text-sm font-semibold ink">Comando</p>
+          <p class="mt-1 text-sm muted">Un push gatilla todo el proceso sin pasos adicionales.</p>
+        </div>
+        <div class="rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+          <p class="stat-number accent">5</p>
+          <p class="mt-2 text-sm font-semibold ink">Repositorios</p>
+          <p class="mt-1 text-sm muted">La misma configuraci&oacute;n cubre 3 front-ends y 2 back-ends.</p>
+        </div>
+        <div class="rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+          <p class="stat-number accent">0</p>
+          <p class="mt-2 text-sm font-semibold ink">Pasos manuales</p>
+          <p class="mt-1 text-sm muted">Despu&eacute;s de la configuraci&oacute;n inicial, cero intervenci&oacute;n humana.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mt-8 flex items-center justify-between border-t border-line pt-6 text-xs muted">
+      <p>HiPanda &middot; Documento t&eacute;cnico interno &middot; Julio 2026</p>
+      <p>Preparado para Felipe</p>
+    </footer>
+
+  </main>
+</body>
+</html>
