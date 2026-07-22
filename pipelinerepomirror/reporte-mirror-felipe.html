@@ -400,6 +400,109 @@
       </div>
     </section>
 
+    <!-- Instrucciones para Felipe -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
+      <p class="kicker accent">5. Instrucciones para Felipe</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Lo que ten&eacute;s que hacer en tu equipo local para levantar cada proyecto.</h2>
+      <p class="measure mt-5 text-base leading-8 muted sm:text-lg">El pipeline ya te dej&oacute; el c&oacute;digo actualizado en GitLab en la rama <code class="rounded-md bg-[color:var(--paper-strong)] px-1.5 py-0.5 text-sm font-semibold ink">felipe</code>. Desde ah&iacute; vos decid&iacute;s c&oacute;mo correrlo. Esto aplica a los cinco repositorios.</p>
+
+      <!-- Paso 1: Pull + checkout -->
+      <div class="mt-10 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">1</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Hacer pull del repo y pararse en la rama felipe</p>
+            <p class="mt-2 text-sm leading-6 muted">La rama <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">felipe</code> es la que tiene la &uacute;ltima versi&oacute;n sincronizada. Siempre empez&aacute; desde ac&aacute;.</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--code-bg)] p-5">
+              <p class="text-xs font-bold uppercase tracking-[0.15em] muted mb-3">En tu terminal</p>
+              <pre class="text-sm leading-relaxed ink"><span class="muted">$</span> git clone git@gitlab.com:galco2/<span class="accent font-semibold">[repo]</span>.git
+<span class="muted">$</span> cd <span class="accent font-semibold">[repo]</span>
+<span class="muted">$</span> git checkout felipe
+<span class="muted">$</span> git pull origin felipe</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Las variables de entorno -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">2</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Antes de arrancar: configurar las variables de entorno</p>
+            <p class="mt-2 text-sm leading-6 muted">Cada proyecto necesita su archivo <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.env</code> con las variables de entorno. Sin esto los back-ends no conectan a la base de datos y los front-ends no saben a qu&eacute; API pegarle.</p>
+            <div class="mt-3 rounded-[1.25rem] border border-line bg-[color:var(--accent-soft)] p-5">
+              <p class="text-sm font-bold ink flex items-center gap-2">&#9888;&#65039; No omitir este paso</p>
+              <p class="mt-2 text-sm leading-6 muted">Los <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.env</code> <strong>no se suben al repo</strong> por seguridad (est&aacute;n en <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.gitignore</code>). Pedile a Juan las variables de entorno de cada proyecto o copialas de tu backup. Ponelas en un archivo <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.env</code> en la ra&iacute;z de cada repo <strong>antes</strong> de ejecutar cualquier comando.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 3: Opciones de despliegue -->
+      <div class="mt-8 border-t border-line pt-8">
+        <div class="flex items-start gap-4">
+          <span class="stat-number accent mt-1">3</span>
+          <div class="flex-1">
+            <p class="text-lg font-bold ink">Tres formas de levantar el proyecto</p>
+            <p class="mt-2 text-sm leading-6 muted">Ten&eacute;s tres caminos seg&uacute;n lo que necesites. Los tres parten de tener el repo clonado y el <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.env</code> configurado.</p>
+
+            <!-- Opción A -->
+            <div class="mt-5 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+              <p class="text-sm font-bold ink">Opci&oacute;n A &mdash; Correr directo en la rama felipe</p>
+              <p class="mt-1 text-sm muted">La m&aacute;s r&aacute;pida. El c&oacute;digo que lleg&oacute; por el pipeline ya est&aacute; listo. Ideal para probar cambios r&aacute;pido.</p>
+              <div class="mt-3 rounded-[1rem] border border-line bg-[color:var(--code-bg)] p-4">
+                <pre class="text-sm leading-relaxed ink"><span class="muted">$</span> git checkout felipe
+<span class="muted">$</span> npm install
+<span class="muted">$</span> npm run dev</pre>
+              </div>
+            </div>
+
+            <!-- Opción B -->
+            <div class="mt-4 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+              <p class="text-sm font-bold ink">Opci&oacute;n B &mdash; Mergear felipe en dev y correr en dev</p>
+              <p class="mt-1 text-sm muted">Si quer&eacute;s integrar lo de felipe en la rama de desarrollo antes de pasarlo a producci&oacute;n.</p>
+              <div class="mt-3 rounded-[1rem] border border-line bg-[color:var(--code-bg)] p-4">
+                <pre class="text-sm leading-relaxed ink"><span class="muted">$</span> git checkout dev
+<span class="muted">$</span> git merge felipe
+<span class="muted">$</span> npm install
+<span class="muted">$</span> npm run dev</pre>
+              </div>
+            </div>
+
+            <!-- Opción C -->
+            <div class="mt-4 rounded-[1.25rem] border border-line bg-[color:var(--paper-soft)] p-5">
+              <p class="text-sm font-bold ink">Opci&oacute;n C &mdash; Mergear felipe en master y correr en master</p>
+              <p class="mt-1 text-sm muted">Cuando el cambio ya est&aacute; probado y quer&eacute;s pasarlo a la rama principal de producci&oacute;n local.</p>
+              <div class="mt-3 rounded-[1rem] border border-line bg-[color:var(--code-bg)] p-4">
+                <pre class="text-sm leading-relaxed ink"><span class="muted">$</span> git checkout master
+<span class="muted">$</span> git merge felipe
+<span class="muted">$</span> npm install
+<span class="muted">$</span> npm run dev</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen visual -->
+      <div class="mt-8 rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-6 sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.15em] muted mb-4">Checklist por repositorio</p>
+        <div class="space-y-3 text-sm muted">
+          <div class="flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold accent">1</span> Clonar el repo de galco2 en tu m&aacute;quina</div>
+          <div class="flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold accent">2</span> <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">git checkout felipe</code> para tener la &uacute;ltima versi&oacute;n</div>
+          <div class="flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold accent">3</span> Crear el <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">.env</code> con las variables de entorno</div>
+          <div class="flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold accent">4</span> Elegir opci&oacute;n A, B o C seg&uacute;n la rama donde quieras correr</div>
+          <div class="flex items-center gap-3"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--accent-soft)] text-xs font-bold accent">5</span> <code class="rounded bg-[color:var(--paper-strong)] px-1 text-xs font-semibold ink">npm install && npm run dev</code></div>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-[1.25rem] border border-line bg-[color:var(--green-soft)] p-5">
+        <p class="text-sm font-bold ink flex items-center gap-2">&#9989; Resumen</p>
+        <p class="mt-2 text-sm leading-6 muted">El pipeline te ahorra el trabajo de sincronizar c&oacute;digo. De ah&iacute; en adelante es est&aacute;ndar: <strong>pull, .env, checkout a la rama que quieras, npm install, npm run dev</strong>. Repet&iacute; el checklist en cada uno de los 5 repositorios y listo.</p>
+      </div>
+    </section>
+
     <!-- Conclusión -->
     <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-paper sm:p-8 lg:p-10">
       <p class="kicker accent">Resumen</p>
