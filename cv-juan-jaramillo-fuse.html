@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Juan David Jaramillo — Product Engineer</title>
+<meta name="description" content="Product engineer who models complex financial logic in code. 15 years building custom software that is still in production." />
+<meta name="author" content="Juan David Jaramillo Gutiérrez" />
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Juan David Jaramillo Gutiérrez — Product Engineer" />
+<meta property="og:description" content="Product engineer who models complex financial logic in code. 15 years building custom software that is still in production." />
+<meta name="twitter:card" content="summary" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     HiPanda — "El Plano de Obra"
+     One family (JetBrains Mono), one accent (amber), warm neutrals.
+     ============================================================ */
+  :root {
+    --paper:        oklch(0.95 0.004 65);
+    --parchment:    oklch(0.90 0.005 65);
+    --surface:      oklch(1 0 0);
+    --ink:          oklch(0.30 0.005 65);
+    --ink-soft:     oklch(0.47 0.005 65);
+    --mist:         oklch(0.82 0.003 65);
+    --line:         oklch(0.86 0.004 65);
+    --amber:        oklch(0.62 0.16 65);
+    --amber-deep:   oklch(0.52 0.145 62);
+    --amber-wash:   oklch(0.955 0.022 65);
+
+    --shadow-card: 0 1px 2px oklch(0.30 0.005 65 / 0.06), 0 4px 12px oklch(0.30 0.005 65 / 0.08);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --step-0: 0.9375rem;
+    --step-1: 1.0625rem;
+    --step-2: 1.375rem;
+    --step-3: clamp(1.9rem, 5vw, 2.9rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      oklch(0.20 0.005 65);
+      --parchment:  oklch(0.235 0.005 65);
+      --surface:    oklch(0.26 0.005 65);
+      --ink:        oklch(0.94 0.004 65);
+      --ink-soft:   oklch(0.76 0.005 65);
+      --mist:       oklch(0.42 0.005 65);
+      --line:       oklch(0.36 0.005 65);
+      --amber:      oklch(0.72 0.11 65);
+      --amber-deep: oklch(0.78 0.10 65);
+      --amber-wash: oklch(0.30 0.030 65);
+      --shadow-card: 0 1px 2px oklch(0 0 0 / 0.35), 0 6px 18px oklch(0 0 0 / 0.30);
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: var(--step-0);
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .sheet {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: clamp(1.75rem, 5vw, 4.5rem) clamp(1.15rem, 4vw, 3rem) 4rem;
+  }
+
+  a {
+    color: var(--amber-deep);
+    text-decoration: none;
+    border-bottom: 1px solid var(--mist);
+    transition: border-color 200ms var(--ease), color 200ms var(--ease);
+  }
+  a:hover { border-color: var(--amber); }
+  a:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead {
+    border-bottom: 3px double var(--line);
+    padding-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .thesis {
+    font-size: var(--step-1);
+    font-weight: 700;
+    color: var(--amber-deep);
+    margin: 0.75rem 0 0;
+    max-width: 46ch;
+    text-wrap: balance;
+  }
+
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+  .contact li { display: flex; gap: 0.45rem; align-items: baseline; }
+  .contact .k {
+    color: var(--ink);
+    opacity: 0.55;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Summary + ledger ---------- */
+
+  .summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+    margin-top: 2rem;
+  }
+  @media (max-width: 46rem) {
+    .summary { grid-template-columns: 1fr; }
+  }
+
+  .summary p {
+    margin: 0 0 0.9rem;
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  .summary p:last-child { margin-bottom: 0; }
+
+  .ledger { margin: 0; }
+
+  .ledger-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+  }
+  .ledger-row + .ledger-row { border-top: 1px solid var(--line); }
+
+  .ledger-label {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    flex: 0 1 auto;
+  }
+  .ledger-leader {
+    flex: 1 1 auto;
+    min-width: 1rem;
+    border-bottom: 1px dotted var(--mist);
+    transform: translateY(-0.22em);
+  }
+  .ledger-figure {
+    font-weight: 700;
+    font-size: 1.0625rem;
+    white-space: nowrap;
+  }
+
+  /* ---------- Sections ---------- */
+
+  section { margin-top: 2.75rem; }
+
+  h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 3px double var(--line);
+  }
+
+  /* ---------- Cases ---------- */
+
+  .case {
+    display: grid;
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    gap: 0.25rem 1.75rem;
+    margin-bottom: 1.6rem;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .case:last-child { margin-bottom: 0; }
+  @media (max-width: 46rem) {
+    .case { grid-template-columns: 1fr; }
+  }
+
+  .case-meta {
+    grid-column: 1;
+    font-size: 0.7rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    margin: 0.35rem 0 0;
+    text-align: right;
+    border-right: 1px solid var(--line);
+    padding-right: 1.75rem;
+    margin-right: -1.75rem;
+  }
+  .case-body { grid-column: 2; }
+
+  @media (max-width: 46rem) {
+    .case-meta {
+      grid-column: 1;
+      text-align: left;
+      border-right: 0;
+      padding-right: 0;
+      margin: 0 0 0.15rem;
+    }
+    .case-body { grid-column: 1; }
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .case p {
+    margin: 0.4rem 0 0;
+    max-width: 74ch;
+    text-wrap: pretty;
+  }
+
+  .annot {
+    background: var(--amber-wash);
+    border: 1px solid var(--mist);
+    border-radius: 2px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+    display: flex;
+    gap: 0.6rem;
+  }
+  .annot::before {
+    content: "\21B3";
+    color: var(--amber-deep);
+    font-weight: 700;
+    flex: none;
+  }
+
+  .built-with {
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- Practice list ---------- */
+
+  .practice {
+    margin: 0;
+    display: grid;
+    gap: 0.65rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
+  }
+  .practice div {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: baseline;
+  }
+  .practice dt {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    text-align: right;
+  }
+  .practice dd { margin: 0; font-size: 0.875rem; }
+
+  /* ---------- Stack ---------- */
+
+  .stack { margin: 0; }
+  .stack div {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
+  }
+  .stack div + div { border-top: 1px solid var(--line); }
+  .stack dt {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: 0.55;
+    text-align: right;
+  }
+  .stack dd { margin: 0; font-size: 0.875rem; }
+
+  /* ---------- Footer / credentials ---------- */
+
+  .creds {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+    gap: 0.75rem 2.5rem;
+  }
+  .creds p { margin: 0; font-size: 0.875rem; }
+  .creds strong { display: block; }
+  .creds span { color: var(--ink-soft); }
+
+  /* Label rails collapse before they can squeeze the definition text */
+  @media (max-width: 34rem) {
+    .practice div, .stack div {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+    .practice dt, .stack dt { text-align: left; }
+  }
+
+  .closing {
+    margin-top: 2.5rem;
+    padding-top: 0.9rem;
+    border-top: 3px double var(--line);
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+  }
+
+  /* Continuation mark: only meaningful once the sheet becomes paper */
+  .page-mark { display: none; }
+
+  /* ---------- Print button ---------- */
+
+  .print-btn {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 10;
+    font: inherit;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: oklch(1 0 0);
+    background: var(--amber);
+    border: 0;
+    border-radius: 2px;
+    padding: 0.75rem 1.4rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: background-color 200ms var(--ease), box-shadow 200ms var(--ease);
+  }
+  .print-btn:hover { background: oklch(0.55 0.14 65); }
+  .print-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* On narrow screens a floating button just covers the copy */
+  @media (max-width: 46rem) {
+    .print-btn {
+      position: static;
+      display: block;
+      width: calc(100% - 2.3rem);
+      margin: 0 auto 2.5rem;
+    }
+  }
+
+  /* ---------- Motion: one restrained load, never gating content ---------- */
+
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .masthead, .summary, section {
+    animation: settle 620ms var(--ease) backwards;
+  }
+  .summary { animation-delay: 70ms; }
+  section:nth-of-type(1) { animation-delay: 140ms; }
+  section:nth-of-type(2) { animation-delay: 200ms; }
+  section:nth-of-type(3) { animation-delay: 250ms; }
+  section:nth-of-type(4) { animation-delay: 300ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 1ms !important;
+    }
+  }
+
+  /* ---------- Print ---------- */
+
+  @media print {
+    @page { size: A4; margin: 11mm 12mm; }
+
+    :root {
+      --paper: #ffffff;
+      --parchment: #ffffff;
+      --surface: #ffffff;
+      --ink: #221f1c;
+      --ink-soft: #55504a;
+      --mist: #b6ada4;
+      --line: #b6ada4;
+      --amber-deep: #8a5410;
+      --amber-wash: #ffffff;
+    }
+
+    html, body {
+      background: #fff;
+      font-size: 8.7pt;
+      line-height: 1.42;
+    }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .sheet { max-width: none; padding: 0; }
+    .print-btn { display: none !important; }
+    *, *::before, *::after { animation: none !important; box-shadow: none !important; }
+
+    h1 { font-size: 20pt; }
+    .thesis { font-size: 9.6pt; margin-top: 0.35rem; }
+    .contact { margin-top: 0.5rem; font-size: 7.4pt; gap: 0.15rem 0.9rem; }
+    .masthead { padding-bottom: 0.55rem; }
+
+    .summary { margin-top: 0.6rem; gap: 1.4rem; }
+    .summary p { margin-bottom: 0.3rem; }
+    .case { margin-bottom: 0.5rem; }
+    .case-meta { margin-top: 0.28rem; }
+    .ledger-row { padding: 0.16rem 0; }
+    .ledger-figure { font-size: 9.6pt; }
+    .ledger-label { font-size: 7.4pt; }
+
+    section { margin-top: 0.62rem; }
+    h2 { margin-bottom: 0.45rem; padding-top: 0.3rem; font-size: 7.2pt; break-after: avoid; page-break-after: avoid; }
+    .practice, .stack, .creds { break-inside: avoid; page-break-inside: avoid; }
+
+    /* Deliberate two-page structure: cases close page 1,
+       capabilities open page 2. Never a mid-case spill. */
+    .sheet > section.capabilities { break-before: page; page-break-before: always; margin-top: 0; }
+    .sheet > section.capabilities ~ section { margin-top: 1.45rem; }
+
+    .page-mark {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 1.1rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 7pt;
+      color: var(--ink-soft);
+    }
+
+    /* Page 2 has room; let the capability sheet breathe rather than
+       float at the top of an empty page. */
+    .capabilities .practice { gap: 0.6rem 2.2rem; }
+    .stack div { padding: 0.42rem 0; }
+    .creds { gap: 1.05rem 2.5rem; }
+    .closing { margin-top: 1.5rem; padding-top: 0.4rem; }
+    h3 { font-size: 9.6pt; }
+    .case { margin-bottom: 0.62rem; }
+    .case p { margin-top: 0.18rem; }
+    .annot { padding: 0.28rem 0.45rem; font-size: 8pt; }
+    .practice { gap: 0.2rem 2rem; }
+    .practice dd, .stack dd, .creds p { font-size: 8pt; }
+    .stack div { padding: 0.2rem 0; }
+    .closing { margin-top: 0.7rem; padding-top: 0.35rem; font-size: 7.4pt; }
+
+    a { color: inherit; border-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet">
+
+  <header class="masthead">
+    <h1>Juan David Jaramillo Gutiérrez</h1>
+    <p class="thesis">Product engineer who models complex financial logic in code.</p>
+    <ul class="contact">
+      <li><span class="k">Mail</span> <a href="mailto:jdjara@gmail.com">jdjara@gmail.com</a></li>
+      <li><span class="k">Site</span> <a href="https://hipanda.io" rel="noopener">hipanda.io</a></li>
+      <li><span class="k">In</span> <a href="https://www.linkedin.com/in/juan-davidjaramillo-hipandaio" rel="noopener">juan-davidjaramillo-hipandaio</a></li>
+      <li><span class="k">Base</span> Medellín, Colombia · UTC−5</li>
+    </ul>
+  </header>
+
+  <div class="summary">
+    <div>
+      <p>CPA and finance specialist by training, 15 years building custom software for companies that run on it. I standardize the process before I write the code — as an accountant, not as a programmer. That is why the numbers reconcile and the systems are still in production years later.</p>
+      <p>I run HiPanda, where the client owns the repository, the infrastructure and the data. No lock-in, no black boxes. When I read a requirement I see its effect on the P&amp;L, on cash flow and on the audit trail — not loops and functions.</p>
+    </div>
+    <dl class="ledger">
+      <div class="ledger-row">
+        <dt class="ledger-label">Years shipping software</dt>
+        <span class="ledger-leader" aria-hidden="true"></span>
+        <dd class="ledger-figure">15</dd>
+      </div>
+      <div class="ledger-row">
+        <dt class="ledger-label">Years owning one product, one client</dt>
+        <span class="ledger-leader" aria-hidden="true"></span>
+        <dd class="ledger-figure">5</dd>
+      </div>
+      <div class="ledger-row">
+        <dt class="ledger-label">Tax jurisdictions automated</dt>
+        <span class="ledger-leader" aria-hidden="true"></span>
+        <dd class="ledger-figure">350+</dd>
+      </div>
+      <div class="ledger-row">
+        <dt class="ledger-label">Systems that outlived their owner</dt>
+        <span class="ledger-leader" aria-hidden="true"></span>
+        <dd class="ledger-figure">1</dd>
+      </div>
+    </dl>
+  </div>
+
+  <section>
+    <h2>Selected work</h2>
+
+    <article class="case">
+      <p class="case-meta">2020 — present<br>my product to prioritize</p>
+      <div class="case-body">
+      <h3>Galco — the system the factory runs on</h3>
+      <p>They hired me to replace one Excel file. Today the whole operation lives in the system: quote → order → inventory check → progress logged at each plant station from tablets → warehouse → dispatch, QR-traceable end to end. It made just-in-time inventory possible. Two interfaces for two realities: tablet on the shop floor, desktop for management. Five years on retainer — I decide what gets built next, and they keep paying for it.</p>
+      <p class="built-with">Node.js · Vue · Firestore · GCP</p>
+      </div>
+    </article>
+
+    <article class="case">
+      <p class="case-meta">2024 — present<br>own product, recurring revenue in EUR</p>
+      <div class="case-body">
+      <h3>AI platform, RAG and my own inference stack</h3>
+      <p>A multi-model chat platform over the Anthropic, OpenAI and Gemini APIs, with retrieval built from scratch — chunking, embeddings, vector store, semantic search, re-ranker — before RAG templates and vibe coding existed. The same engine powers a contract-analysis product that scores agreements against 54 rules and returns a compliance report and a risk map: structured AI for decisions, not a chatbot.</p>
+      <p>Underneath it runs my own GPU inference infrastructure — a Node.js orchestrator I wrote doing dynamic VRAM management across llama.cpp, stable-diffusion.cpp and ComfyUI, served over REST. Frontier models when quality decides, open weights when cost does.</p>
+      <p class="built-with">Node.js · Python · Anthropic / OpenAI / Gemini APIs · vector search · llama.cpp · ComfyUI</p>
+      </div>
+    </article>
+
+    <article class="case">
+      <p class="case-meta">2019 — 2024<br>still in production</p>
+      <div class="case-body">
+      <h3>Grupo Argos — a rules engine for 350+ tax jurisdictions</h3>
+      <p>350+ monthly municipal tax filings, every municipality with its own rules. Before: 15 tax analysts, 15 different Excel methods, and a previous team two years into failing to build it. I did not start with code — I reconciled the accounting and standardized the method first, then built the engine on that standard. The largest company files in 2 minutes instead of a full day; 20,000 certificates in one day against 7,000 in a week; 75% better delivery rate; ledger and tax result reconcile automatically. Internal innovation award.</p>
+      <p class="annot">Structurally this is underwriting: a rules engine over hundreds of changing jurisdictions, with money and an audit trail on the line if the output is quietly wrong.</p>
+      <p class="built-with">Node.js · full-stack · systems integration</p>
+      </div>
+    </article>
+
+    <article class="case">
+      <p class="case-meta">2013 — 2017<br>as employee, then as consultant</p>
+      <div class="case-body">
+      <h3>CINCEL / SIETE — the platform that outlived its owner</h3>
+      <p>Replaced a five-tool manual pipeline (SurveyMonkey → Excel → SPSS → PowerPoint → Word) with one platform: instrument delivery, automatic statistics, generated reports and an interactive portal for the end client. It retired the IBM SPSS licenses and handles 10,000+ simultaneous respondents. End clients: Postobón, Éxito, EPM. The firm that commissioned it shut down; the system still runs under a new owner.</p>
+      <p class="built-with">Node.js · statistical computation · multi-tenant reporting</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="capabilities">
+    <p class="page-mark" aria-hidden="true"><span>Juan David Jaramillo Gutiérrez</span><span>jdjara@gmail.com · hipanda.io</span></p>
+    <h2>AI in practice</h2>
+    <dl class="practice">
+      <div>
+        <dt>Daily loop</dt>
+        <dd>Claude Code and agent workflows inside real client delivery — scaffolding, tests, self-review before a human reviews.</dd>
+      </div>
+      <div>
+        <dt>Own infra</dt>
+        <dd>Self-hosted GPU inference and production RAG, both built from scratch. Model choice is benchmarked per use case, not a vendor preference.</dd>
+      </div>
+      <div>
+        <dt>Judgment</dt>
+        <dd>AI writes code that works in isolation but does not know your inventory has to reconcile with the ledger. Standardize the process first, then generate.</dd>
+      </div>
+      <div>
+        <dt>Teaching</dt>
+        <dd>Delivered an applied-AI workshop to ISAGEN's internal audit team.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Stack</h2>
+    <dl class="stack">
+      <div>
+        <dt>Daily</dt>
+        <dd>Node.js · JavaScript · TypeScript · Vue · React · Python · Astro · Tailwind</dd>
+      </div>
+      <div>
+        <dt>Data &amp; cloud</dt>
+        <dd>Firestore and NoSQL modeling · GCP · Firebase · GitLab CI/CD</dd>
+      </div>
+      <div>
+        <dt>AI</dt>
+        <dd>Anthropic · OpenAI · Gemini · RAG · embeddings · re-ranking · local inference · Claude Code agents</dd>
+      </div>
+      <div>
+        <dt>Domain</dt>
+        <dd>Double-entry accounting · tax and regulatory logic · reconciliation · intercompany consolidation · budgeting</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Credentials &amp; earlier</h2>
+    <div class="creds">
+      <p><strong>CPA (Contador Público)</strong><span>Universidad de Antioquia · 1996 — 2002</span></p>
+      <p><strong>Specialist, Finance &amp; Capital Markets</strong><span>Universidad de Medellín · 2012</span></p>
+      <p><strong>Founder — Yungol S.A.S. / HiPanda S.A.S.</strong><span>2012 — present · custom software and process automation</span></p>
+      <p><strong>Regional Administrative Manager — Grupo Integer</strong><span>2003 — 2011 · consolidated financials for a multi-country group reporting to Rome; budget automation rolled out in Mexico, Chile and Venezuela</span></p>
+    </div>
+    <p class="closing">
+      <span>Available as a B2B contractor, LATAM remote.</span>
+      <span>Every system above is still owned and operated by the client.</span>
+    </p>
+  </section>
+
+</main>
+
+<button class="print-btn" type="button" onclick="window.print()">Save as PDF</button>
+
+</body>
+</html>
