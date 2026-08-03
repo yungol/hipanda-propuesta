@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIP-46 · Módulo de Compras · Entrega Técnica | Galco</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Libre Franklin', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --paper: oklch(0.985 0.005 85);
+      --paper-soft: oklch(0.969 0.007 82);
+      --paper-strong: oklch(0.944 0.008 82);
+      --ink: oklch(0.252 0.012 252);
+      --muted: oklch(0.53 0.016 250);
+      --line: oklch(0.865 0.008 80);
+      --accent: oklch(0.59 0.074 46);
+      --accent-soft: oklch(0.946 0.022 46);
+      --slate-soft: oklch(0.95 0.012 245);
+      --slate-line: oklch(0.88 0.014 245);
+      --green-soft: oklch(0.94 0.04 155);
+      --amber-soft: oklch(0.94 0.04 85);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Libre Franklin', sans-serif;
+      background:
+        radial-gradient(circle at top left, oklch(0.96 0.012 50) 0, transparent 28%),
+        radial-gradient(circle at top right, oklch(0.958 0.012 235) 0, transparent 30%),
+        linear-gradient(180deg, var(--paper) 0%, oklch(0.978 0.006 84) 100%);
+      color: var(--ink);
+    }
+
+    .ink { color: var(--ink); }
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent); }
+    .bg-paper { background-color: var(--paper); }
+    .bg-paper-soft { background-color: var(--paper-soft); }
+    .bg-paper-strong { background-color: var(--paper-strong); }
+    .bg-accent-soft { background-color: var(--accent-soft); }
+    .bg-slate-soft { background-color: var(--slate-soft); }
+    .bg-green-soft { background-color: var(--green-soft); }
+    .bg-amber-soft { background-color: var(--amber-soft); }
+    .border-line { border-color: var(--line); }
+    .border-slate-line { border-color: var(--slate-line); }
+
+    .kicker {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      font-weight: 700;
+    }
+
+    .section-title {
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .measure { max-width: 72ch; }
+
+    .stat-line {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: end;
+      padding: 0.95rem 0;
+      border-top: 1px solid var(--line);
+    }
+    .stat-line:first-child { border-top: 0; padding-top: 0; }
+
+    .contract-shell {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .contract-shell::before {
+      content: '';
+      display: block;
+      height: 2px;
+      background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 95%, transparent), color-mix(in oklab, var(--accent) 30%, transparent));
+      margin-bottom: 1.25rem;
+      border-radius: 999px;
+    }
+
+    .flow-index {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in oklab, var(--paper) 84%, var(--accent-soft));
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .print-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 50;
+    }
+
+    /* Tablas */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .data-table thead { border-bottom: 2px solid var(--line); }
+    .data-table th {
+      text-align: left;
+      padding: 0.65rem 0.75rem 0.55rem 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .data-table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .tag-blue { background: var(--accent-soft); color: var(--accent); }
+    .tag-green { background: var(--green-soft); color: oklch(0.45 0.10 155); }
+    .tag-amber { background: var(--amber-soft); color: oklch(0.52 0.10 70); }
+
+    /* Code blocks */
+    .code-block {
+      background: oklch(0.97 0.005 260);
+      border: 1px solid var(--slate-line);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      font-family: 'Ubuntu Mono', 'Courier New', monospace;
+      font-size: 0.825rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--ink);
+    }
+
+    /* Link style */
+    .doc-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+      transition: border-color 0.15s;
+    }
+    .doc-link:hover { border-color: var(--accent); }
+
+    @media (max-width: 640px) {
+      .stat-line {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+      .data-table { font-size: 0.78rem; }
+      .data-table th, .data-table td { padding: 0.45rem 0.5rem; }
+    }
+
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      html, body { background: var(--paper); }
+      .print-btn, .no-print { display: none !important; }
+      .print-shadow { box-shadow: none !important; }
+      section { break-inside: avoid; page-break-inside: avoid; }
+      a { text-decoration: none; color: inherit; }
+      .code-block { background: white; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <button onclick="window.print()" class="print-btn no-print inline-flex items-center gap-2 rounded-full border border-line bg-[color:var(--paper)] px-4 py-2.5 text-sm font-semibold ink shadow-lg transition hover:-translate-y-0.5 hover:bg-[color:var(--paper-soft)]">
+    <span>Imprimir / Guardar PDF</span>
+  </button>
+
+  <main class="mx-auto max-w-7xl px-5 pb-16 pt-6 sm:px-8 lg:px-10 lg:pt-10">
+
+    <!-- ==================== PORTADA ==================== -->
+    <section class="print-shadow overflow-hidden rounded-[2rem] border border-line bg-[color:var(--paper)] shadow-lg">
+      <div class="border-b border-line px-5 py-5 sm:px-8 lg:px-10">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--accent)] text-white font-extrabold text-sm leading-none">HP</div>
+            <div>
+              <p class="kicker muted">HiPanda · Entrega Técnica</p>
+              <p class="mt-1 text-xl font-semibold tracking-[-0.03em] ink sm:text-2xl">HIP-46 · Módulo de Compras</p>
+              <p class="mt-1 text-sm muted">Backend + Frontend + Documentación de usuario</p>
+            </div>
+          </div>
+
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] px-5 py-4">
+            <p class="kicker accent">Fecha de entrega</p>
+            <p class="mt-2 text-base font-semibold ink">31 de julio de 2026</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-10 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.7fr)] lg:px-10 lg:py-14">
+        <div>
+          <p class="kicker accent">Para Felipe · CTO Galco</p>
+          <h1 class="section-title mt-4 text-4xl font-extrabold ink sm:text-5xl lg:text-[4.4rem]">Sistema completo de solicitudes y órdenes de compra.</h1>
+          <p class="measure mt-6 text-lg leading-8 muted sm:text-xl">Un módulo nuevo, autocontenido, que cubre el ciclo completo de compras: desde que un colaborador pide productos hasta que el proveedor entrega y la orden se cierra administrativamente. Backend con 53 endpoints y 472 tests. Frontend con 13 componentes Vue y kanban dual. Documentación de usuario publicada.</p>
+        </div>
+
+        <aside class="contract-shell rounded-[1.75rem] border border-line bg-[color:var(--paper-soft)] p-6 sm:p-7">
+          <p class="kicker muted">Cifras clave</p>
+          <div class="mt-5 space-y-4">
+            <div>
+              <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Commits</p>
+              <p class="mt-1 text-2xl font-extrabold ink">15</p>
+              <p class="mt-0.5 text-sm leading-6 muted">Backend 8 + Frontend 7</p>
+            </div>
+            <div class="border-t border-line pt-4">
+              <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Endpoints</p>
+              <p class="mt-1 text-2xl font-extrabold ink">53</p>
+              <p class="mt-0.5 text-sm leading-6 muted">29 solicitudes + 11 órdenes + 10 proveedores + 3 catálogo</p>
+            </div>
+            <div class="border-t border-line pt-4">
+              <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Tests</p>
+              <p class="mt-1 text-2xl font-extrabold ink">472</p>
+              <p class="mt-0.5 text-sm leading-6 muted">Todos pasando. Lint limpio.</p>
+            </div>
+            <div class="border-t border-line pt-4">
+              <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Archivos nuevos</p>
+              <p class="mt-1 text-2xl font-extrabold ink">33</p>
+              <p class="mt-0.5 text-sm leading-6 muted">20 backend + 13 frontend</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ==================== RESUMEN EJECUTIVO ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Resumen ejecutivo</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Qué se construyó y por qué.</h2>
+
+      <div class="mt-8 grid gap-8 lg:grid-cols-2">
+        <div>
+          <p class="text-base leading-8 muted">Antes de este módulo, Galco no tenía un sistema de compras. Las solicitudes se hacían en Excel: cada persona mandaba su archivo por separado y el encargado de compras debía consolidar manualmente todas las planillas para unificar pedidos y gestionarlos con los proveedores. Este módulo automatiza ese ciclo completo: solicitudes multiproducto, órdenes a proveedores, catálogo de productos, máquina de estados con seis etapas, kanban dual y generación de Excel/PDF para envío al proveedor.</p>
+          <p class="mt-4 text-base leading-8 muted">Se construyó como un <strong class="ink">dominio de negocio independiente</strong> dentro de la arquitectura existente. El backend no modifica controladores, modelos ni rutas de otros módulos. La única modificación fuera del directorio <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">modules/compras/</code> es la adición de tres registros de rutas.</p>
+          <p class="mt-4 text-base leading-8 muted">El frontend sigue el design system de Galco: Poppins, Azul Industrial #0053A1, sin sombras ni gradientes. Cada componente consume la API directamente desde <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">apiServices</code>, siguiendo la convención del repositorio.</p>
+        </div>
+
+        <div class="rounded-[1.5rem] border border-line bg-[color:var(--slate-soft)] p-5 sm:p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Lo que cubre el módulo</p>
+          <ul class="mt-4 space-y-3">
+            <li class="flex gap-3">
+              <span class="flow-index text-xs">1</span>
+              <div>
+                <p class="text-base font-semibold ink">Solicitudes multiproducto</p>
+                <p class="mt-0.5 text-sm leading-6 muted">Un usuario crea un pedido con N productos, adjuntos y lo envía a Compras. Borrador automático en localStorage.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flow-index text-xs">2</span>
+              <div>
+                <p class="text-base font-semibold ink">Kanban dual con 6 columnas</p>
+                <p class="mt-0.5 text-sm leading-6 muted">Solicitudes y órdenes conviven en un solo tablero. Toggle para ver el tramo final por orden o por solicitud.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flow-index text-xs">3</span>
+              <div>
+                <p class="text-base font-semibold ink">Órdenes de compra a proveedores</p>
+                <p class="mt-0.5 text-sm leading-6 muted">Agrupación de productos del pool, asignación a proveedor, envío con Excel corporativo y PDF imprimible.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flow-index text-xs">4</span>
+              <div>
+                <p class="text-base font-semibold ink">Máquina de estados con 6 etapas</p>
+                <p class="mt-0.5 text-sm leading-6 muted">Cada producto recorre el ciclo: enviada → recibida → en preparación → preparada → enviada al proveedor → recibida. La solicitud refleja el producto menos avanzado.</p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span class="flow-index text-xs">5</span>
+              <div>
+                <p class="text-base font-semibold ink">Catálogo + Proveedores</p>
+                <p class="mt-0.5 text-sm leading-6 muted">CRUD completo con importación/exportación Excel. Autocompletado en el formulario de solicitud.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== DOCUMENTACIÓN DE USUARIO ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Entregable 1 de 3</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Documentación de usuario.</h2>
+      <p class="measure mt-4 text-base leading-8 muted">Tres guías completas publicadas en el portal de documentación de Galco. Cada una explica qué hace el módulo, cómo se usa y qué acciones están disponibles. Escritas para los dos perfiles: quien solicita productos y quien administra compras.</p>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-3">
+        <a href="https://galcodocs.yungol.com/docs/compras/gestion/" target="_blank" class="contract-shell group rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6 transition hover:border-[color:var(--accent)] no-underline">
+          <p class="kicker muted">Panel de administración</p>
+          <p class="mt-3 text-xl font-bold ink group-hover:text-[color:var(--accent)] transition-colors">Gestión de compras</p>
+          <p class="mt-2 text-sm leading-6 muted">Solicitudes, órdenes, proveedores y catálogo en un solo panel. Exclusivo para Compras Administrador.</p>
+          <p class="mt-3 text-sm font-semibold accent">galcodocs.yungol.com/docs/compras/gestion →</p>
+        </a>
+
+        <a href="https://galcodocs.yungol.com/docs/compras/solicitud/" target="_blank" class="contract-shell group rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6 transition hover:border-[color:var(--accent)] no-underline">
+          <p class="kicker muted">Formulario</p>
+          <p class="mt-3 text-xl font-bold ink group-hover:text-[color:var(--accent)] transition-colors">Nueva solicitud de compra</p>
+          <p class="mt-2 text-sm leading-6 muted">Cómo crear, editar y dar seguimiento a un pedido de productos. Para todos los usuarios.</p>
+          <p class="mt-3 text-sm font-semibold accent">galcodocs.yungol.com/docs/compras/solicitud →</p>
+        </a>
+
+        <a href="https://galcodocs.yungol.com/docs/compras/tablero/" target="_blank" class="contract-shell group rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6 transition hover:border-[color:var(--accent)] no-underline">
+          <p class="kicker muted">Kanban</p>
+          <p class="mt-3 text-xl font-bold ink group-hover:text-[color:var(--accent)] transition-colors">Tablero de compras</p>
+          <p class="mt-2 text-sm leading-6 muted">Control visual del ciclo completo. Avanzar, regresar, armar órdenes y enviar al proveedor.</p>
+          <p class="mt-3 text-sm font-semibold accent">galcodocs.yungol.com/docs/compras/tablero →</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== CONFIGURACIÓN DE ROLES ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Entregable 2 de 3</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Configuración de roles y permisos.</h2>
+      <p class="measure mt-4 text-base leading-8 muted">Para que el módulo funcione, cada usuario que vaya a usar Compras debe tener asignado el claim correspondiente en Firebase. Esto se hace desde el panel de administración de usuarios, en la sección de edición de cada usuario.</p>
+
+      <div class="mt-8 grid gap-8 lg:grid-cols-2">
+        <!-- Rol 1: Compras Administrador -->
+        <div class="contract-shell rounded-[1.75rem] border border-line bg-[color:var(--paper-soft)] p-6 sm:p-7">
+          <div class="flex items-center gap-3">
+            <span class="tag tag-blue">Admin</span>
+            <p class="text-lg font-bold ink">Compras Administrador</p>
+          </div>
+          <p class="mt-3 text-sm leading-7 muted">Este rol debe asignarse <strong class="ink">exclusivamente al encargado del área de compras de Galco</strong>. Tiene acceso completo al módulo: ve todas las solicitudes de todos los departamentos, puede mover estados, crear órdenes de compra, gestionar proveedores y el catálogo de productos, y regresar solicitudes a estados anteriores.</p>
+
+          <div class="mt-5 space-y-3">
+            <div class="rounded-xl border border-line bg-[color:var(--paper)] p-4">
+              <p class="text-xs font-bold uppercase tracking-[0.12em] muted">Claim en Firebase</p>
+              <p class="mt-1 text-base font-semibold ink font-mono">comprasAdm</p>
+            </div>
+            <div class="rounded-xl border border-line bg-[color:var(--paper)] p-4">
+              <p class="text-xs font-bold uppercase tracking-[0.12em] muted">Alcance en el sistema</p>
+              <ul class="mt-2 space-y-1.5 text-sm leading-6 muted">
+                <li>· Ver y gestionar TODAS las solicitudes de compra</li>
+                <li>· Avanzar y regresar estados de solicitudes y productos</li>
+                <li>· Crear, cerrar, reabrir, enviar y finalizar órdenes de compra</li>
+                <li>· CRUD completo de proveedores y catálogo de productos</li>
+                <li>· Acceso al tablero kanban completo</li>
+                <li>· Panel de Gestión de compras</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rol 2: Compras Usuario -->
+        <div class="contract-shell rounded-[1.75rem] border border-line bg-[color:var(--paper-soft)] p-6 sm:p-7">
+          <div class="flex items-center gap-3">
+            <span class="tag tag-green">Usuario</span>
+            <p class="text-lg font-bold ink">Compras Usuario</p>
+          </div>
+          <p class="mt-3 text-sm leading-7 muted">Este rol debe asignarse a <strong class="ink">todos los colaboradores que necesiten solicitar compras al área de compras</strong>. Cubre a cualquier persona en la organización que requiera pedir productos: producción, mantenimiento, administración, logística o cualquier otro departamento.</p>
+
+          <div class="mt-5 space-y-3">
+            <div class="rounded-xl border border-line bg-[color:var(--paper)] p-4">
+              <p class="text-xs font-bold uppercase tracking-[0.12em] muted">Claim en Firebase</p>
+              <p class="mt-1 text-base font-semibold ink font-mono">comprasUsr</p>
+            </div>
+            <div class="rounded-xl border border-line bg-[color:var(--paper)] p-4">
+              <p class="text-xs font-bold uppercase tracking-[0.12em] muted">Alcance en el sistema</p>
+              <ul class="mt-2 space-y-1.5 text-sm leading-6 muted">
+                <li>· Crear, editar y eliminar SUS PROPIAS solicitudes</li>
+                <li>· Solo puede modificar mientras estén en "Solicitud Enviada"</li>
+                <li>· Ver el tablero con sus solicitudes y órdenes relacionadas</li>
+                <li>· Consultar el catálogo de productos</li>
+                <li>· <strong>Sin acceso</strong> a Gestión, proveedores, ni control de estados</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-[1.5rem] border border-line bg-[color:var(--accent-soft)] p-5 sm:p-6">
+        <p class="text-sm font-semibold uppercase tracking-[0.12em] accent">Procedimiento</p>
+        <p class="mt-2 text-base leading-7 ink">Para asignar los roles, entrar al panel de administración de usuarios (<strong>Admin → Usuarios</strong>), buscar al usuario y en la sección de <strong>Permisos</strong> seleccionar el claim correspondiente en el dropdown de "Compras". Guardar los cambios. El claim se sincroniza con Firebase Auth y el sistema lo aplica en el próximo login del usuario.</p>
+      </div>
+    </section>
+
+    <!-- ==================== ARQUITECTURA BACKEND ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Entregable 3 de 3 · Backend</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Arquitectura del backend.</h2>
+      <p class="measure mt-4 text-base leading-8 muted">Repositorio <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">backend-galco</code>. Stack: Node.js + Hapi 20 + Mongoose 6 + Firebase Auth. El módulo es un dominio de negocio independiente que no modifica ningún controlador, modelo ni ruta de otros módulos.</p>
+
+      <!-- Colecciones -->
+      <div class="mt-10">
+        <p class="kicker muted">Modelo de datos</p>
+        <h3 class="mt-3 text-xl font-bold ink">Cinco colecciones nuevas en MongoDB.</h3>
+
+        <div class="mt-6 overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Colección</th>
+                <th>Propósito</th>
+                <th>Consecutivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold ink">solicitudes</td>
+                <td class="muted">Cabecera de una solicitud de compra. Contiene solicitante, departamento, estado y adjuntos.</td>
+                <td class="ink font-mono text-sm">SOL-0001</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">productossolicitudes</td>
+                <td class="muted">Cada producto pedido dentro de una solicitud. Es el <strong>átomo</strong> que recorre el ciclo completo.</td>
+                <td class="muted">—</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">ordenescompras</td>
+                <td class="muted">Orden emitida a un proveedor. Agrupa productos de una o varias solicitudes.</td>
+                <td class="ink font-mono text-sm">OC-0001</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">proveedores</td>
+                <td class="muted">Proveedor con NIT único. Baja lógica: las órdenes históricas conservan una copia de los datos.</td>
+                <td class="muted">—</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">catalogoproductos</td>
+                <td class="muted">Catálogo maestro de códigos de producto. Alimenta los autocompletados del frontend.</td>
+                <td class="muted">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Máquina de estados -->
+      <div class="mt-10">
+        <p class="kicker muted">Máquina de estados</p>
+        <h3 class="mt-3 text-xl font-bold ink">Seis estados que comparten productos y solicitudes.</h3>
+
+        <div class="mt-5 overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Estado</th>
+                <th>Significado</th>
+                <th>Quién lo setea</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono text-sm muted">1</td>
+                <td class="font-semibold ink">solicitud_enviada</td>
+                <td class="muted">El usuario creó la solicitud</td>
+                <td><span class="tag tag-green">Automático</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm muted">2</td>
+                <td class="font-semibold ink">solicitud_recibida</td>
+                <td class="muted">Compras acusó recibo</td>
+                <td><span class="tag tag-blue">comprasAdm</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm muted">3</td>
+                <td class="font-semibold ink">en_preparacion</td>
+                <td class="muted">Compras está armando las órdenes</td>
+                <td><span class="tag tag-blue">comprasAdm</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm muted">4</td>
+                <td class="font-semibold ink">preparada</td>
+                <td class="muted">El producto fue asignado a una orden</td>
+                <td><span class="tag tag-green">Automático</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm muted">5</td>
+                <td class="font-semibold ink">enviada_proveedor</td>
+                <td class="muted">La orden se envió al proveedor</td>
+                <td><span class="tag tag-amber">Propagado</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm muted">6</td>
+                <td class="font-semibold ink">productos_recibidos</td>
+                <td class="muted">El proveedor entregó</td>
+                <td><span class="tag tag-amber">Propagado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 rounded-[1.5rem] border border-line bg-[color:var(--accent-soft)] p-5 sm:p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] accent">Regla central</p>
+          <p class="mt-2 text-base leading-7 ink">El estado de la solicitud es el del producto <strong>menos avanzado</strong>. Si una solicitud tiene tres productos, uno ya entregado, otro en camino y un tercero sin proveedor asignado, la solicitud está en <code class="bg-paper px-1.5 py-0.5 rounded text-sm">en_preparacion</code>. El estado se recalcula automáticamente dentro de la misma transacción MongoDB desde seis caminos distintos (crear, avanzar, asignar, quitar, propagar y borrar).</p>
+        </div>
+      </div>
+
+      <!-- API -->
+      <div class="mt-10">
+        <p class="kicker muted">API REST</p>
+        <h3 class="mt-3 text-xl font-bold ink">53 endpoints con autenticación Firebase.</h3>
+        <p class="mt-2 text-sm leading-7 muted">Todas las rutas requieren <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">Authorization: Bearer &lt;idToken&gt;</code>. Los claims de Firebase (<code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">comprasAdm</code>, <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">comprasUsr</code>) se mapean a scope en Hapi, que rechaza con 403 antes de llegar al controller si el scope no coincide. El aislamiento de datos es server-side: un <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">comprasUsr</code> solo ve y modifica sus propias solicitudes.</p>
+
+        <div class="mt-6 grid gap-6 sm:grid-cols-2">
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5">
+            <p class="text-sm font-bold ink">Solicitudes y productos</p>
+            <p class="mt-1 text-xs muted font-mono">/api/compras/*</p>
+            <p class="mt-2 text-sm muted">15 endpoints: CRUD de solicitudes, productos, estados, adjuntos y cierre administrativo. Las operaciones multiregistro usan transacciones MongoDB.</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5">
+            <p class="text-sm font-bold ink">Órdenes de compra</p>
+            <p class="mt-1 text-xs muted font-mono">/api/compras/ordenes/*</p>
+            <p class="mt-2 text-sm muted">11 endpoints: CRUD de órdenes, asignación de productos, avance con propagación en cascada y adjuntos.</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5">
+            <p class="text-sm font-bold ink">Proveedores</p>
+            <p class="mt-1 text-xs muted font-mono">/api/compras/proveedores/*</p>
+            <p class="mt-2 text-sm muted">5 endpoints: CRUD con NIT único y baja lógica. Las órdenes conservan copia de los datos al momento de crearse.</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5">
+            <p class="text-sm font-bold ink">Catálogo de productos</p>
+            <p class="mt-1 text-xs muted font-mono">/api/compras/catalogo/*</p>
+            <p class="mt-2 text-sm muted">3 endpoints: listar, crear y editar productos del catálogo maestro. Código único, búsqueda por texto.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="mt-10">
+        <p class="kicker muted">Seguridad e integridad</p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Aislamiento de datos</p>
+            <p class="mt-1 text-sm leading-6 muted">comprasUsr solo ve y modifica sus propias solicitudes. Solo puede editar mientras estén en solicitud_enviada. El solicitanteUid se fuerza server-side.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Guardas de integridad</p>
+            <p class="mt-1 text-sm leading-6 muted">No se puede borrar el último producto de una solicitud. No se borra un producto asignado a una orden sin quitarlo primero. Las órdenes solo aceptan cambios en en_preparacion.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Transacciones MongoDB</p>
+            <p class="mt-1 text-sm leading-6 muted">Todas las operaciones multiregistro corren dentro de una sesión MongoDB. Si el entorno no tiene replica set, degrada gracefulmente a ejecución sin sesión.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Consecutivos atómicos</p>
+            <p class="mt-1 text-sm leading-6 muted">SOL-0001, OC-0001 generados dentro de la transacción con padding de 4 dígitos. Sin condiciones de carrera.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== IMPLEMENTACIÓN FRONTEND ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Entregable 3 de 3 · Frontend</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Implementación del frontend.</h2>
+      <p class="measure mt-4 text-base leading-8 muted">Repositorio <code class="bg-paper-strong px-1.5 py-0.5 rounded text-sm">front-galco</code>. 7 commits, 13 componentes Vue, 6.392 líneas de código. Build compila limpio y ESLint sin hallazgos.</p>
+
+      <!-- Componentes -->
+      <div class="mt-10">
+        <p class="kicker muted">Componentes del módulo</p>
+        <h3 class="mt-3 text-xl font-bold ink">Trece componentes en src/components/compras/.</h3>
+
+        <div class="mt-6 overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>Líneas</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold ink">TableroCompras.vue</td>
+                <td class="font-mono text-sm muted">1.502</td>
+                <td class="muted">Kanban dual de 6 columnas. Solicitudes y órdenes conviven en el mismo tablero.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">SolicitudCompra.vue</td>
+                <td class="font-mono text-sm muted">1.110</td>
+                <td class="muted">Formulario multiproducto con borrador en localStorage. Funciona como página y como modal.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">GestionOrdenes.vue</td>
+                <td class="font-mono text-sm muted">743</td>
+                <td class="muted">Vista tabular de órdenes activas y finalizadas con paginación.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">GestionSolicitudes.vue</td>
+                <td class="font-mono text-sm muted">542</td>
+                <td class="muted">Vista tabular de solicitudes activas y finalizadas con paginación.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">ProveedoresCompras.vue</td>
+                <td class="font-mono text-sm muted">487</td>
+                <td class="muted">CRUD de proveedores con contactos y baja lógica.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">ArmarOrden.vue</td>
+                <td class="font-mono text-sm muted">429</td>
+                <td class="muted">Agrupación de productos del pool en órdenes de compra.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">AdjuntosCompra.vue</td>
+                <td class="font-mono text-sm muted">412</td>
+                <td class="muted">Subida y previsualización de adjuntos con Firebase Storage.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">CatalogoProductos.vue</td>
+                <td class="font-mono text-sm muted">371</td>
+                <td class="muted">CRUD de catálogo con importación y exportación Excel.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">EnvioProveedor.vue</td>
+                <td class="font-mono text-sm muted">355</td>
+                <td class="muted">Kit de envío: correo, Excel corporativo y PDF/impresión.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">estadosCompra.config.js</td>
+                <td class="font-mono text-sm muted">284</td>
+                <td class="muted">Dos máquinas de estados con 29 helpers exportados.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">ComprasMenu.vue</td>
+                <td class="font-mono text-sm muted">80</td>
+                <td class="muted">Navegación por tabs del módulo.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">GestionCompras.vue</td>
+                <td class="font-mono text-sm muted">64</td>
+                <td class="muted">Wrapper con sub-tabs: Solicitudes, Órdenes, Proveedores, Catálogo.</td>
+              </tr>
+              <tr>
+                <td class="font-semibold ink">formato.js</td>
+                <td class="font-mono text-sm muted">13</td>
+                <td class="muted">Formateo de fechas en zona horaria Colombia.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Funcionalidad adicional -->
+      <div class="mt-10">
+        <p class="kicker muted">Más allá de HIP-46</p>
+        <h3 class="mt-3 text-xl font-bold ink">Funcionalidad adicional implementada durante el desarrollo.</h3>
+
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Catálogo de productos</p>
+            <p class="mt-1 text-sm leading-6 muted">CRUD completo con importación/exportación Excel. Autocompletado con debounce y navegación por teclado en el formulario de solicitud.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Tracking de urgencia</p>
+            <p class="mt-1 text-sm leading-6 muted">Flag urgente por línea de producto. Tag rojo, fondo rosado en kanban, filtro de urgencia en todas las vistas.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Campos extendidos</p>
+            <p class="mt-1 text-sm leading-6 muted">Unidad, Nº pedido, Proyecto y Fecha de entrega en cada línea de producto. Con validación client-side.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Regresión de estados</p>
+            <p class="mt-1 text-sm leading-6 muted">Devolver una solicitud al estado anterior. Bloqueo automático si hay productos asignados a órdenes.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Edición inline desde tablero</p>
+            <p class="mt-1 text-sm leading-6 muted">SolicitudCompra.vue funciona como modal child. Props y emits para integrarse con el kanban sin navegar.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Envío a proveedor</p>
+            <p class="mt-1 text-sm leading-6 muted">Correo prearmado, Excel corporativo con xlsx-js-style (header #0053A1), PDF vía window.print().</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Separación activas/finalizadas</p>
+            <p class="mt-1 text-sm leading-6 muted">Tabs internos en Gestión con paginación de 50 items. Arrays independientes para evitar refetch.</p>
+          </div>
+          <div class="rounded-xl border border-line bg-[color:var(--slate-soft)] p-4">
+            <p class="text-sm font-semibold ink">Warning irreversible</p>
+            <p class="mt-1 text-sm leading-6 muted">Al enviar una orden al proveedor, advertencia explícita de que el paso no se puede deshacer.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CONSIDERACIONES PARA EL DESPLIEGUE ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker accent">Despliegue</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Consideraciones para pasar a producción.</h2>
+
+      <div class="mt-8 grid gap-8 lg:grid-cols-2">
+        <div>
+          <div class="space-y-6">
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="tag tag-amber">Previo</span>
+                <p class="text-base font-bold ink">Verificar colección compras</p>
+              </div>
+              <p class="mt-3 text-sm leading-7 muted">Antes de deployar, ejecutar <code class="bg-paper px-1.5 py-0.5 rounded text-xs">db.compras.countDocuments()</code> en la base de producción. Si el resultado es mayor a 0, esos documentos pertenecen a solicitudes creadas con el modelo anterior y quedarán inaccesibles. Evaluar si requieren migración.</p>
+            </div>
+
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="tag tag-blue">Claims</span>
+                <p class="text-base font-bold ink">Asignar roles en Firebase</p>
+              </div>
+              <p class="mt-3 text-sm leading-7 muted">Los claims <code class="bg-paper px-1.5 py-0.5 rounded text-xs">comprasAdm</code> y <code class="bg-paper px-1.5 py-0.5 rounded text-xs">comprasUsr</code> deben asignarse desde el panel de administración de usuarios. La lógica ya está en <code class="bg-paper px-1.5 py-0.5 rounded text-xs">plugins/firebase.js</code> en master y no requiere cambios.</p>
+            </div>
+
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="tag tag-green">Auto</span>
+                <p class="text-base font-bold ink">Colecciones nuevas</p>
+              </div>
+              <p class="mt-3 text-sm leading-7 muted">Mongoose crea automáticamente las colecciones al primer write. No se requiere script de migración de esquema. No hay foreign keys con colecciones existentes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="space-y-6">
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="tag tag-amber">Replica set</span>
+                <p class="text-base font-bold ink">Transacciones MongoDB</p>
+              </div>
+              <p class="mt-3 text-sm leading-7 muted">Las transacciones requieren replica set. En producción con un solo nodo (standalone), <code class="bg-paper px-1.5 py-0.5 rounded text-xs">conSesion()</code> detecta el error y reintenta sin sesión automáticamente. El comportamiento degradado ya está implementado y probado.</p>
+            </div>
+
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+              <div class="flex items-center gap-3">
+                <span class="tag tag-green">Rollback</span>
+                <p class="text-base font-bold ink">Plan de reversión</p>
+              </div>
+              <p class="mt-3 text-sm leading-7 muted">Si es necesario revertir, volver al commit anterior en master. Las colecciones nuevas quedarán en MongoDB pero ningún endpoint las consultará. La colección <code class="bg-paper px-1.5 py-0.5 rounded text-xs">compras</code> original no se ve afectada. Mongoose no dropea colecciones al eliminar un modelo.</p>
+            </div>
+
+            <div class="rounded-[1.5rem] border border-line bg-[color:var(--accent-soft)] p-5 sm:p-6">
+              <p class="text-sm font-semibold uppercase tracking-[0.12em] accent">Archivos modificados fuera del módulo</p>
+              <p class="mt-2 text-sm leading-7 ink">Solo un archivo en backend: <code class="bg-paper px-1.5 py-0.5 rounded text-xs">modules/registerRoutes.js</code> (+3 líneas). Tres archivos en frontend: <code class="bg-paper px-1.5 py-0.5 rounded text-xs">permissions.config.js</code>, <code class="bg-paper px-1.5 py-0.5 rounded text-xs">firebase/index.js</code>, <code class="bg-paper px-1.5 py-0.5 rounded text-xs">routes/index.js</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PENDIENTES ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker muted">Estado actual</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Pendientes y fuera de alcance.</h2>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-[1.75rem] border border-line bg-[color:var(--amber-soft)] p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em]" style="color: oklch(0.52 0.10 70)">Pendientes de ejecución</p>
+          <ul class="mt-4 space-y-3 text-sm leading-7 muted" style="color: oklch(0.38 0.05 70)">
+            <li>· Asignar claims de Firebase a los usuarios reales desde EditUser.vue</li>
+            <li>· Guard de scope en el router del frontend (deuda técnica transversal)</li>
+          </ul>
+        </div>
+
+        <div class="rounded-[1.75rem] border border-line bg-[color:var(--slate-soft)] p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Fuera de alcance</p>
+          <ul class="mt-4 space-y-3 text-sm leading-7 muted">
+            <li>· Recepción parcial de productos</li>
+            <li>· Precios unitarios y totales en órdenes</li>
+            <li>· PDF de orden generado automáticamente (se resuelve con EnvioProveedor.vue)</li>
+            <li>· Notificaciones al solicitante por cambio de estado</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== REFERENCIAS ==================== -->
+    <section class="mt-8 print-shadow rounded-[2rem] border border-line bg-[color:var(--paper)] p-6 shadow-lg sm:p-8 lg:p-10">
+      <p class="kicker muted">Referencias</p>
+      <h2 class="section-title mt-4 text-3xl font-bold ink sm:text-4xl">Links y artefactos.</h2>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-3">
+        <div class="contract-shell rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Linear</p>
+          <p class="mt-2"><a href="https://linear.app/hipanda/issue/HIP-46" target="_blank" class="doc-link">HIP-46 · Módulo de compras</a></p>
+        </div>
+        <div class="contract-shell rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Ramas</p>
+          <p class="mt-2 text-sm ink font-mono">backend-galco: master<br>front-galco: master</p>
+        </div>
+        <div class="contract-shell rounded-[1.5rem] border border-line bg-[color:var(--paper-soft)] p-5 sm:p-6">
+          <p class="text-sm font-semibold uppercase tracking-[0.12em] muted">Documentación</p>
+          <p class="mt-2 space-y-1 text-sm">
+            <a href="https://galcodocs.yungol.com/docs/compras/gestion/" target="_blank" class="doc-link">Gestión de compras</a><br>
+            <a href="https://galcodocs.yungol.com/docs/compras/solicitud/" target="_blank" class="doc-link">Nueva solicitud</a><br>
+            <a href="https://galcodocs.yungol.com/docs/compras/tablero/" target="_blank" class="doc-link">Tablero de compras</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-[1.5rem] border border-line bg-[color:var(--accent-soft)] p-5 sm:p-6">
+        <p class="text-sm font-semibold uppercase tracking-[0.12em] accent">Documentos técnicos adjuntos</p>
+        <p class="mt-2 text-base leading-7 ink">Este documento se complementa con dos anexos técnicos detallados en el directorio <code class="bg-paper px-1.5 py-0.5 rounded text-sm">moduloCompras/</code> del repositorio de propuestas:</p>
+        <ul class="mt-3 space-y-2 text-sm leading-6 muted">
+          <li>· <strong class="ink">estructuraBackCompras.md</strong> — Arquitectura completa del backend: modelos, API, máquina de estados, transaccionalidad, seguridad, tests y plan de despliegue.</li>
+          <li>· <strong class="ink">issueComprasFront.md</strong> — Implementación completa del frontend: 7 commits, 13 componentes, funcionalidad adicional, máquinas de estados, diseño y rutas.</li>
+        </ul>
+      </div>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm muted">Documento generado el 31 de julio de 2026 · HiPanda para Galco</p>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>
