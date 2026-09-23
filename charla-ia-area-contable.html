@@ -117,10 +117,56 @@
       html { scroll-behavior: auto; }
     }
 
+    .kit-pre {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      background: var(--paper-soft);
+      border-top: 1px solid var(--line);
+      padding: 1.25rem;
+      margin: 0;
+      border-radius: 0 0 1rem 1rem;
+    }
+    .kit-btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      transition: background-color 0.2s ease;
+    }
+    .kit-btn:hover { background: var(--paper-strong); }
+    .kit-btn:focus-visible, .pdf-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .kit-file summary::-webkit-details-marker { display: none; }
+
+    .pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      transition: opacity 0.2s ease;
+    }
+    .pdf-btn:hover { opacity: 0.88; }
+
+    @page { margin: 14mm 12mm; }
+
     @media print {
+      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body { background: #fff; }
       .no-print { display: none !important; }
-      article, .avoid-break { break-inside: avoid; }
+      .reveal { animation: none !important; }
+      article, .avoid-break, .kit-file { break-inside: avoid; }
+      h2, h3 { break-after: avoid; }
       .shadow-paper { box-shadow: none; }
     }
   </style>
@@ -134,14 +180,19 @@
         <img src="pandaV2.png" alt="" class="h-8 w-8 rounded-md object-cover" onerror="this.remove()">
         <span class="text-sm font-extrabold tracking-wide ink">HiPanda</span>
       </a>
-      <nav class="hidden gap-6 text-sm font-medium muted md:flex">
+      <nav class="hidden gap-5 text-sm font-medium muted lg:flex">
         <a href="#fundamentos" class="hover:text-[color:var(--ink)]">Fundamentos</a>
         <a href="#agentes" class="hover:text-[color:var(--ink)]">Agentes</a>
         <a href="#automatizar" class="hover:text-[color:var(--ink)]">Automatizar</a>
         <a href="#casos" class="hover:text-[color:var(--ink)]">Casos</a>
         <a href="#prompt" class="hover:text-[color:var(--ink)]">Buen prompt</a>
+        <a href="#conciliacion" class="hover:text-[color:var(--ink)]">Conciliación</a>
         <a href="https://www.youtube.com/@hipandaio" target="_blank" rel="noopener" class="font-semibold accent hover:underline">YouTube</a>
       </nav>
+      <button type="button" class="pdf-btn" data-print>
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
+        Descargar PDF
+      </button>
     </div>
   </header>
 
@@ -166,11 +217,12 @@
       </div>
 
       <!-- Índice -->
-      <ol class="reveal reveal-3 mt-10 grid gap-px overflow-hidden rounded-2xl border border-line bg-[color:var(--line)] text-sm sm:grid-cols-2 lg:grid-cols-4">
+      <ol class="reveal reveal-3 mt-10 grid gap-px overflow-hidden rounded-2xl border border-line bg-[color:var(--line)] text-sm sm:grid-cols-2 lg:grid-cols-5">
         <li class="bg-paper p-5"><a href="#fundamentos" class="block"><span class="part-label">Parte 1</span><span class="mt-1 block font-bold ink">Cómo funciona la IA</span><span class="mt-1 block muted">Lo que es, lo que no es y sus límites</span></a></li>
         <li class="bg-paper p-5"><a href="#agentes" class="block"><span class="part-label">Parte 2</span><span class="mt-1 block font-bold ink">Chat vs. agente</span><span class="mt-1 block muted">Herramientas y modelos disponibles</span></a></li>
         <li class="bg-paper p-5"><a href="#automatizar" class="block"><span class="part-label">Parte 3</span><span class="mt-1 block font-bold ink">Cómo se automatiza</span><span class="mt-1 block muted">Carpetas, pasos y orquestador</span></a></li>
         <li class="bg-paper p-5"><a href="#casos" class="block"><span class="part-label">Parte 4</span><span class="mt-1 block font-bold ink">Aplicado a contabilidad</span><span class="mt-1 block muted">Casos, prompts y reglas de oro</span></a></li>
+        <li class="bg-paper p-5 sm:col-span-2 lg:col-span-1"><a href="#conciliacion" class="block"><span class="part-label">Parte 5</span><span class="mt-1 block font-bold ink">Guía práctica</span><span class="mt-1 block muted">Automatizar una conciliación bancaria</span></a></li>
       </ol>
     </section>
 
@@ -395,14 +447,15 @@
             <p class="text-sm font-semibold muted">Estructura de una automatización</p>
 <pre class="tree mt-3 ink">📁 conciliacion-bancaria/
 ├── 📁 entradas/
-│   ├── extracto-banco.csv
-│   └── auxiliar-bancos.csv
+│   ├── extracto_banco.csv
+│   └── auxiliar_libros.csv
 ├── 📁 salidas/
-│   └── conciliacion.xlsx
-├── paso-1-limpiar-extracto.md
-├── paso-2-cruzar-partidas.md
-├── paso-3-reporte-pendientes.md
+│   └── informe_cuadratica.md
+├── paso1.md
+├── paso2.md
+├── paso3.md
 └── orquestador.md</pre>
+            <a href="#conciliacion" class="no-print mt-4 inline-block text-sm font-semibold accent hover:underline">Ver el kit completo en la guía práctica →</a>
           </div>
           <ol class="space-y-5">
             <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
@@ -579,8 +632,326 @@ Reglas: cruza por valor y fecha con tolerancia de 3 días. No inventes datos. Si
       </ul>
     </section>
 
+    <!-- ============ PARTE 5 · GUÍA CONCILIACIÓN ============ -->
+    <section id="conciliacion" class="border-t border-line bg-paper-soft">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+        <p class="part-label">Parte 5 · Guía práctica</p>
+        <h2 class="section-title mt-3 text-3xl font-extrabold ink sm:text-5xl">Cómo se hace una automatización<br class="hidden sm:block"> de conciliación bancaria</h2>
+        <p class="measure mt-5 text-lg leading-relaxed muted">
+          Todo lo anterior, aplicado a un caso real. Aquí está el kit completo: los archivos de ejemplo, las instrucciones
+          de cada paso y el orquestador. Pueden copiarlos o descargarlos y probarlos con cualquier agente.
+        </p>
+
+        <!-- Caja negra vs pasos -->
+        <div class="mt-10 grid gap-5 lg:grid-cols-2">
+          <article class="rounded-2xl border border-line bg-paper-strong p-6 sm:p-8">
+            <p class="font-bold red-ink">Así no: una instrucción gigante</p>
+            <p class="prompt-box mt-3 ink">Hazme la conciliación bancaria de mayo y dame el informe.</p>
+            <p class="mt-4 leading-relaxed muted">Llega un informe. Las cifras cuadran, o no. No sabes qué partidas se consideraron, si se omitió algo o si una nota débito quedó sin registrar. Es una <strong class="ink">caja negra</strong>: el proceso no deja huella y no se puede auditar.</p>
+          </article>
+          <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+            <p class="font-bold green-ink">Así sí: pasos con entregables</p>
+            <p class="mt-3 leading-relaxed muted">Cada paso produce un archivo concreto que puedes abrir, revisar en Excel y decidir si seguir o corregir. Cada archivo intermedio es un <strong class="ink">papel de trabajo</strong>: si en seis meses el revisor fiscal pregunta cómo se llegó a ese saldo, la trazabilidad está completa.</p>
+            <p class="mt-4 font-semibold ink">La IA hace el trabajo mecánico. El contador decide en cada paso.</p>
+          </article>
+        </div>
+
+        <!-- Cadena -->
+        <h3 class="mt-14 text-2xl font-extrabold ink">La cadena: cada paso usa el entregable del anterior</h3>
+        <ol class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-line bg-[color:var(--line)] lg:grid-cols-3">
+          <li class="bg-paper p-6">
+            <span class="font-mono text-sm accent">paso1.md</span>
+            <p class="mt-2 text-lg font-bold ink">Construye el cuadro de 4 columnas</p>
+            <p class="mt-2 text-sm leading-relaxed muted">Lee los dos CSV, calcula saldo inicial, ingresos, egresos y saldo final de banco y libros.</p>
+            <p class="mt-3 font-mono text-xs green-ink">→ salidas/cuadro_4col.csv</p>
+          </li>
+          <li class="bg-paper p-6">
+            <span class="font-mono text-sm accent">paso2.md</span>
+            <p class="mt-2 text-lg font-bold ink">Identifica las partidas conciliatorias</p>
+            <p class="mt-2 text-sm leading-relaxed muted">Cruza movimientos por fecha y valor y clasifica lo que no empareja.</p>
+            <p class="mt-3 font-mono text-xs green-ink">→ salidas/partidas_conciliatorias.csv</p>
+          </li>
+          <li class="bg-paper p-6">
+            <span class="font-mono text-sm accent">paso3.md</span>
+            <p class="mt-2 text-lg font-bold ink">Valida el cuadre y emite el informe</p>
+            <p class="mt-2 text-sm leading-relaxed muted">Aplica los ajustes y verifica que banco y libros cuadren en las cuatro columnas.</p>
+            <p class="mt-3 font-mono text-xs green-ink">→ salidas/informe_cuadratica.md</p>
+          </li>
+        </ol>
+
+        <!-- Carpeta + cifras -->
+        <div class="mt-14 grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div class="avoid-break rounded-2xl border border-line bg-paper p-6 shadow-paper">
+            <p class="text-sm font-semibold muted">La carpeta del kit</p>
+<pre class="tree mt-3 ink">📁 conciliacion-bancaria/
+├── 📁 entradas/
+│   ├── extracto_banco.csv
+│   └── auxiliar_libros.csv
+├── 📁 salidas/
+│   ├── cuadro_4col.csv
+│   ├── partidas_conciliatorias.csv
+│   └── informe_cuadratica.md
+├── paso1.md
+├── paso2.md
+├── paso3.md
+└── orquestador.md</pre>
+          </div>
+          <div class="avoid-break rounded-2xl border border-line bg-paper p-6 sm:p-8">
+            <p class="text-sm font-semibold muted">El caso de ejemplo · cuenta de bancos, mayo 2026</p>
+            <dl class="mt-4 divide-y divide-[color:var(--line)] border-y border-line">
+              <div class="flex items-baseline justify-between gap-4 py-3"><dt class="muted">Saldo final según banco</dt><dd class="font-mono font-semibold ink">$17.000.000</dd></div>
+              <div class="flex items-baseline justify-between gap-4 py-3"><dt class="muted">Saldo final según libros</dt><dd class="font-mono font-semibold ink">$16.500.000</dd></div>
+              <div class="flex items-baseline justify-between gap-4 py-3"><dt class="font-bold ink">Diferencia a explicar</dt><dd class="font-mono font-bold accent">$500.000</dd></div>
+            </dl>
+            <p class="mt-4 leading-relaxed muted">La diferencia se explica con dos partidas: el <strong class="ink">cheque 1204 en circulación</strong> ($800.000) y la <strong class="ink">nota débito por comisión y GMF</strong> ($300.000).</p>
+            <p class="mt-2 font-mono text-sm green-ink">800.000 − 300.000 = 500.000 ✓</p>
+          </div>
+        </div>
+
+        <!-- Cómo ejecutarlo -->
+        <h3 class="mt-14 text-2xl font-extrabold ink">Cómo ejecutarlo</h3>
+        <p class="measure mt-3 leading-relaxed muted">Sirve cualquier agente: Claude, Codex, Antigravity, Copilot Cowork u OpenCode. Toma menos de cinco minutos.</p>
+        <div class="mt-6 grid gap-5 lg:grid-cols-2">
+          <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+            <p class="font-bold ink">Primero, a mano: paso a paso</p>
+            <ol class="mt-4 space-y-4">
+              <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3"><span class="font-mono text-sm accent">1</span><p class="leading-relaxed muted">Abre la carpeta <span class="font-mono text-sm ink">conciliacion-bancaria/</span> en el agente y dale acceso a los archivos.</p></li>
+              <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3"><span class="font-mono text-sm accent">2</span><p class="leading-relaxed muted">Dile: <span class="font-mono text-sm ink">Sigue las instrucciones de paso1.md</span>. Abre <span class="font-mono text-sm ink">cuadro_4col.csv</span> y mira las cifras.</p></li>
+              <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3"><span class="font-mono text-sm accent">3</span><p class="leading-relaxed muted">Dile: <span class="font-mono text-sm ink">Sigue las instrucciones de paso2.md</span>. Revisa <span class="font-mono text-sm ink">partidas_conciliatorias.csv</span>.</p></li>
+              <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3"><span class="font-mono text-sm accent">4</span><p class="leading-relaxed muted">Dile: <span class="font-mono text-sm ink">Sigue las instrucciones de paso3.md</span>. El agente emite el veredicto: CUADRA o NO CUADRA.</p></li>
+            </ol>
+          </article>
+          <article class="rounded-2xl border border-line bg-green-soft p-6 sm:p-8">
+            <p class="font-bold ink">Después, automático: con el orquestador</p>
+            <p class="mt-4 leading-relaxed muted">Cuando cada paso funciona por separado, una sola instrucción ejecuta los tres en secuencia:</p>
+            <p class="prompt-box mt-3 rounded-xl bg-paper p-4 ink">Sigue las instrucciones de orquestador.md</p>
+            <p class="mt-4 leading-relaxed muted">El criterio de éxito no es terminar, es <strong class="ink">cuadrar</strong> en las cuatro columnas. Esto ya no es un prompt: es un <strong class="ink">procedimiento</strong> repetible cada mes.</p>
+            <p class="mt-5 text-sm font-bold ink">Prueba opcional: hacerlo fallar</p>
+            <p class="mt-1 text-sm leading-relaxed muted">En el paso 2, pídele que ignore la nota débito. El paso 3 reportará NO CUADRA por $300.000. Vuelve a incluirla y cuadra. Así se comprueba que el último paso valida, no solo redacta.</p>
+          </article>
+        </div>
+
+        <!-- Kit completo -->
+        <div class="mt-14 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h3 class="text-2xl font-extrabold ink">El kit completo</h3>
+            <p class="mt-2 leading-relaxed muted">Copia o descarga cada archivo y guárdalo en la carpeta indicada.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-3" data-kit>
+          <details class="kit-file group rounded-2xl border border-line bg-paper" open>
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">paso1.md</span> <span class="ml-2 text-sm muted">Construir el cuadro de cuatro columnas</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-paso1">Copiar</button><button type="button" class="kit-btn" data-download="f-paso1" data-name="paso1.md">Descargar</button></span>
+            </summary>
+<pre id="f-paso1" class="kit-pre"># Paso 1 — Construir el cuadro base de cuatro columnas
+
+## Objetivo
+A partir del extracto bancario y del libro auxiliar de bancos, construir el cuadro de
+la **prueba de efectivo (conciliación cuadrática)** con las cuatro columnas —
+Saldo inicial, Ingresos, Egresos y Saldo final — para **BANCO** y para **LIBROS**.
+
+## Insumos
+- `entradas/extracto_banco.csv` — movimientos según el banco.
+- `entradas/auxiliar_libros.csv` — movimientos según la contabilidad.
+
+Ambos archivos tienen columnas: `fecha, concepto, tipo, valor, saldo`,
+donde `tipo` es uno de: `saldo_inicial`, `credito`, `debito`.
+
+## Instrucciones
+1. Lee ambos archivos.
+2. Para **BANCO** calcula:
+   - Saldo inicial = `saldo` de la fila con `tipo = saldo_inicial`.
+   - Ingresos = suma de `valor` donde `tipo = credito`.
+   - Egresos = suma de `valor` donde `tipo = debito`.
+   - Saldo final = `saldo` de la última fila.
+3. Para **LIBROS** calcula lo mismo a partir del auxiliar.
+4. Verifica el **cuadre interno** de cada fuente:
+   `Saldo inicial + Ingresos − Egresos = Saldo final`.
+   Si alguna fuente no cuadra internamente, **detente** y reporta el descuadre.
+5. NO intentes explicar todavía las diferencias entre banco y libros.
+   Eso es trabajo del Paso 2.
+
+## Entregable
+Crea `salidas/cuadro_4col.csv` con esta estructura exacta:
+
+```
+fuente,saldo_inicial,ingresos,egresos,saldo_final
+BANCO,...,...,...,...
+LIBROS,...,...,...,...
+```
+
+Además, muestra en pantalla un resumen con la **diferencia por columna**
+(BANCO − LIBROS), señalando en cuáles columnas hay diferencia.</pre>
+          </details>
+
+          <details class="kit-file group rounded-2xl border border-line bg-paper">
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">paso2.md</span> <span class="ml-2 text-sm muted">Identificar y clasificar las partidas conciliatorias</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-paso2">Copiar</button><button type="button" class="kit-btn" data-download="f-paso2" data-name="paso2.md">Descargar</button></span>
+            </summary>
+<pre id="f-paso2" class="kit-pre"># Paso 2 — Identificar y clasificar las partidas conciliatorias
+
+## Objetivo
+Explicar las diferencias entre **BANCO** y **LIBROS** detectadas en el Paso 1,
+identificando y clasificando cada partida conciliatoria.
+
+## Insumos
+- `salidas/cuadro_4col.csv` — salida del Paso 1 (resumen por columnas).
+- `entradas/extracto_banco.csv` y `entradas/auxiliar_libros.csv` — detalle de movimientos.
+
+## Instrucciones
+1. Cruza los movimientos del extracto contra los del auxiliar.
+   Empareja **principalmente por `fecha` y `valor`** (los conceptos pueden estar
+   redactados distinto en cada fuente).
+2. Identifica las partidas que quedan **sin emparejar** y clasifícalas:
+   - **Cheque en circulación**: registrado en LIBROS (egreso) pero no pagado aún por el BANCO.
+   - **Depósito en tránsito**: registrado en LIBROS (ingreso) pero no abonado aún por el BANCO.
+   - **Nota débito no registrada**: cargo del BANCO (comisiones, GMF/4x1000) que LIBROS aún no causa.
+   - **Nota crédito no registrada**: abono del BANCO (rendimientos) que LIBROS aún no causa.
+   - **Error de digitación** en cualquiera de las dos fuentes.
+3. Para cada partida indica: tipo, descripción, valor, columna(s) afectada(s)
+   y a cuál fuente debe ajustarse para llegar al saldo real.
+4. Comprueba que la suma de las partidas **explique exactamente** la diferencia
+   del saldo final detectada en el Paso 1. Si sobra o falta diferencia por explicar,
+   indícalo claramente.
+
+## Entregable
+Crea `salidas/partidas_conciliatorias.csv` con esta estructura:
+
+```
+tipo,descripcion,valor,columna_afectada,ajusta_a
+```
+
+Ejemplo de filas (ilustrativo, NO copies valores: dedúcelos de los insumos):
+
+```
+cheque_en_circulacion,Cheque NNNN proveedor,000,egresos|saldo_final,BANCO
+nota_debito,Comision + GMF,000,egresos|saldo_final,LIBROS
+```
+
+Además, muestra un resumen: cuánto de la diferencia total explica cada partida.</pre>
+          </details>
+
+          <details class="kit-file group rounded-2xl border border-line bg-paper">
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">paso3.md</span> <span class="ml-2 text-sm muted">Validar el cuadre y emitir el informe</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-paso3">Copiar</button><button type="button" class="kit-btn" data-download="f-paso3" data-name="paso3.md">Descargar</button></span>
+            </summary>
+<pre id="f-paso3" class="kit-pre"># Paso 3 — Validar el cuadre y emitir el informe
+
+## Objetivo
+Aplicar las partidas conciliatorias al cuadro base y verificar que **BANCO** y
+**LIBROS** cuadren en las cuatro columnas. Emitir el informe final.
+
+## Insumos
+- `salidas/cuadro_4col.csv` — salida del Paso 1.
+- `salidas/partidas_conciliatorias.csv` — salida del Paso 2.
+
+## Instrucciones
+1. Parte de los saldos del cuadro base (BANCO y LIBROS).
+2. Aplica cada partida a la fuente indicada en `ajusta_a`:
+   - **Cheque en circulación** → resta del Saldo final del BANCO (y sube sus Egresos).
+   - **Depósito en tránsito** → suma al Saldo final del BANCO (y sube sus Ingresos).
+   - **Nota débito no registrada** → resta del Saldo final de LIBROS (y sube sus Egresos).
+   - **Nota crédito no registrada** → suma al Saldo final de LIBROS (y sube sus Ingresos).
+3. Calcula los **saldos ajustados** de BANCO y LIBROS en las cuatro columnas.
+4. **VALIDA el cuadre** (esto es lo que hace "cuadrática" a la conciliación):
+   - Que en cada fila ajustada se cumpla `SI + Ingresos − Egresos = SF`.
+   - Que **BANCO ajustado = LIBROS ajustado** en las CUATRO columnas.
+5. Veredicto: marca **✅ CUADRA** o **❌ NO CUADRA**. Si no cuadra, indica la
+   columna y el monto exacto del descuadre.
+
+## Entregable
+Crea `salidas/informe_cuadratica.md` que contenga:
+- Encabezado con cuenta y período.
+- El cuadro de cuatro columnas mostrando: saldos según banco, saldos según libros,
+  los ajustes aplicados a cada lado, y los **saldos ajustados**.
+- La lista de partidas conciliatorias con su valor.
+- El **veredicto final del cuadre** (✅ / ❌) por cada una de las cuatro columnas.
+- Si NO cuadra: la diferencia que queda pendiente por explicar.</pre>
+          </details>
+
+          <details class="kit-file group rounded-2xl border border-line bg-paper">
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">orquestador.md</span> <span class="ml-2 text-sm muted">Los tres pasos de un tirón</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-orq">Copiar</button><button type="button" class="kit-btn" data-download="f-orq" data-name="orquestador.md">Descargar</button></span>
+            </summary>
+<pre id="f-orq" class="kit-pre"># Orquestador — Conciliación cuadrática completa
+
+Ejecuta la conciliación cuadrática de principio a fin **encadenando los tres pasos**.
+Cada paso consume el entregable del paso anterior.
+
+## Secuencia
+1. Ejecuta las instrucciones de **`paso1.md`**.
+   → Debe generar `salidas/cuadro_4col.csv`.
+   → Si el cuadre interno de alguna fuente falla, **no continúes**: repórtalo.
+2. Ejecuta las instrucciones de **`paso2.md`** usando `salidas/cuadro_4col.csv` y el detalle.
+   → Debe generar `salidas/partidas_conciliatorias.csv`.
+3. Ejecuta las instrucciones de **`paso3.md`** usando los dos archivos anteriores.
+   → Debe generar `salidas/informe_cuadratica.md`.
+
+## Criterio de éxito
+La orquestación es **EXITOSA** únicamente si `salidas/informe_cuadratica.md` concluye
+**✅ CUADRA** en las cuatro columnas.
+Si concluye **❌**, reporta en qué columna y por qué monto, y señala en qué paso
+conviene abrir el entregable intermedio para auditar dónde se rompió.
+
+## Regla de oro (anti-invención)
+No inventes valores. Si un dato no está en los insumos, **detente y repórtalo**.
+Cada cifra del informe final debe poder rastrearse hasta `entradas/extracto_banco.csv`
+o `entradas/auxiliar_libros.csv`. Esa trazabilidad es el papel de trabajo.</pre>
+          </details>
+
+          <details class="kit-file group rounded-2xl border border-line bg-paper">
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">entradas/extracto_banco.csv</span> <span class="ml-2 text-sm muted">Datos de ejemplo según el banco</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-extracto">Copiar</button><button type="button" class="kit-btn" data-download="f-extracto" data-name="extracto_banco.csv">Descargar</button></span>
+            </summary>
+<pre id="f-extracto" class="kit-pre">fecha,concepto,tipo,valor,saldo
+2026-05-01,Saldo anterior,saldo_inicial,0,10000000
+2026-05-03,Consignacion cliente A,credito,8000000,18000000
+2026-05-05,Pago cheque 1201,debito,4000000,14000000
+2026-05-10,Transferencia recibida cliente B,credito,6500000,20500000
+2026-05-12,Pago nomina mayo,debito,7000000,13500000
+2026-05-15,Pago cheque 1202,debito,3000000,10500000
+2026-05-18,Consignacion cliente C,credito,5500000,16000000
+2026-05-20,Pago PSE servicios publicos,debito,2200000,13800000
+2026-05-25,Transferencia recibida cliente D,credito,5000000,18800000
+2026-05-28,Pago cheque 1203,debito,1500000,17300000
+2026-05-31,Nota debito - comision manejo y GMF 4x1000,debito,300000,17000000</pre>
+          </details>
+
+          <details class="kit-file group rounded-2xl border border-line bg-paper">
+            <summary class="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 p-5">
+              <span><span class="font-mono font-semibold ink">entradas/auxiliar_libros.csv</span> <span class="ml-2 text-sm muted">Datos de ejemplo según la contabilidad</span></span>
+              <span class="no-print flex gap-2"><button type="button" class="kit-btn" data-copy="f-auxiliar">Copiar</button><button type="button" class="kit-btn" data-download="f-auxiliar" data-name="auxiliar_libros.csv">Descargar</button></span>
+            </summary>
+<pre id="f-auxiliar" class="kit-pre">fecha,concepto,tipo,valor,saldo
+2026-05-01,Saldo anterior,saldo_inicial,0,10000000
+2026-05-03,Recaudo cliente A FV-1001,credito,8000000,18000000
+2026-05-05,Cheque 1201 - Proveedor Insumos SAS,debito,4000000,14000000
+2026-05-10,Recaudo cliente B FV-1002,credito,6500000,20500000
+2026-05-12,Nomina mayo,debito,7000000,13500000
+2026-05-15,Cheque 1202 - Arrendamiento,debito,3000000,10500000
+2026-05-18,Recaudo cliente C FV-1003,credito,5500000,16000000
+2026-05-20,Pago servicios publicos,debito,2200000,13800000
+2026-05-25,Recaudo cliente D FV-1004,credito,5000000,18800000
+2026-05-28,Cheque 1203 - Proveedor Insumos SAS,debito,1500000,17300000
+2026-05-30,Cheque 1204 - Proveedor Logistica SAS,debito,800000,16500000</pre>
+          </details>
+        </div>
+
+        <div class="mt-10 rounded-2xl bg-ink p-6 text-[color:var(--paper)] sm:p-8">
+          <p class="text-lg font-extrabold">La regla de oro</p>
+          <p class="mt-2 leading-relaxed text-[color:oklch(0.86_0.01_250)]">No inventes valores. Si un dato no está en los insumos, detente y repórtalo. Cada cifra del informe final debe poder rastrearse hasta los CSV originales. <strong class="text-white">Esa trazabilidad es el papel de trabajo.</strong></p>
+        </div>
+      </div>
+    </section>
+
     <!-- Cierre -->
-    <section class="border-t border-line bg-paper-soft">
+    <section class="border-t border-line">
       <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-24">
         <div class="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end">
           <div>
@@ -620,5 +991,63 @@ Reglas: cruza por valor y fecha con tolerancia de 3 días. No inventes datos. Si
     </div>
   </footer>
 
+  <script>
+    (function () {
+      document.querySelectorAll('[data-print]').forEach(function (btn) {
+        btn.addEventListener('click', function () { window.print(); });
+      });
+
+      var openState = [];
+      window.addEventListener('beforeprint', function () {
+        openState = [];
+        document.querySelectorAll('details').forEach(function (d) {
+          openState.push([d, d.open]);
+          d.open = true;
+        });
+      });
+      window.addEventListener('afterprint', function () {
+        openState.forEach(function (pair) { pair[0].open = pair[1]; });
+      });
+
+      function flash(btn, text) {
+        var original = btn.textContent;
+        btn.textContent = text;
+        setTimeout(function () { btn.textContent = original; }, 1600);
+      }
+
+      document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var text = document.getElementById(btn.dataset.copy).textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(
+              function () { flash(btn, 'Copiado ✓'); },
+              function () { flash(btn, 'No se pudo copiar'); }
+            );
+          } else {
+            flash(btn, 'No se pudo copiar');
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-download]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var name = btn.dataset.name;
+          var text = document.getElementById(btn.dataset.download).textContent;
+          var type = name.endsWith('.csv') ? 'text/csv' : 'text/markdown';
+          var blob = new Blob([text + '\n'], { type: type + ';charset=utf-8' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = name;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
