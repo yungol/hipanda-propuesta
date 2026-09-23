@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IA para el área contable | Maderkit S.A. · HiPanda</title>
-  <meta name="description" content="Memorias de la charla: de chatear con la IA a delegarle trabajo. Chat vs. agente, herramientas disponibles y qué se puede automatizar en contabilidad." />
+  <meta name="description" content="Memorias de la charla para Maderkit S.A.: qué es la IA, cómo funcionan chats y agentes, cómo construir automatizaciones contables y cómo pedirle las cosas a la IA." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,6 +36,8 @@
       --accent-soft: oklch(0.946 0.022 46);
       --green-soft: oklch(0.94 0.04 155);
       --green-ink: oklch(0.42 0.08 155);
+      --red-soft: oklch(0.95 0.025 25);
+      --red-ink: oklch(0.48 0.12 25);
       --blue-soft: oklch(0.945 0.025 235);
       --slate-soft: oklch(0.95 0.012 245);
       --slate-line: oklch(0.88 0.014 245);
@@ -56,11 +58,13 @@
     .muted { color: var(--muted); }
     .accent { color: var(--accent); }
     .green-ink { color: var(--green-ink); }
+    .red-ink { color: var(--red-ink); }
     .bg-paper { background-color: var(--paper); }
     .bg-paper-soft { background-color: var(--paper-soft); }
     .bg-paper-strong { background-color: var(--paper-strong); }
     .bg-accent-soft { background-color: var(--accent-soft); }
     .bg-green-soft { background-color: var(--green-soft); }
+    .bg-red-soft { background-color: var(--red-soft); }
     .bg-blue-soft { background-color: var(--blue-soft); }
     .bg-slate-soft { background-color: var(--slate-soft); }
     .bg-ink { background-color: var(--ink); }
@@ -70,7 +74,7 @@
     .measure { max-width: 68ch; }
 
     h1, h2, h3 { text-wrap: balance; }
-    p, li { text-wrap: pretty; }
+    p, li, dd { text-wrap: pretty; }
 
     .kicker {
       letter-spacing: 0.18em;
@@ -84,7 +88,13 @@
       letter-spacing: -0.035em;
     }
 
-    .prompt-box {
+    .part-label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .prompt-box, .tree {
       font-family: 'JetBrains Mono', ui-monospace, monospace;
       font-size: 0.86rem;
       line-height: 1.7;
@@ -110,7 +120,7 @@
     @media print {
       body { background: #fff; }
       .no-print { display: none !important; }
-      section { break-inside: avoid-page; }
+      article, .avoid-break { break-inside: avoid; }
       .shadow-paper { box-shadow: none; }
     }
   </style>
@@ -125,9 +135,10 @@
         <span class="text-sm font-extrabold tracking-wide ink">HiPanda</span>
       </a>
       <nav class="hidden gap-6 text-sm font-medium muted md:flex">
-        <a href="#chat-agente" class="hover:text-[color:var(--ink)]">Chat vs. agente</a>
-        <a href="#herramientas" class="hover:text-[color:var(--ink)]">Herramientas</a>
-        <a href="#automatizar" class="hover:text-[color:var(--ink)]">Qué automatizar</a>
+        <a href="#fundamentos" class="hover:text-[color:var(--ink)]">Fundamentos</a>
+        <a href="#agentes" class="hover:text-[color:var(--ink)]">Agentes</a>
+        <a href="#automatizar" class="hover:text-[color:var(--ink)]">Automatizar</a>
+        <a href="#casos" class="hover:text-[color:var(--ink)]">Casos</a>
         <a href="#prompt" class="hover:text-[color:var(--ink)]">Buen prompt</a>
         <a href="https://www.youtube.com/@hipandaio" target="_blank" rel="noopener" class="font-semibold accent hover:underline">YouTube</a>
       </nav>
@@ -137,362 +148,466 @@
   <main id="inicio">
 
     <!-- Hero -->
-    <section class="mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-8 sm:pt-24">
+    <section class="mx-auto max-w-6xl px-4 pb-14 pt-14 sm:px-8 sm:pt-24">
       <p class="kicker accent reveal">Memorias de la charla · Maderkit S.A.</p>
       <h1 class="section-title reveal reveal-2 mt-5 text-[clamp(2.4rem,6vw,4.75rem)] font-extrabold ink">
         Inteligencia artificial<br class="hidden sm:block"> para el área contable
       </h1>
       <p class="reveal reveal-3 measure mt-6 text-lg leading-relaxed muted sm:text-xl">
         De <strong class="ink">preguntarle</strong> a la IA a <strong class="ink">delegarle trabajo</strong>.
-        Qué existe hoy más allá de Copilot, cómo se diferencia un chat de un agente y qué tareas contables
-        se pueden automatizar desde ya.
+        Qué es realmente la IA, por qué un agente va más allá de un chat, cómo se construye una automatización
+        y qué tareas contables se pueden automatizar desde ya.
       </p>
 
       <div class="reveal reveal-3 mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-line pt-6 text-sm muted">
         <span><strong class="ink">Juan David Jaramillo</strong> · HiPanda</span>
         <span>Preparado para <strong class="ink">Maderkit S.A.</strong> · área contable y administrativa</span>
         <span>23 de septiembre de 2026 · sesión de 2 horas</span>
-        <span>Documento de consulta para después de la sesión</span>
       </div>
+
+      <!-- Índice -->
+      <ol class="reveal reveal-3 mt-10 grid gap-px overflow-hidden rounded-2xl border border-line bg-[color:var(--line)] text-sm sm:grid-cols-2 lg:grid-cols-4">
+        <li class="bg-paper p-5"><a href="#fundamentos" class="block"><span class="part-label">Parte 1</span><span class="mt-1 block font-bold ink">Cómo funciona la IA</span><span class="mt-1 block muted">Lo que es, lo que no es y sus límites</span></a></li>
+        <li class="bg-paper p-5"><a href="#agentes" class="block"><span class="part-label">Parte 2</span><span class="mt-1 block font-bold ink">Chat vs. agente</span><span class="mt-1 block muted">Herramientas y modelos disponibles</span></a></li>
+        <li class="bg-paper p-5"><a href="#automatizar" class="block"><span class="part-label">Parte 3</span><span class="mt-1 block font-bold ink">Cómo se automatiza</span><span class="mt-1 block muted">Carpetas, pasos y orquestador</span></a></li>
+        <li class="bg-paper p-5"><a href="#casos" class="block"><span class="part-label">Parte 4</span><span class="mt-1 block font-bold ink">Aplicado a contabilidad</span><span class="mt-1 block muted">Casos, prompts y reglas de oro</span></a></li>
+      </ol>
     </section>
 
-    <!-- Chat vs agente -->
-    <section id="chat-agente" class="border-y border-line bg-paper-soft">
+    <!-- ============ PARTE 1 · FUNDAMENTOS ============ -->
+    <section id="fundamentos" class="border-y border-line bg-paper-soft">
       <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-        <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">Un chat responde.<br>Un agente trabaja.</h2>
+        <p class="part-label">Parte 1 · Cómo funciona la IA</p>
+        <h2 class="section-title mt-3 text-3xl font-extrabold ink sm:text-5xl">No es un ente pensante.<br>Es un cálculo.</h2>
         <p class="measure mt-5 text-lg leading-relaxed muted">
-          Copilot, ChatGPT o Gemini en su versión de chat son excelentes para preguntar, redactar y resumir.
-          Pueden leer un archivo que les adjuntes. Pero un <strong class="ink">agente</strong> es otra cosa:
-          vive en una carpeta de tu computador, con los permisos que tú le des, y ejecuta el trabajo de principio a fin.
+          La inteligencia artificial no es un Gran Hermano ni una mente que piensa. Es un cálculo matemático y probabilístico
+          que, palabra por palabra, devuelve el <strong class="ink">token más probable</strong>. Es revolucionario, sorprendente
+          y cambia la forma de trabajar, pero sigue siendo un cálculo. Entender eso explica sus superpoderes y también sus límites.
         </p>
 
-        <div class="mt-10 overflow-hidden rounded-2xl border border-line bg-paper shadow-paper">
-          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] border-b border-line text-sm font-bold sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-            <div class="hidden p-4 sm:block"></div>
-            <div class="bg-slate-soft p-4 ink">Chat (Copilot, ChatGPT…)</div>
-            <div class="bg-accent-soft p-4 ink">Agente (Claude Code, Codex…)</div>
-          </div>
-          <div class="divide-y divide-[color:var(--line)] text-[0.95rem]">
-            <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-              <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Cómo trabajas</div>
-              <div class="p-4 muted">Le preguntas y te responde. Tú copias, pegas y armas el resultado.</div>
-              <div class="p-4 ink">Le das un objetivo. Planea, ejecuta y te entrega el archivo terminado.</div>
-            </div>
-            <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-              <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Archivos</div>
-              <div class="p-4 muted">Los que subas a la conversación, uno por uno.</div>
-              <div class="p-4 ink">Una carpeta completa: lee, crea, renombra y organiza cientos de archivos.</div>
-            </div>
-            <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-              <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Cálculos</div>
-              <div class="p-4 muted">Los estima en el texto. Con volúmenes grandes, se equivoca.</div>
-              <div class="p-4 ink">Escribe y corre su propio código en Python: cálculos exactos y repetibles.</div>
-            </div>
-            <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-              <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Control</div>
-              <div class="p-4 muted">Todo pasa dentro de la conversación.</div>
-              <div class="p-4 ink">Tú decides a qué carpeta entra y qué puede hacer. Pide permiso antes de actuar.</div>
-            </div>
-            <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
-              <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Repetición</div>
-              <div class="p-4 muted">Cada mes vuelves a empezar la conversación.</div>
-              <div class="p-4 ink">Lo que funcionó se guarda como una automatización que corre cada mes.</div>
-            </div>
-          </div>
+        <!-- Tres verdades -->
+        <div class="mt-12 grid gap-5 lg:grid-cols-3">
+          <article class="rounded-2xl border border-line bg-paper p-6">
+            <h3 class="text-xl font-extrabold ink">No tiene memoria</h3>
+            <p class="mt-3 leading-relaxed muted">
+              La conversación es una ilusión. Cada vez que le escribes, no le envías solo tu pregunta:
+              le envías <strong class="ink">todo el historial</strong> del chat otra vez. Entre más larga la conversación,
+              más tokens gasta y más se confunde.
+            </p>
+          </article>
+          <article class="rounded-2xl border border-line bg-paper p-6">
+            <h3 class="text-xl font-extrabold ink">No lee todo el archivo</h3>
+            <p class="mt-3 leading-relaxed muted">
+              Un archivo pequeño lo lee completo. Uno grande lo parte en pedacitos (<em>chunks</em>), los guarda en una
+              base de datos vectorial y, cuando preguntas, recupera solo los pedacitos que probablemente responden.
+              Las técnicas han mejorado mucho, pero <strong class="ink">no tiene todo el documento en la cabeza</strong>.
+            </p>
+          </article>
+          <article class="rounded-2xl border border-line bg-red-soft p-6">
+            <h3 class="text-xl font-extrabold ink">Todavía no es confiable</h3>
+            <p class="mt-3 leading-relaxed muted">
+              Está diseñada para <strong class="ink">responder</strong>, no para decir “no sé”. Por eso puede alucinar:
+              inventar un dato, una cifra o una norma con total seguridad. Todo resultado se revisa.
+            </p>
+          </article>
         </div>
 
-        <!-- Flow -->
-        <h3 class="mt-16 text-xl font-bold ink">Así trabaja un agente, paso a paso</h3>
-        <ol class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-line bg-[color:var(--line)] sm:grid-cols-2 lg:grid-cols-5">
-          <li class="bg-paper p-5">
-            <span class="font-mono text-sm accent">1</span>
-            <p class="mt-2 font-bold ink">Le das una carpeta</p>
-            <p class="mt-1 text-sm leading-relaxed muted">Extractos, auxiliares, facturas. Solo ve lo que está ahí.</p>
-          </li>
-          <li class="bg-paper p-5">
-            <span class="font-mono text-sm accent">2</span>
-            <p class="mt-2 font-bold ink">Le explicas el objetivo</p>
-            <p class="mt-1 text-sm leading-relaxed muted">“Concilia el extracto de marzo contra el auxiliar de bancos.”</p>
-          </li>
-          <li class="bg-paper p-5">
-            <span class="font-mono text-sm accent">3</span>
-            <p class="mt-2 font-bold ink">Propone un plan</p>
-            <p class="mt-1 text-sm leading-relaxed muted">Tú lo revisas y lo corriges antes de que ejecute.</p>
-          </li>
-          <li class="bg-paper p-5">
-            <span class="font-mono text-sm accent">4</span>
-            <p class="mt-2 font-bold ink">Ejecuta con código</p>
-            <p class="mt-1 text-sm leading-relaxed muted">Escribe Python por dentro, cruza datos y genera el Excel.</p>
-          </li>
-          <li class="bg-paper p-5">
-            <span class="font-mono text-sm accent">5</span>
-            <p class="mt-2 font-bold ink">Lo vuelves rutina</p>
-            <p class="mt-1 text-sm leading-relaxed muted">El próximo mes: misma carpeta, un clic, mismo resultado.</p>
-          </li>
-        </ol>
+        <!-- Regla: un entregable por sesión -->
+        <div class="avoid-break mt-12 grid gap-8 rounded-2xl bg-ink p-6 text-[color:var(--paper)] sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-12">
+          <div>
+            <p class="kicker text-[color:oklch(0.82_0.06_60)]">La consecuencia práctica</p>
+            <h3 class="section-title mt-4 text-3xl font-extrabold sm:text-4xl">Un entregable por sesión</h3>
+            <p class="mt-5 leading-relaxed text-[color:oklch(0.86_0.01_250)]">
+              Como cada mensaje arrastra todo el historial, lo sano es que cada chat o sesión tenga
+              <strong class="text-white">un solo objetivo</strong>. Terminado el entregable, se cierra y se abre una nueva.
+            </p>
+          </div>
+          <div class="grid gap-3 text-sm">
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-white/15 p-4">
+              <span class="font-semibold text-white">Sesión 1 · Conciliación bancaria de marzo</span>
+              <span class="text-[color:oklch(0.85_0.08_155)]">Terminada ✓</span>
+            </div>
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-white/15 p-4">
+              <span class="font-semibold text-white">Sesión 2 · Conciliación bancaria de abril</span>
+              <span class="text-[color:oklch(0.85_0.08_155)]">Terminada ✓</span>
+            </div>
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-white/15 p-4">
+              <span class="font-semibold text-white">Sesión 3 · Conciliación bancaria de mayo</span>
+              <span class="text-[color:oklch(0.82_0.06_60)]">Nueva sesión</span>
+            </div>
+            <p class="px-1 pt-1 text-[color:oklch(0.8_0.01_250)]">No: una sola conversación eterna con todos los meses del año.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Herramientas -->
-    <section id="herramientas" class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">Los agentes que existen hoy</h2>
+    <!-- ============ PARTE 2 · AGENTES ============ -->
+    <section id="agentes" class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+      <p class="part-label">Parte 2 · Chat vs. agente</p>
+      <h2 class="section-title mt-3 text-3xl font-extrabold ink sm:text-5xl">Un chat responde.<br>Un agente trabaja.</h2>
       <p class="measure mt-5 text-lg leading-relaxed muted">
-        Cada una de las grandes empresas de IA ya tiene su agente. Y hay una alternativa de código abierto
-        que permite usar cualquiera de sus modelos, incluidos los modelos chinos, mucho más económicos.
+        Un chat es excelente para preguntar, redactar y resumir. Un <strong class="ink">agente</strong> es otra cosa:
+        trabaja dentro de una carpeta de tu computador, con los permisos que tú le des, y ejecuta el trabajo de principio a fin.
       </p>
 
-      <div class="mt-10 divide-y divide-[color:var(--line)] border-y border-line">
-        <article class="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
-          <div>
-            <p class="text-sm font-semibold muted">Microsoft</p>
-            <h3 class="text-2xl font-extrabold ink">Copilot Cowork</h3>
+      <div class="mt-10 overflow-hidden rounded-2xl border border-line bg-paper shadow-paper">
+        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] border-b border-line text-sm font-bold sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+          <div class="hidden p-4 sm:block"></div>
+          <div class="bg-slate-soft p-4 ink">Chat</div>
+          <div class="bg-accent-soft p-4 ink">Agente</div>
+        </div>
+        <div class="divide-y divide-[color:var(--line)] text-[0.95rem]">
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Cómo trabajas</div>
+            <div class="p-4 muted">Le preguntas y te responde. Tú copias, pegas y armas el resultado.</div>
+            <div class="p-4 ink">Le das un objetivo. Planea, ejecuta y te entrega el archivo terminado.</div>
           </div>
-          <p class="leading-relaxed muted">El paso siguiente a lo que ya tienen. Copilot deja de solo responder y empieza a ejecutar tareas dentro de Microsoft 365: Excel, Outlook, SharePoint. <strong class="ink">Es el camino natural si la empresa ya vive en Microsoft.</strong></p>
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Archivos</div>
+            <div class="p-4 muted">Los que subas a la conversación, uno por uno.</div>
+            <div class="p-4 ink">Una carpeta completa: lee, crea, edita y organiza cientos de archivos.</div>
+          </div>
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Cálculos</div>
+            <div class="p-4 muted">Los estima en el texto. Con volúmenes grandes, se equivoca.</div>
+            <div class="p-4 ink">Escribe y corre su propio código (Python, Node): cálculos exactos y repetibles.</div>
+          </div>
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Control</div>
+            <div class="p-4 muted">Todo pasa dentro de la conversación.</div>
+            <div class="p-4 ink">Tú decides a qué carpeta entra y qué puede hacer. Pide permiso antes de actuar.</div>
+          </div>
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="col-span-2 px-4 pt-4 text-xs font-bold uppercase tracking-wider muted sm:col-span-1 sm:py-4">Repetición</div>
+            <div class="p-4 muted">Cada mes vuelves a empezar desde cero.</div>
+            <div class="p-4 ink">Lo que funcionó queda como una automatización que se corre cada mes.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Por debajo + Copilot -->
+      <div class="mt-5 grid gap-5 lg:grid-cols-2">
+        <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+          <h3 class="text-xl font-extrabold ink">Qué hay por debajo de un agente</h3>
+          <p class="mt-3 leading-relaxed muted">
+            Una aplicación agéntica tiene por debajo una <strong class="ink">terminal</strong>: la consola del computador.
+            Esa terminal le da herramientas para operar en tu equipo. Así es como puede leer, crear y editar archivos:
+            escribe pequeños programas internos en Python o Node y los ejecuta.
+          </p>
+          <p class="mt-4 font-mono text-xs muted">agente → terminal → código Python/Node → tus archivos</p>
         </article>
-        <article class="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
-          <div>
-            <p class="text-sm font-semibold muted">Google</p>
-            <h3 class="text-2xl font-extrabold ink">Antigravity</h3>
-          </div>
-          <p class="leading-relaxed muted">El entorno de agentes de Google, con los modelos Gemini. Trabaja sobre carpetas y proyectos, y encaja bien con equipos que usan Google Workspace.</p>
-        </article>
-        <article class="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
-          <div>
-            <p class="text-sm font-semibold muted">Anthropic</p>
-            <h3 class="text-2xl font-extrabold ink">Claude</h3>
-          </div>
-          <p class="leading-relaxed muted">Claude Code y Claude Cowork: agentes que trabajan en una carpeta de tu computador con permisos controlados. <strong class="ink">De los más fuertes para planear, analizar documentos y construir automatizaciones.</strong></p>
-        </article>
-        <article class="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
-          <div>
-            <p class="text-sm font-semibold muted">OpenAI</p>
-            <h3 class="text-2xl font-extrabold ink">Codex</h3>
-          </div>
-          <p class="leading-relaxed muted">El agente de OpenAI, incluido en la suscripción de ChatGPT. Muy bueno ejecutando tareas largas y generando código para procesar archivos.</p>
-        </article>
-        <article class="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
-          <div>
-            <p class="text-sm font-semibold green-ink">Código abierto</p>
-            <h3 class="text-2xl font-extrabold ink">OpenCode</h3>
-          </div>
-          <p class="leading-relaxed muted">Un agente libre que no te amarra a una marca: funciona con Claude, GPT, Gemini o con modelos chinos como DeepSeek, Kimi o Qwen. <strong class="ink">Con su plan OpenCode Go accedes a modelos muy buenos a bajo costo.</strong></p>
+        <article class="rounded-2xl border border-line bg-paper-strong p-6 sm:p-8">
+          <h3 class="text-xl font-extrabold ink">¿Y los “agentes” de Copilot?</h3>
+          <p class="mt-3 leading-relaxed muted">
+            Los agentes que se crean dentro del Copilot de chat no son agentes de verdad: son <strong class="ink">un chat con una
+            instrucción guardada</strong>. Útiles, pero siguen siendo un chat. Para tener todo lo que se describe en este
+            documento se necesita un agente real, como los de la siguiente sección.
+          </p>
         </article>
       </div>
 
-      <!-- Recomendación -->
-      <div class="mt-14 grid gap-8 rounded-2xl bg-ink p-6 text-[color:var(--paper)] sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
-        <div>
-          <p class="kicker text-[color:oklch(0.82_0.06_60)]">Mi recomendación</p>
-          <h3 class="section-title mt-4 text-3xl font-extrabold sm:text-4xl">Dos suscripciones que rinden todo el mes</h3>
-          <p class="mt-5 leading-relaxed text-[color:oklch(0.86_0.01_250)]">
-            Los tokens se acaban. La forma de que alcancen es repartir el trabajo:
-            el modelo caro <strong class="text-white">piensa</strong>, el modelo económico <strong class="text-white">ejecuta</strong>.
-            Así es como trabajo yo hoy.
-          </p>
+      <!-- Herramientas -->
+      <h3 class="mt-16 text-2xl font-extrabold ink">Los agentes que existen hoy</h3>
+      <p class="measure mt-3 leading-relaxed muted">
+        Son <strong class="ink">transversales</strong>: funcionan prácticamente igual. Lo que aprendan con uno les sirve para los demás.
+        Escojan el que mejor encaje con las herramientas que ya usa la empresa.
+      </p>
+
+      <div class="mt-6 divide-y divide-[color:var(--line)] border-y border-line">
+        <article class="grid gap-2 py-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
+          <div><p class="text-sm font-semibold muted">Anthropic</p><p class="text-xl font-extrabold ink">Claude</p></div>
+          <p class="leading-relaxed muted">Claude Code y Claude Cowork. De los más fuertes para planear, analizar documentos y construir automatizaciones.</p>
+        </article>
+        <article class="grid gap-2 py-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
+          <div><p class="text-sm font-semibold muted">OpenAI</p><p class="text-xl font-extrabold ink">Codex</p></div>
+          <p class="leading-relaxed muted">Incluido en la suscripción de ChatGPT. Muy bueno ejecutando tareas largas y procesando archivos.</p>
+        </article>
+        <article class="grid gap-2 py-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
+          <div><p class="text-sm font-semibold muted">Google</p><p class="text-xl font-extrabold ink">Antigravity · Gemini</p></div>
+          <p class="leading-relaxed muted">El entorno de agentes de Google con los modelos Gemini. Encaja bien con equipos que usan Google Workspace.</p>
+        </article>
+        <article class="grid gap-2 py-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
+          <div><p class="text-sm font-semibold muted">Microsoft</p><p class="text-xl font-extrabold ink">Copilot Cowork</p></div>
+          <p class="leading-relaxed muted">El paso de Copilot de chat a agente, dentro de Microsoft 365. El camino natural si la empresa ya vive en Microsoft.</p>
+        </article>
+        <article class="grid gap-2 py-5 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8">
+          <div><p class="text-sm font-semibold green-ink">Código abierto</p><p class="text-xl font-extrabold ink">OpenCode</p></div>
+          <p class="leading-relaxed muted">No te amarra a una marca: funciona con Claude, GPT, Gemini o modelos chinos como DeepSeek, Kimi o Qwen. Con el plan OpenCode Go accedes a buenos modelos a bajo costo.</p>
+        </article>
+      </div>
+
+      <!-- Modelos -->
+      <h3 class="mt-16 text-2xl font-extrabold ink">El modelo potente construye. El económico ejecuta.</h3>
+      <p class="measure mt-3 leading-relaxed muted">
+        Cada empresa ofrece modelos de distintos niveles. Los potentes son caros y se agotan rápido; los económicos rinden mucho más.
+        La estrategia: usar el <strong class="ink">potente para crear</strong> la automatización y el <strong class="ink">económico para correrla</strong> cada mes.
+      </p>
+
+      <div class="mt-6 overflow-hidden rounded-2xl border border-line bg-paper">
+        <div class="grid grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)] border-b border-line text-sm font-bold sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+          <div class="p-4 muted"></div>
+          <div class="bg-accent-soft p-4 ink">Potente · para crear</div>
+          <div class="bg-green-soft p-4 ink">Económico · para ejecutar</div>
         </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="rounded-xl border border-white/15 p-5">
-            <p class="text-sm font-semibold text-[color:oklch(0.82_0.06_60)]">Para planear</p>
-            <p class="mt-2 text-xl font-bold text-white">Claude o Codex</p>
-            <p class="mt-1 text-sm text-[color:oklch(0.8_0.01_250)]">Suscripción de ~USD 20/mes</p>
-            <p class="mt-4 text-sm leading-relaxed text-[color:oklch(0.86_0.01_250)]">Entiende el problema, diseña el paso a paso y revisa el resultado.</p>
+        <div class="divide-y divide-[color:var(--line)] text-[0.95rem]">
+          <div class="grid grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="p-4 font-bold ink">Claude</div>
+            <div class="p-4 muted">Fable 5.1 · Opus 5.5</div>
+            <div class="p-4 muted">Sonnet 5 · Haiku 4.5</div>
           </div>
-          <div class="rounded-xl border border-white/15 p-5">
-            <p class="text-sm font-semibold text-[color:oklch(0.85_0.08_155)]">Para ejecutar</p>
-            <p class="mt-2 text-xl font-bold text-white">OpenCode Go</p>
-            <p class="mt-1 text-sm text-[color:oklch(0.8_0.01_250)]">Plan económico · modelos como DeepSeek Flash</p>
-            <p class="mt-4 text-sm leading-relaxed text-[color:oklch(0.86_0.01_250)]">Hace el trabajo pesado y repetitivo sin gastar los tokens caros.</p>
+          <div class="grid grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="p-4 font-bold ink">OpenAI</div>
+            <div class="p-4 muted">Astra · Sol</div>
+            <div class="p-4 muted">Sol · Luna</div>
           </div>
+          <div class="grid grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="p-4 font-bold ink">OpenCode Go</div>
+            <div class="p-4 muted">—</div>
+            <div class="p-4 muted">Modelos abiertos como DeepSeek Flash</div>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 text-sm muted">Los nombres cambian cada pocos meses; la lógica potente/económico se mantiene.</p>
+
+      <div class="mt-8 rounded-2xl border border-line bg-accent-soft p-6 sm:p-8">
+        <h4 class="text-lg font-extrabold ink">Mi recomendación: dos suscripciones</h4>
+        <p class="mt-2 leading-relaxed muted">
+          Una suscripción grande de ~USD 20/mes (<strong class="ink">Claude o Codex</strong>) para planear y construir,
+          y una económica (<strong class="ink">OpenCode Go</strong>) para el trabajo repetitivo. Así los tokens rinden todo el mes.
+          Es exactamente como trabajo yo hoy.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ PARTE 3 · AUTOMATIZAR ============ -->
+    <section id="automatizar" class="border-y border-line bg-paper-soft">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+        <p class="part-label">Parte 3 · Cómo se automatiza</p>
+        <h2 class="section-title mt-3 text-3xl font-extrabold ink sm:text-5xl">Todo empieza con una carpeta</h2>
+        <p class="measure mt-5 text-lg leading-relaxed muted">
+          El primer paso para trabajar con un agente siempre es el mismo: abrir una carpeta. Adentro van los archivos de entrada,
+          y se le pide al agente que todo lo que entregue lo deje en salidas. Luego se le pide que documente el proceso en pasos
+          y que cree un orquestador que los ejecute en orden.
+        </p>
+
+        <div class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div class="avoid-break rounded-2xl border border-line bg-paper p-6 shadow-paper">
+            <p class="text-sm font-semibold muted">Estructura de una automatización</p>
+<pre class="tree mt-3 ink">📁 conciliacion-bancaria/
+├── 📁 entradas/
+│   ├── extracto-banco.csv
+│   └── auxiliar-bancos.csv
+├── 📁 salidas/
+│   └── conciliacion.xlsx
+├── paso-1-limpiar-extracto.md
+├── paso-2-cruzar-partidas.md
+├── paso-3-reporte-pendientes.md
+└── orquestador.md</pre>
+          </div>
+          <ol class="space-y-5">
+            <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
+              <span class="font-mono text-sm accent">1</span>
+              <div><p class="font-bold ink">Entradas</p><p class="mt-1 leading-relaxed muted">Los archivos que llegan cada mes: extractos, auxiliares, soportes.</p></div>
+            </li>
+            <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
+              <span class="font-mono text-sm accent">2</span>
+              <div><p class="font-bold ink">Salidas</p><p class="mt-1 leading-relaxed muted">Todo lo que el agente produce va aquí. Nunca modifica las entradas.</p></div>
+            </li>
+            <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
+              <span class="font-mono text-sm accent">3</span>
+              <div><p class="font-bold ink">Pasos en Markdown</p><p class="mt-1 leading-relaxed muted">Paso 1, paso 2, paso 3… paso N. Cada uno explica una parte del proceso en texto simple. Se pueden leer y corregir como un manual.</p></div>
+            </li>
+            <li class="grid grid-cols-[2rem_minmax(0,1fr)] gap-3">
+              <span class="font-mono text-sm accent">4</span>
+              <div><p class="font-bold ink">Orquestador</p><p class="mt-1 leading-relaxed muted">Un archivo que coordina todos los pasos en orden. El mes siguiente solo se le dice: “ejecuta el orquestador”.</p></div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Formatos -->
+        <h3 class="mt-16 text-2xl font-extrabold ink">Denle a la IA archivos que lea fácil</h3>
+        <p class="measure mt-3 leading-relaxed muted">
+          La IA sí puede leer Word, PDF y Excel, pero no de forma nativa: primero tiene que hacer un proceso interno para convertirlos.
+          Eso gasta más tokens y aumenta el riesgo de errores. Con el formato adecuado, lee más rápido y procesa mejor.
+        </p>
+        <div class="mt-6 grid gap-5 sm:grid-cols-2">
+          <div class="rounded-2xl border border-line bg-paper p-6">
+            <p class="text-sm font-semibold muted">Para textos: instrucciones, políticas, manuales</p>
+            <p class="mt-3 text-lg ink"><span class="red-ink line-through decoration-2">Word · PDF</span> <span class="muted">→</span> <strong>Markdown (.md)</strong></p>
+          </div>
+          <div class="rounded-2xl border border-line bg-paper p-6">
+            <p class="text-sm font-semibold muted">Para datos: extractos, auxiliares, listados</p>
+            <p class="mt-3 text-lg ink"><span class="red-ink line-through decoration-2">Excel (.xlsx)</span> <span class="muted">→</span> <strong>CSV</strong></p>
+          </div>
+        </div>
+
+        <!-- Qué automatizar y qué no -->
+        <h3 class="mt-16 text-2xl font-extrabold ink">No todo se automatiza</h3>
+        <div class="mt-6 grid gap-5 lg:grid-cols-2">
+          <article class="rounded-2xl border border-line bg-green-soft p-6 sm:p-8">
+            <p class="font-bold green-ink">Sí se automatiza</p>
+            <p class="mt-2 text-xl font-extrabold ink">Lo que se repite cada mes</p>
+            <p class="mt-3 leading-relaxed muted">Conciliaciones, informes mensuales, captura de soportes, cruces. Mismo proceso, mismas entradas, mismo resultado esperado.</p>
+          </article>
+          <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+            <p class="font-bold muted">Mejor trabajarlo con el agente</p>
+            <p class="mt-2 text-xl font-extrabold ink">Lo que se hace una vez al año</p>
+            <p class="mt-3 leading-relaxed muted">Ejemplo: el presupuesto anual. De un año a otro cambian las condiciones y una automatización hecha hace doce meses probablemente ya no sirva. Ahí se trabaja <em>junto</em> con el agente, sin automatizar.</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- Qué automatizar -->
-    <section id="automatizar" class="border-y border-line bg-paper-soft">
-      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-        <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">Qué puede hacer el área contable</h2>
-        <p class="measure mt-5 text-lg leading-relaxed muted">
-          No se trata de reemplazar el criterio contable, sino de quitarle al equipo las horas de copiar, cruzar y cuadrar.
-          Estos son casos reales, de menor a mayor nivel de madurez.
-        </p>
+    <!-- ============ PARTE 4 · CASOS ============ -->
+    <section id="casos" class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+      <p class="part-label">Parte 4 · Aplicado a contabilidad</p>
+      <h2 class="section-title mt-3 text-3xl font-extrabold ink sm:text-5xl">Qué puede hacer el área contable</h2>
+      <p class="measure mt-5 text-lg leading-relaxed muted">
+        No se trata de reemplazar el criterio contable, sino de quitarle al equipo las horas de copiar, cruzar y cuadrar.
+        De menor a mayor nivel de madurez:
+      </p>
 
-        <div class="mt-10 grid gap-5 lg:grid-cols-2">
-          <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
-            <p class="text-sm font-semibold accent">Desde el primer día</p>
-            <h3 class="mt-2 text-2xl font-extrabold ink">Conciliaciones bancarias</h3>
-            <p class="mt-3 leading-relaxed muted">El agente cruza el extracto (PDF o Excel) contra el auxiliar de bancos, marca lo conciliado y deja en una hoja aparte las partidas pendientes, con su posible explicación.</p>
-          </article>
-          <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
-            <p class="text-sm font-semibold accent">Desde el primer día</p>
-            <h3 class="mt-2 text-2xl font-extrabold ink">Informes y estados financieros</h3>
-            <p class="mt-3 leading-relaxed muted">A partir del balance de prueba exportado del software contable, arma el estado de situación financiera, el de resultados, las variaciones frente al mes anterior y un informe gerencial redactado.</p>
-          </article>
-        </div>
-
-        <!-- Caso estrella: cajas menores -->
-        <article class="mt-5 overflow-hidden rounded-2xl border border-line bg-paper">
-          <div class="p-6 sm:p-8">
-            <p class="text-sm font-semibold green-ink">Con un poco más de práctica</p>
-            <h3 class="mt-2 text-2xl font-extrabold ink">Captura de datos: la IA como OCR</h3>
-            <p class="measure mt-3 leading-relaxed muted">Una carpeta con fotos o escaneos de soportes de caja menor. El agente los lee todos, extrae la información y la entrega organizada. Y si se le enseña el plan de cuentas, puede ir un paso más allá.</p>
-          </div>
-          <div class="grid border-t border-line sm:grid-cols-3">
-            <div class="border-b border-line p-6 sm:border-b-0 sm:border-r">
-              <p class="font-mono text-xs muted">entrada</p>
-              <p class="mt-2 font-bold ink">/caja-menor-marzo</p>
-              <p class="mt-1 text-sm muted">42 fotos de facturas y recibos</p>
-            </div>
-            <div class="border-b border-line p-6 sm:border-b-0 sm:border-r">
-              <p class="font-mono text-xs muted">resultado</p>
-              <p class="mt-2 font-bold ink">caja-menor-marzo.xlsx</p>
-              <p class="mt-1 text-sm muted">Fecha, NIT, proveedor, concepto, base, IVA, total</p>
-            </div>
-            <div class="bg-green-soft p-6">
-              <p class="font-mono text-xs green-ink">nivel avanzado</p>
-              <p class="mt-2 font-bold ink">Registros contables</p>
-              <p class="mt-1 text-sm muted">Propuesta de asiento con cuentas, débitos y créditos, lista para revisar</p>
-            </div>
-          </div>
+      <div class="mt-10 grid gap-5 lg:grid-cols-2">
+        <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+          <p class="text-sm font-semibold accent">Desde el primer día</p>
+          <h3 class="mt-2 text-2xl font-extrabold ink">Conciliaciones bancarias</h3>
+          <p class="mt-3 leading-relaxed muted">El agente cruza el extracto contra el auxiliar de bancos, marca lo conciliado y deja en una hoja aparte las partidas pendientes, con su posible explicación.</p>
         </article>
-
-        <!-- Integración -->
-        <article class="mt-5 grid gap-6 rounded-2xl border border-slate-line bg-blue-soft p-6 sm:p-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center">
-          <div>
-            <p class="text-sm font-semibold muted">El siguiente nivel</p>
-            <h3 class="mt-2 text-2xl font-extrabold ink">Conectarlo todo con el software contable</h3>
-            <p class="mt-3 leading-relaxed muted">Cuando el software contable tiene API, los agentes dejan de trabajar con exportaciones manuales: leen la información directamente, generan los registros y los cargan, con aprobación humana en el medio. Es un proyecto de integración que requiere acompañamiento técnico, pero el ahorro de tiempo es de otra escala.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2 text-sm font-semibold ink">
-            <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Software contable</span>
-            <span class="muted" aria-hidden="true">⇄</span>
-            <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">API</span>
-            <span class="muted" aria-hidden="true">⇄</span>
-            <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Agente</span>
-            <span class="muted" aria-hidden="true">⇄</span>
-            <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Contador que aprueba</span>
-          </div>
+        <article class="rounded-2xl border border-line bg-paper p-6 sm:p-8">
+          <p class="text-sm font-semibold accent">Desde el primer día</p>
+          <h3 class="mt-2 text-2xl font-extrabold ink">Informes y estados financieros</h3>
+          <p class="mt-3 leading-relaxed muted">A partir del balance de prueba exportado del software contable, arma los estados financieros, las variaciones frente al mes anterior y un informe gerencial redactado.</p>
         </article>
-
-        <p class="mt-8 text-sm muted">Otras ideas: cartera por edades y correos de cobro, validación de facturas electrónicas contra el auxiliar, cruces de retenciones, soportes para medios magnéticos, presupuesto vs. ejecución.</p>
       </div>
+
+      <article class="mt-5 overflow-hidden rounded-2xl border border-line bg-paper">
+        <div class="p-6 sm:p-8">
+          <p class="text-sm font-semibold green-ink">Con un poco más de práctica</p>
+          <h3 class="mt-2 text-2xl font-extrabold ink">Captura de datos: la IA como OCR</h3>
+          <p class="measure mt-3 leading-relaxed muted">Una carpeta con fotos o escaneos de soportes de caja menor. El agente los lee todos, extrae la información y la entrega organizada. Si se le enseña el plan de cuentas, puede ir un paso más allá.</p>
+        </div>
+        <div class="grid border-t border-line sm:grid-cols-3">
+          <div class="border-b border-line p-6 sm:border-b-0 sm:border-r">
+            <p class="font-mono text-xs muted">entradas/</p>
+            <p class="mt-2 font-bold ink">Fotos de caja menor</p>
+            <p class="mt-1 text-sm muted">Facturas y recibos del mes</p>
+          </div>
+          <div class="border-b border-line p-6 sm:border-b-0 sm:border-r">
+            <p class="font-mono text-xs muted">salidas/</p>
+            <p class="mt-2 font-bold ink">caja-menor.xlsx</p>
+            <p class="mt-1 text-sm muted">Fecha, NIT, proveedor, concepto, base, IVA, total</p>
+          </div>
+          <div class="bg-green-soft p-6">
+            <p class="font-mono text-xs green-ink">nivel avanzado</p>
+            <p class="mt-2 font-bold ink">Registros contables</p>
+            <p class="mt-1 text-sm muted">Propuesta de asiento con cuentas, débitos y créditos, lista para revisar</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="mt-5 grid gap-6 rounded-2xl border border-slate-line bg-blue-soft p-6 sm:p-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center">
+        <div>
+          <p class="text-sm font-semibold muted">El siguiente nivel</p>
+          <h3 class="mt-2 text-2xl font-extrabold ink">Conectarlo todo con el software contable</h3>
+          <p class="mt-3 leading-relaxed muted">Cuando el software contable tiene API, los agentes dejan de trabajar con exportaciones manuales: leen la información directamente, generan los registros y los cargan, con aprobación humana en el medio. Es un proyecto de integración que requiere acompañamiento técnico, pero el ahorro de tiempo es de otra escala.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 text-sm font-semibold ink">
+          <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Software contable</span>
+          <span class="muted" aria-hidden="true">⇄</span>
+          <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">API</span>
+          <span class="muted" aria-hidden="true">⇄</span>
+          <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Agente</span>
+          <span class="muted" aria-hidden="true">⇄</span>
+          <span class="rounded-full border border-slate-line bg-paper px-3 py-1.5">Contador que aprueba</span>
+        </div>
+      </article>
+
+      <p class="mt-8 text-sm muted">Otras ideas: cartera por edades y correos de cobro, validación de facturas electrónicas contra el auxiliar, cruces de retenciones, soportes para medios magnéticos, presupuesto vs. ejecución.</p>
     </section>
 
     <!-- Buen prompt -->
-    <section id="prompt" class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-      <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">Cómo pedirle las cosas a la IA</h2>
-      <p class="measure mt-5 text-lg leading-relaxed muted">
-        La IA es como un auxiliar muy capaz que acaba de llegar a la empresa: no conoce su contexto.
-        Entre más claro el encargo, mejor el resultado. Un buen prompt tiene seis partes.
-      </p>
+    <section id="prompt" class="border-y border-line bg-paper-soft">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+        <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">Cómo pedirle las cosas a la IA</h2>
+        <p class="measure mt-5 text-lg leading-relaxed muted">
+          La IA es como un auxiliar muy capaz que acaba de llegar a la empresa: no conoce su contexto.
+          Entre más claro el encargo, mejor el resultado. Un buen prompt tiene seis partes.
+        </p>
 
-      <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-        <dl class="divide-y divide-[color:var(--line)] border-y border-line">
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Rol</dt>
-            <dd class="muted">Quién debe ser. “Actúa como contador senior experto en NIIF para pymes.”</dd>
-          </div>
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Contexto</dt>
-            <dd class="muted">La empresa, el periodo, de dónde salen los datos, para quién es.</dd>
-          </div>
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Tarea</dt>
-            <dd class="muted">Qué debe hacer, con un verbo claro: concilia, clasifica, resume, compara.</dd>
-          </div>
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Formato</dt>
-            <dd class="muted">Cómo quieres el resultado: Excel con estas columnas, tabla, informe de una página.</dd>
-          </div>
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Reglas</dt>
-            <dd class="muted">Límites y criterios: “no inventes datos”, “si no cuadra, márcalo en rojo”.</dd>
-          </div>
-          <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4">
-            <dt class="font-bold ink">Ejemplo</dt>
-            <dd class="muted">Una muestra de cómo se ve un resultado bien hecho. Vale más que mil instrucciones.</dd>
-          </div>
-        </dl>
+        <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+          <dl class="divide-y divide-[color:var(--line)] border-y border-line">
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Rol</dt><dd class="muted">Quién debe ser. “Actúa como contador senior experto en NIIF para pymes.”</dd></div>
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Contexto</dt><dd class="muted">La empresa, el periodo, de dónde salen los datos, para quién es.</dd></div>
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Tarea</dt><dd class="muted">Qué debe hacer, con un verbo claro: concilia, clasifica, resume, compara.</dd></div>
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Formato</dt><dd class="muted">Cómo quieres el resultado: Excel con estas columnas, tabla, informe de una página.</dd></div>
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Reglas</dt><dd class="muted">Límites y criterios: “no inventes datos”, “si no cuadra, márcalo”.</dd></div>
+            <div class="grid grid-cols-[110px_minmax(0,1fr)] gap-4 py-4"><dt class="font-bold ink">Ejemplo</dt><dd class="muted">Una muestra de cómo se ve un resultado bien hecho. Vale más que mil instrucciones.</dd></div>
+          </dl>
 
-        <div class="space-y-4">
-          <div class="rounded-2xl border border-line bg-paper-strong p-5">
-            <p class="text-sm font-semibold muted">Así no</p>
-            <p class="prompt-box mt-2 ink">Concilia el banco.</p>
-          </div>
-          <div class="rounded-2xl border border-line bg-paper p-5 shadow-paper">
-            <p class="text-sm font-semibold green-ink">Así sí</p>
-            <p class="prompt-box mt-2 ink">Actúa como contador senior.
-En esta carpeta están el extracto de Bancolombia de marzo (PDF) y el auxiliar de la cuenta 111005 (Excel), exportado de nuestro software contable.
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-line bg-paper-strong p-5">
+              <p class="text-sm font-semibold muted">Así no</p>
+              <p class="prompt-box mt-2 ink">Concilia el banco.</p>
+            </div>
+            <div class="rounded-2xl border border-line bg-paper p-5 shadow-paper">
+              <p class="text-sm font-semibold green-ink">Así sí</p>
+              <p class="prompt-box mt-2 ink">Actúa como contador senior.
+En la carpeta entradas/ están el extracto bancario de marzo y el auxiliar de la cuenta 111005, ambos en CSV.
 
-Concilia los dos documentos y entrega un Excel con tres hojas:
+Concilia los dos documentos y deja en salidas/ un Excel con tres hojas:
 1. Partidas conciliadas.
 2. Partidas en el extracto que no están en libros.
 3. Partidas en libros que no están en el extracto.
 
 Reglas: cruza por valor y fecha con tolerancia de 3 días. No inventes datos. Si una partida es dudosa, déjala en pendientes con una nota. Al final, dame el saldo conciliado y un resumen de 5 líneas.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Buenas prácticas -->
-    <section class="border-y border-line bg-paper-soft">
-      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
-        <h2 class="section-title text-3xl font-extrabold ink sm:text-4xl">Reglas de oro para empezar</h2>
-        <ul class="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
-          <li>
-            <p class="font-bold ink">La IA prepara, el contador firma.</p>
-            <p class="mt-1 leading-relaxed muted">Todo resultado se revisa. La responsabilidad profesional sigue siendo humana.</p>
-          </li>
-          <li>
-            <p class="font-bold ink">Empieza con copias, no con originales.</p>
-            <p class="mt-1 leading-relaxed muted">Dale al agente una carpeta de trabajo con copias de los archivos.</p>
-          </li>
-          <li>
-            <p class="font-bold ink">Cuida la información sensible.</p>
-            <p class="mt-1 leading-relaxed muted">Usa planes empresariales, revisa las políticas de datos y no compartas lo que no debe salir de la empresa.</p>
-          </li>
-          <li>
-            <p class="font-bold ink">Un proceso a la vez.</p>
-            <p class="mt-1 leading-relaxed muted">Escojan una tarea que se repita cada mes, automatícenla bien y luego sigan con la próxima.</p>
-          </li>
-          <li>
-            <p class="font-bold ink">Pide que explique lo que hizo.</p>
-            <p class="mt-1 leading-relaxed muted">Un buen agente deja el rastro: qué cruzó, qué descartó y por qué.</p>
-          </li>
-          <li>
-            <p class="font-bold ink">Guarda lo que funciona.</p>
-            <p class="mt-1 leading-relaxed muted">Un prompt bueno es un activo del área. Documéntenlo y reutilícenlo.</p>
-          </li>
-        </ul>
-      </div>
+    <!-- Reglas de oro -->
+    <section class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-20">
+      <h2 class="section-title text-3xl font-extrabold ink sm:text-4xl">Reglas de oro para empezar</h2>
+      <ul class="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        <li><p class="font-bold ink">La IA prepara, el contador firma.</p><p class="mt-1 leading-relaxed muted">Puede alucinar. Todo resultado se revisa; la responsabilidad profesional sigue siendo humana.</p></li>
+        <li><p class="font-bold ink">Un entregable por sesión.</p><p class="mt-1 leading-relaxed muted">Terminado el trabajo, nueva sesión. Conversaciones cortas, resultados mejores y menos tokens.</p></li>
+        <li><p class="font-bold ink">Siempre una carpeta.</p><p class="mt-1 leading-relaxed muted">Entradas, salidas, pasos y orquestador. Trabajen con copias, nunca con los originales.</p></li>
+        <li><p class="font-bold ink">Markdown y CSV.</p><p class="mt-1 leading-relaxed muted">Menos conversión, menos tokens, menos errores.</p></li>
+        <li><p class="font-bold ink">Automaticen lo mensual.</p><p class="mt-1 leading-relaxed muted">Un proceso a la vez. Lo anual o excepcional, trabájenlo con el agente sin automatizar.</p></li>
+        <li><p class="font-bold ink">Cuiden la información sensible.</p><p class="mt-1 leading-relaxed muted">Usen planes empresariales, revisen las políticas de datos y no compartan lo que no debe salir de la empresa.</p></li>
+      </ul>
     </section>
 
     <!-- Cierre -->
-    <section class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-24">
-      <div class="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end">
-        <div>
-          <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">El primer paso es pequeño</h2>
-          <p class="measure mt-5 text-lg leading-relaxed muted">
-            Elijan una tarea que hoy les tome horas cada mes. Pruébenla con un agente sobre una carpeta de copias.
-            Cuando quieran llevarlo al siguiente nivel, integrar el software contable o formar al equipo, aquí estoy para acompañarlos.
-          </p>
-        </div>
-        <div class="rounded-2xl border border-line bg-paper p-6 shadow-paper">
-          <p class="text-xl font-extrabold ink">Juan David Jaramillo</p>
-          <p class="mt-1 muted">HiPanda · Automatización e IA para empresas</p>
-          <a href="https://www.youtube.com/@hipandaio" target="_blank" rel="noopener"
-             class="mt-5 flex items-center gap-3 rounded-xl bg-accent-soft p-4 transition-colors hover:bg-[color:var(--paper-strong)]">
-            <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6 15.8 12 9.6 8.4z"/></svg>
-            <span>
-              <span class="block font-bold ink">Síganme en YouTube</span>
-              <span class="block text-sm muted">@hipandaio · tutoriales de IA y automatización</span>
-            </span>
-          </a>
-          <ul class="mt-5 space-y-2 text-sm">
-            <li><a class="font-semibold accent hover:underline" href="mailto:jdjara@gmail.com">jdjara@gmail.com</a></li>
-            <li><a class="font-semibold accent hover:underline" href="https://hipanda.io" target="_blank" rel="noopener">hipanda.io</a></li>
-            <li><a class="font-semibold accent hover:underline" href="https://www.linkedin.com/in/juan-david-jaramillo-hipandaio" target="_blank" rel="noopener">LinkedIn</a></li>
-          </ul>
+    <section class="border-t border-line bg-paper-soft">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:px-8 sm:py-24">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-end">
+          <div>
+            <h2 class="section-title text-3xl font-extrabold ink sm:text-5xl">El primer paso es pequeño</h2>
+            <p class="measure mt-5 text-lg leading-relaxed muted">
+              Elijan una tarea que hoy les tome horas cada mes. Armen su carpeta, pruébenla con un agente sobre copias
+              y conviértanla en automatización. Para cualquier duda, para llevarlo al siguiente nivel, integrar el software
+              contable o formar al equipo, estoy disponible para lo que necesiten.
+            </p>
+          </div>
+          <div class="rounded-2xl border border-line bg-paper p-6 shadow-paper">
+            <p class="text-xl font-extrabold ink">Juan David Jaramillo</p>
+            <p class="mt-1 muted">HiPanda · Automatización e IA para empresas</p>
+            <a href="https://www.youtube.com/@hipandaio" target="_blank" rel="noopener"
+               class="mt-5 flex items-center gap-3 rounded-xl bg-accent-soft p-4 transition-colors hover:bg-[color:var(--paper-strong)]">
+              <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6 15.8 12 9.6 8.4z"/></svg>
+              <span>
+                <span class="block font-bold ink">Síganme en YouTube</span>
+                <span class="block text-sm muted">@hipandaio · tutoriales de IA y automatización</span>
+              </span>
+            </a>
+            <ul class="mt-5 space-y-2 text-sm">
+              <li><a class="font-semibold accent hover:underline" href="mailto:jdjara@gmail.com">jdjara@gmail.com</a></li>
+              <li><a class="font-semibold accent hover:underline" href="https://hipanda.io" target="_blank" rel="noopener">hipanda.io</a></li>
+              <li><a class="font-semibold accent hover:underline" href="https://www.linkedin.com/in/juan-david-jaramillo-hipandaio" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
