@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complementos con inventario | Galco</title>
+  <style>
+    :root {
+      --paper: #fbfaf7;
+      --paper-soft: #f4f2ed;
+      --ink: #23262d;
+      --muted: #676d78;
+      --line: #dedad2;
+      --accent: #a8663f;
+      --accent-soft: #f6ebe3;
+      --ok: #3f7a5a;
+      --ok-soft: #e7f1ea;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, var(--paper) 0%, #f7f5f0 100%);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 1.5rem;
+      box-shadow: 0 24px 80px rgba(45, 39, 32, 0.07);
+      overflow: hidden;
+    }
+    .pad { padding: 2rem 2.25rem; }
+    .kicker {
+      letter-spacing: .16em; text-transform: uppercase;
+      font-size: .72rem; font-weight: 700; color: var(--muted); margin: 0;
+    }
+    .accent { color: var(--accent); }
+    .muted { color: var(--muted); }
+    header.top {
+      display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+    }
+    .tag {
+      background: var(--paper-soft); border: 1px solid var(--line); border-radius: 1rem;
+      padding: .8rem 1.1rem; align-self: flex-start;
+    }
+    .tag strong { display: block; margin-top: .25rem; }
+    h1 {
+      font-size: clamp(2rem, 4.5vw, 2.9rem); line-height: 1.08; letter-spacing: -.035em;
+      margin: 0 0 1.1rem; font-weight: 800;
+    }
+    h2 {
+      font-size: 1.45rem; letter-spacing: -.02em; margin: .4rem 0 1rem; font-weight: 750;
+    }
+    h3 { font-size: 1.02rem; margin: 0 0 .35rem; }
+    p { margin: 0 0 .9rem; }
+    .lead { font-size: 1.12rem; color: var(--muted); max-width: 68ch; }
+    section { margin-top: 1.5rem; }
+
+    /* Antes / ahora */
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .compare > div { border: 1px solid var(--line); border-radius: 1rem; padding: 1.2rem 1.3rem; }
+    .compare .now { background: var(--ok-soft); border-color: #c9ddcf; }
+    .compare ul { margin: .5rem 0 0; padding-left: 1.1rem; }
+    .compare li { margin-bottom: .35rem; }
+
+    /* Flujo */
+    .flow { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+    .flow li {
+      counter-increment: s; position: relative;
+      padding: .9rem 0 .9rem 3rem; border-top: 1px solid var(--line);
+    }
+    .flow li:first-child { border-top: 0; }
+    .flow li::before {
+      content: counter(s); position: absolute; left: 0; top: .9rem;
+      width: 2rem; height: 2rem; border-radius: 999px;
+      background: var(--accent-soft); color: var(--accent);
+      font-weight: 800; display: grid; place-items: center; font-size: .9rem;
+    }
+    .flow p { margin: 0; color: var(--muted); }
+
+    /* Frentes de trabajo */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .box { border: 1px solid var(--line); border-radius: 1rem; padding: 1.2rem 1.3rem; background: var(--paper); }
+    .box ul { margin: .4rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+    .box li { margin-bottom: .3rem; }
+
+    /* Cifras */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .stat { border-left: 3px solid var(--accent); padding: .2rem 0 .2rem .9rem; }
+    .stat b { display: block; font-size: 1.6rem; letter-spacing: -.02em; }
+    .stat span { font-size: .88rem; color: var(--muted); }
+
+    /* Tickets */
+    table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    th, td { text-align: left; padding: .65rem .5rem; border-top: 1px solid var(--line); vertical-align: top; }
+    th { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-top: 0; }
+    td.code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .85rem; white-space: nowrap; color: var(--accent); }
+
+    .note {
+      background: var(--accent-soft); border-radius: 1rem; padding: 1.1rem 1.3rem;
+      border: 1px solid #ecd6c6;
+    }
+    .note ul { margin: .4rem 0 0; padding-left: 1.1rem; }
+    footer { margin-top: 2rem; text-align: center; font-size: .85rem; color: var(--muted); }
+
+    .print-btn {
+      position: fixed; top: 1rem; right: 1rem; z-index: 10;
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+      border-radius: 999px; padding: .55rem 1rem; font: inherit; font-size: .85rem; font-weight: 600;
+      cursor: pointer; box-shadow: 0 8px 24px rgba(45,39,32,.08);
+    }
+    @media (max-width: 720px) {
+      .compare, .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .pad { padding: 1.5rem 1.25rem; }
+    }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { background: #fff; }
+      .print-btn { display: none; }
+      .card { box-shadow: none; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">Imprimir / PDF</button>
+  <main>
+
+    <!-- Encabezado -->
+    <div class="card">
+      <header class="top pad">
+        <div>
+          <p class="kicker">HiPanda · Noviembre 2026</p>
+          <p style="margin:.4rem 0 0;font-weight:700;font-size:1.15rem;">Reporte de avance: complementos</p>
+          <p class="muted" style="margin:.2rem 0 0;font-size:.92rem;">Para Diego y Felipe · Proyecto Galco</p>
+        </div>
+        <div class="tag">
+          <p class="kicker accent">Módulos</p>
+          <strong>Inventario · Almacén</strong>
+        </div>
+      </header>
+      <div class="pad">
+        <h1>Los complementos de las remisiones ahora mueven inventario.</h1>
+        <p class="lead">Hasta ahora los complementos (tornillería, accesorios, empaques) aparecían en la remisión solo como texto. Ahora son productos de inventario: se descuentan al remisionar, se ajustan si se corrige la remisión y se devuelven si se anula. Todo queda registrado con su comprobante.</p>
+      </div>
+    </div>
+
+    <!-- Antes / ahora -->
+    <section class="card pad">
+      <p class="kicker">Qué cambia en la operación</p>
+      <h2>Antes y ahora</h2>
+      <div class="compare">
+        <div>
+          <h3>Antes</h3>
+          <ul class="muted">
+            <li>El complemento se escribía como texto en la regla del producto.</li>
+            <li>La remisión los mostraba, pero no descontaba nada del inventario.</li>
+            <li>Al anular una remisión, los complementos no se devolvían.</li>
+            <li>No había forma de saber cuántos complementos salieron realmente.</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>Ahora</h3>
+          <ul>
+            <li>Cada complemento es un producto del catálogo, con referencia y stock.</li>
+            <li>Al confirmar la remisión se genera una <b>salida de complementos</b> (comprobante 95) que descuenta de la bodega 02.</li>
+            <li>Si se corrige la remisión, se mueve solo la diferencia.</li>
+            <li>Al anular, todo vuelve al inventario con el comprobante 96.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flujo -->
+    <section class="card pad">
+      <p class="kicker">Cómo funciona</p>
+      <h2>El recorrido de un complemento</h2>
+      <ol class="flow">
+        <li>
+          <h3>Configuración en Inventario</h3>
+          <p>Se elige de qué bodega salen los complementos y con qué comprobante se registran. Hoy: bodega 02 y comprobante 95. No quedó nada fijo en el código; se cambia desde la pantalla.</p>
+        </li>
+        <li>
+          <h3>Catálogo de complementos</h3>
+          <p>Desde Inventario se crean complementos uno por uno o se cargan en bloque con un Excel (hay plantilla de ejemplo).</p>
+        </li>
+        <li>
+          <h3>Reglas por producto</h3>
+          <p>En el Tablero de almacén se define qué complementos lleva cada producto y cuántos por unidad. Ahora solo se pueden escoger complementos que existan en el catálogo, ya no texto libre.</p>
+        </li>
+        <li>
+          <h3>Remisión</h3>
+          <p>Al confirmar, el sistema calcula los complementos según las reglas y las cantidades remitidas, y los descuenta en la misma operación que los productos. Si algo falla, no se guarda nada a medias.</p>
+        </li>
+        <li>
+          <h3>Ajuste o anulación</h3>
+          <p>Si se editan los complementos de una remisión, se registra un ajuste por la diferencia. Si se anula la remisión, se devuelve todo lo que se había descontado.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Frentes -->
+    <section class="card pad">
+      <p class="kicker">Lo que se hizo</p>
+      <h2>Trabajo por frente</h2>
+      <div class="grid">
+        <div class="box">
+          <h3>Servidor</h3>
+          <ul>
+            <li>Nuevo documento “Salida de complementos”, ligado a cada remisión.</li>
+            <li>Rutas nuevas para remisionar (incluida “toda la construcción”), ajustar complementos y configurar el módulo.</li>
+            <li>Anulación de remisiones rehecha para que sea atómica y devuelva también los complementos.</li>
+            <li>Rutas viejas desactivadas para que no convivan dos formas de remisionar.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Aplicación</h3>
+          <ul>
+            <li>Pantalla nueva de Complementos en la configuración de Inventario.</li>
+            <li>Tablero y Operador de almacén actualizados para las reglas y la remisión.</li>
+            <li>Pantallas de Movimiento y Resumen de inventario pasadas al diseño nuevo.</li>
+            <li>Botón “?” en cada pantalla que abre su manual.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Migración de datos</h3>
+          <ul>
+            <li>Script que marca como complemento lo que ya existía, sin mover stock.</li>
+            <li>Crea en la bodega 02 los que faltaban.</li>
+            <li>Las remisiones anteriores no se tocan: se siguen viendo e imprimiendo igual.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Manuales</h3>
+          <ul>
+            <li>Inventario → Complementos: configuración, catálogo y carga por Excel.</li>
+            <li>Almacén → Complementos: reglas, salida, ajuste y devolución.</li>
+            <li>Almacén → Tablero: manual nuevo de la pantalla y permisos por rol.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cifras -->
+    <section class="card pad">
+      <p class="kicker">Punto de partida</p>
+      <h2>Con qué datos se trabajó</h2>
+      <div class="stats">
+        <div class="stat"><b>21.930</b><span>reglas de complementos activas</span></div>
+        <div class="stat"><b>6.289</b><span>productos con reglas</span></div>
+        <div class="stat"><b>79</b><span>complementos distintos</span></div>
+        <div class="stat"><b>7</b><span>complementos que no existían y se crearon</span></div>
+      </div>
+      <p class="muted" style="margin-top:1.3rem;">La parte más delicada fue que remisión, salida de complementos y movimientos de inventario quedaran en una sola operación, y que las remisiones históricas siguieran funcionando sin cambios. Se validó con pruebas automáticas y con pruebas de punta a punta sobre una copia de la base: remisión, ajuste y anulación, revisando el stock en cada paso.</p>
+    </section>
+
+    <!-- Tickets -->
+    <section class="card pad">
+      <p class="kicker">Referencia</p>
+      <h2>Tickets</h2>
+      <table>
+        <thead><tr><th>Ticket</th><th>Qué cubre</th></tr></thead>
+        <tbody>
+          <tr><td class="code">HIP-175</td><td>Anulación de remisión atómica (base para devolver complementos).</td></tr>
+          <tr><td class="code">HIP-178</td><td>Complementos como productos de inventario: modelo, rutas, pantallas y migración.</td></tr>
+          <tr><td class="code">HIP-245 / 246</td><td>Movimiento y Resumen de inventario en el diseño nuevo.</td></tr>
+          <tr><td class="code">HIP-247</td><td>Manuales de complementos y botón de ayuda.</td></tr>
+          <tr><td class="code">HIP-248</td><td>Manual del Tablero de almacén.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Siguientes -->
+    <section class="note">
+      <p class="kicker accent">Quedó identificado para después</p>
+      <ul>
+        <li>Ajustar permisos del Tablero: algunos botones se le muestran al usuario de almacén aunque no los puede usar (HIP-250, HIP-251).</li>
+        <li>Quitar elementos sin uso en el Tablero y el Operador (HIP-249, HIP-252).</li>
+        <li>Retirar del código las rutas viejas que ya quedaron desactivadas (HIP-239).</li>
+      </ul>
+    </section>
+
+    <footer>HiPanda · Juan David Jaramillo · Noviembre 2026</footer>
+  </main>
+</body>
+</html>
